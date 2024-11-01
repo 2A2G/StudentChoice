@@ -24,16 +24,15 @@ class Estudiante extends Component
     {
         try {
             $estudiante = \App\Models\Estudiante::where('numero_identidad', $this->numero_identidad)->first();
-            if ($estudiante) {
-
-                return view('livewire.invitado.dashboard', compact('estudiante'));
+            if ($estudiante) {               
+                return redirect()->route('sveVotacion');
             } else {
                 $this->dispatch('post-error', name: "No se encontro el estudiante o no esta registrado. Intenta de nuevo");
             }
 
             $this->open = false;
         } catch (\Throwable $th) {
-            $this->dispatch('post-error', name: "No se encontro el estudiante o no esta registrado. Intenta de nuevo");
+            $this->dispatch('post-error', name: "Hubo un error al redirigir al estudiante", message: $th->getMessage());
 
         }
 
