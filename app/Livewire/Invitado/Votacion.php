@@ -24,7 +24,7 @@ class Votacion extends Component
     {
         if ($this->selectedCandidato) {
             $candidato = Postulante::find($this->selectedCandidato);
-            dd($candidato);           
+            dd($candidato);        
         }
     }
 
