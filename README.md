@@ -1,8 +1,8 @@
-# Student_Voting_System
+# StudentChoice
 
 Este repositorio contiene el código fuente de un sistema de votación estudiantil con Laravel y Jetstream. Proporciona una plataforma segura y fácil de usar para elecciones estudiantiles. Utiliza Laravel, Jetstream, Livewire y Tailwind CSS. Características: autenticación de usuarios, gestión de candidatos, votación segura y una interfaz intuitiva.
 
-## Student Voting System
+## StudentChoice
 
 Este repositorio contiene el código fuente para un sistema de votación estudiantil desarrollado con Laravel y Jetstream. El objetivo de este proyecto es proporcionar una plataforma segura y fácil de usar para la gestión de elecciones estudiantiles.
 
@@ -28,7 +28,7 @@ Para clonar y ejecutar este proyecto en tu máquina local, sigue estos pasos:
 
     ```bash
     git clone https://github.com/tu-usuario/student_voting_system.git
-    cd student_voting_system
+    cd StudentChoice
     ```
 
 2. Instala las dependencias de PHP con Composer:
