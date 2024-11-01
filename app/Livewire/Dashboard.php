@@ -10,7 +10,6 @@ class Dashboard extends Component
     public $caso;
     #[On('cambiarComponent')]
 
-
     public $name;
 
     public function cambiar($name)
