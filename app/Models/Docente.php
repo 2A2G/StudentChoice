@@ -13,6 +13,7 @@ class Docente extends Model
         'user_id',
         'curso_id',
         'numero_identidad',
+        'sexo',
         'asignatura'
     ];
 

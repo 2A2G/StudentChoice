@@ -13,21 +13,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
-
         $this->call(RoleSeeder::class);
         $this->call(CursoSeeder::class);
         $this->call(CargoSeeder::class);
         $this->call(EstudianteSeeder::class);
+        $this->call(DocenteSeeder::class);
 
-        $user = User::create([
+        $superAdmin = User::create([
             'name' => 'Aldair',
             'email' => 'admin@inefrapasa.com',
             'password' => bcrypt('password'),
         ]);
-        $user->assignRole('super-admin');
+        $superAdmin->assignRole('super-admin');
 
+        $admin = User::create([
+            'name' => 'Ricardo',
+            'email' => 'Ricardo@inefrapasa.com',
+            'password' => bcrypt('password'),
+        ]);
+        $admin->assignRole('admin');
 
-
+        $secretaria = User::create([
+            'name' => 'Julia',
+            'email' => 'Julia@inefrapasa.com',
+            'password' => bcrypt('password'),
+        ]);
+        $secretaria->assignRole('secretaria');
     }
 }
