@@ -28,6 +28,7 @@ class Barra extends Component
             ->whereNull('deleted_at')
             ->whereIn('curso_id', $cursos->keys())
             ->groupBy('curso_id')
+            ->orderByRaw('curso_id')
             ->get();
 
         // Combina resultados
