@@ -27,10 +27,8 @@ class Table extends Component
     public $roles;
     public $case;
     public $open;
-    public  $type;
+    public $type;
 
-    
-    // public $eliminar = true;
 
     public function datos()
     {
@@ -98,6 +96,7 @@ class Table extends Component
                         DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
                     ->groupBy('cursos.id', 'cursos.nombre_curso', 'cursos.deleted_at')
+                    ->orderByRaw('cursos.id')
                     ->simplePaginate(10);
 
                 $this->data = $cursosPaginate->items();
@@ -189,7 +188,7 @@ class Table extends Component
                 // Ajustar los datos para la vista
                 $this->data = $postulacionAnios->items();
                 $this->dataI = ['anio_postulacion', 'cantidad_postulantes'];
-                $this->columns = ['Año de postulación', 'Cantidad de postulantes', 'Estado', 'Acción'];
+                $this->columns = ['Año de postulación', 'Cantidad de postulantes', 'Acción'];
                 break;
 
 
@@ -208,12 +207,13 @@ class Table extends Component
     }
 
 
-    public function openModal($dato,$row){
+    public function openModal($dato, $row)
+    {
 
         // $columns.map(function($column){
         //     if($column == 'action'){
         //         $this->eliminar = $row[$column] == 'Activo' ? true : false;
-     
+
         //     }
         // });
         $this->type = $dato == 'editar' ? 'Editar' : 'Eliminar';
