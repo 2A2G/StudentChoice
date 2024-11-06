@@ -9,8 +9,9 @@ use Livewire\Component;
 class Panel extends Component
 {
     public $estadoVotacion = 'activo';
+    public $estudiantesDisponibles;
+    public $cursos;
     public $cursoSeleccionado;
-    public $cursoGrafica = null;
 
     public function finalizarVotacion()
     {
@@ -22,6 +23,16 @@ class Panel extends Component
         dd('Iniciar votación');
         $this->estadoVotacion = 'activo';
     }
+    public function estudiantesHabilitados()
+    {
+        $estudiantesDisponibles = Estudiante::where('deleted_at', null)->get();
+        $this->estudiantesDisponibles = $estudiantesDisponibles->count();
+    }
+    public function cursos()
+    {
+        $cursos = Curso::where('deleted_at', null)->get();
+        $this->cursos = $cursos;
+    }
 
     public function seleccionarCurso($cursoId)
     {
@@ -30,17 +41,14 @@ class Panel extends Component
 
     public function render()
     {
-        $estudiantesDisponibles = Estudiante::where('deleted_at', null)->get();
-        $cursos = Curso::where('deleted_at', null)->get();
-        // dd($cursos);
+        $this->estudiantesHabilitados();
+        $this->cursos();
         return view(
             'livewire.sistema-votacion.panel',
             [
-                'estudiantesDisponibles' => $estudiantesDisponibles->count(),
-                'cursos' => $cursos,
+                'estudiantesDisponibles' => $this->estudiantesDisponibles,
+                'cursos' => $this->cursos,
                 'cursoSeleccionado' => $this->cursoSeleccionado,
-                'cursoGrafica' => $this->cursoGrafica,
-
             ]
         );
     }
