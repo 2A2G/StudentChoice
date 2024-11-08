@@ -33,7 +33,9 @@
                 </div>
                 <div class="p-4 text-right">
                     <p class="block text-sm font-normal text-blue-gray-600">Total de votos</p>
-                    <h4 class="block text-2xl font-semibold text-blue-gray-900">5</h4>
+                    <h4 class="block text-2xl font-semibold text-blue-gray-900"> <livewire:animated-counter
+                            :targetCount="$totalNoBlanco" />
+                    </h4>
                 </div>
             </div>
 
@@ -49,7 +51,9 @@
                 </div>
                 <div class="p-4 text-right">
                     <p class="block text-sm font-normal text-blue-gray-600">Votos en blanco</p>
-                    <h4 class="block text-2xl font-semibold text-blue-gray-900">0</h4>
+                    <h4 class="block text-2xl font-semibold text-blue-gray-900">
+                        <livewire:animated-counter :targetCount="$totalVotosBlanco" />
+                    </h4>
                 </div>
             </div>
         </div>

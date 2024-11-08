@@ -14,9 +14,10 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('estudiante_id');
             $table->foreignId('cargo_id');
+            $table->string('voto_blanco')->default(false);
 
-            $table->foreign('estudiante_id')->references('estudiante_id')->on('estudiantes');
-            $table->foreign('cargo_id')->references('cargo_id')->on('cargos');
+            $table->foreign('estudiante_id')->references('id')->on('estudiantes');
+            $table->foreign('cargo_id')->references('id')->on('cargos');
             $table->softDeletes();
             $table->timestamps();
         });
