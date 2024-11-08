@@ -10,15 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('postulantes', function (Blueprint $table) {
+        Schema::create('opciones_estudiantes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('estudiante_id');
             $table->foreignId('cargo_id');
-            $table->string('fotografia_postulante');
-            $table->string('anio_postulacion')->default(date('Y'));
 
-            $table->foreign('estudiante_id')->references('id')->on('estudiantes')->onDelete('cascade');
-            $table->foreign('cargo_id')->references('id')->on('cargos')->onDelete('cascade');
+            $table->foreign('estudiante_id')->references('estudiante_id')->on('estudiantes');
+            $table->foreign('cargo_id')->references('cargo_id')->on('cargos');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -29,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('postulantes');
+        Schema::dropIfExists('opciones_estudiantes');
     }
 };

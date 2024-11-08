@@ -12,13 +12,17 @@ class Cargo extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'nombre_cargo',        
+        'nombre_cargo',
         'descripcion_cargo',
     ];
 
     public function postulantes()
     {
         return $this->hasMany(Postulante::class);
+    }
+    public function opcionesEstudiante()
+    {
+        return $this->hasMany(opcionesEstudiante::class);
     }
 
 }
