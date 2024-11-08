@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Votos extends Model
 {
     use HasFactory;
-    protected $guarded = [];
+    protected $fillable = [
+        'postulante_id',
+        'cantidad_voto',
+    ];
 
     public function postulante()
     {

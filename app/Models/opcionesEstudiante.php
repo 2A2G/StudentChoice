@@ -9,7 +9,11 @@ class opcionesEstudiante extends Model
 {
     use HasFactory;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'estudiante_id',
+        'cargo_id',
+        'voto_blanco'
+    ];
 
     public function estudiante()
     {

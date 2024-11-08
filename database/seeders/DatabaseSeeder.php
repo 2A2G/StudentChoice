@@ -26,12 +26,12 @@ class DatabaseSeeder extends Seeder
         ]);
         $superAdmin->assignRole('super-admin');
 
-        $admin = User::create([
+        $rector = User::create([
             'name' => 'Ricardo',
             'email' => 'Ricardo@inefrapasa.com',
             'password' => bcrypt('password'),
         ]);
-        $admin->assignRole('admin');
+        $rector->assignRole('rector');
 
         $secretaria = User::create([
             'name' => 'Julia',
