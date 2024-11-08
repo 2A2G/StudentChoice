@@ -28,5 +28,8 @@ class Estudiante extends Model
     {
         return $this->hasMany(Postulante::class);
     }
-
+    public function opcionesEstudiante()
+    {
+        return $this->hasMany(opcionesEstudiante::class);
+    }
 }

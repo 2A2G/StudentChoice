@@ -30,5 +30,9 @@ class Postulante extends Model
         return $this->belongsTo(Estudiante::class);
     }
 
+    public function opcionesEstudiante()
+    {
+        return $this->hasMany(OpcionesEstudiante::class);
+    }
 
 }
