@@ -117,6 +117,7 @@ class Table extends Component
                         'cursos.nombre_curso as curso',
                         DB::raw('CASE WHEN estudiantes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
+                    ->orderByRaw('cursos.id')
                     ->simplePaginate(10);
 
                 $this->data = $estudiantesPaginate->items();

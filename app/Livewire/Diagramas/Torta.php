@@ -13,7 +13,7 @@ class Torta extends Component
 
     public function mount($curso)
     {
-        $dataCurso = Postulante::whereHas('estudiante.curso', function ($query) use ($curso) {
+        $dataCurso = Postulante::with('estudiante')->whereHas('estudiante.curso', function ($query) use ($curso) {
             $query->where('id', $curso->id);
         })->get();
         $this->cursoSeleccionado = $dataCurso;
@@ -21,6 +21,8 @@ class Torta extends Component
 
     public function render()
     {
-        return view('livewire.diagramas.torta');
+        return view('livewire.diagramas.torta', [
+            'curso' => $this->cursoSeleccionado
+        ]);
     }
 }
