@@ -28,6 +28,7 @@ class Table extends Component
     public $case;
     public $open;
     public $type;
+    public $inDelete;
 
 
     public function datos()
@@ -117,11 +118,12 @@ class Table extends Component
                         'cursos.nombre_curso as curso',
                         DB::raw('CASE WHEN estudiantes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
+                    ->orderByRaw('cursos.id')
                     ->simplePaginate(10);
 
                 $this->data = $estudiantesPaginate->items();
-                $this->dataI = ['id', 'numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
-                $this->columns = ['ID', 'Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
                 break;
 
 
@@ -207,18 +209,38 @@ class Table extends Component
     }
 
 
-    public function openModal($dato, $row)
+    public function openModal($dato, $row, $case): void
     {
+        switch ($case) {
+            case 'estudiantes':
+                $this->inDelete = ['estudiante', $row];
+                break;
 
-        // $columns.map(function($column){
-        //     if($column == 'action'){
-        //         $this->eliminar = $row[$column] == 'Activo' ? true : false;
-
-        //     }
-        // });
+            default:
+                # code...
+                break;
+        }
         $this->type = $dato == 'editar' ? 'Editar' : 'Eliminar';
         $this->open = true;
+    }
 
+    public function delete()
+    {
+        switch ($this->inDelete[0]) {
+            case 'estudiante':
+                $estudiante = Estudiante::find($this->inDelete[1]['id']);
+                if (!$estudiante) {
+                    throw new \Exception('El estudiante no existe.');
+                }
+                $estudiante->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Estudiante eliminado correctamente correctamente");
+                break;
+
+            default:
+                # code...
+                break;
+        }
 
     }
     public function mount($columns = [], $data = [])
@@ -243,7 +265,8 @@ class Table extends Component
         $paginatedData = $this->datos();
         return view('livewire.diagramas.table', [
             'data' => $this->data,
-            'pagination' => $paginatedData // Pasa la colección paginada completa
+            'pagination' => $paginatedData, // Pasa la colección paginada completa
+            'case' => $this->case,
         ]);
     }
 }
