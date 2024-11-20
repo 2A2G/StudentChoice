@@ -28,6 +28,7 @@ class Table extends Component
     public $case;
     public $open;
     public $type;
+    public $inDelete;
 
 
     public function datos()
@@ -45,8 +46,8 @@ class Table extends Component
                         'estado'
                     ]);
                 $this->data = $rolesPaginated->items();
-                $this->dataI = ['id', 'name', 'estado'];
-                $this->columns = ['ID', 'Nombre del Rol', 'estado'];
+                $this->dataI = ['name', 'estado'];
+                $this->columns = ['Nombre del Rol', 'estado'];
                 break;
 
 
@@ -64,8 +65,8 @@ class Table extends Component
 
 
                 $this->data = $permissionsPaginated->items();
-                $this->dataI = ['id', 'name', 'estado'];
-                $this->columns = ['ID', 'Nombre del Permiso', 'estado', 'Acción'];
+                $this->dataI = ['name', 'estado'];
+                $this->columns = ['Nombre del Permiso', 'estado', 'Acción'];
                 break;
 
 
@@ -82,8 +83,8 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $usuariosPaginate->items();
-                $this->dataI = ['id', 'name', 'email', 'role', 'estado'];
-                $this->columns = ['ID', 'Nombre del Usuario', 'Correo Electrónico', 'Rol', 'estado', 'Acción'];
+                $this->dataI = ['name', 'email', 'role', 'estado'];
+                $this->columns = ['Nombre del Usuario', 'Correo Electrónico', 'Rol', 'estado', 'Acción'];
                 break;
 
             case 'cursos':
@@ -100,8 +101,8 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $cursosPaginate->items();
-                $this->dataI = ['id', 'nombre_curso', 'cantidad_estudiantes', 'estado'];
-                $this->columns = ['ID', 'Nombre del Curso', 'Cantidad de Estudiantes', 'Estado', 'Acción'];
+                $this->dataI = ['nombre_curso', 'cantidad_estudiantes', 'estado'];
+                $this->columns = ['Nombre del Curso', 'Cantidad de Estudiantes', 'Estado', 'Acción'];
                 break;
 
 
@@ -121,8 +122,8 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $estudiantesPaginate->items();
-                $this->dataI = ['id', 'numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
-                $this->columns = ['ID', 'Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
                 break;
 
 
@@ -137,11 +138,12 @@ class Table extends Component
                         DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
 
                     )
+                    ->orderByRaw('docentes.id')
                     ->simplePaginate(10);
 
                 $this->data = $docentesPaginate->items();
-                $this->dataI = ['id', 'numero_identidad', 'asignatura', 'sexo', 'curso', 'estado'];
-                $this->columns = ['ID', 'Número de Identidad', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'asignatura', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
                 break;
 
 
@@ -161,8 +163,8 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $postulantesPaginate->items();
-                $this->dataI = ['id', 'estudiantes', 'cursos', 'cargos', 'estado'];
-                $this->columns = ['id', 'estudiante', 'curso', 'cargo', 'estado', 'accion'];
+                $this->dataI = ['estudiantes', 'cursos', 'cargos', 'estado'];
+                $this->columns = ['estudiante', 'curso', 'cargo', 'estado', 'accion'];
                 break;
 
 
@@ -175,8 +177,8 @@ class Table extends Component
                 )->simplePaginate(10);
 
                 $this->data = $cargosPaginate->items();
-                $this->dataI = ['id', 'nombre_cargo', 'descripcion_cargo', 'estado'];
-                $this->columns = ['id', 'Nombre del cargo', 'Descripcion del cargo', 'estado', 'accion'];
+                $this->dataI = ['nombre_cargo', 'descripcion_cargo', 'estado'];
+                $this->columns = ['Nombre del cargo', 'Descripcion del cargo', 'estado', 'accion'];
                 break;
 
 
@@ -196,8 +198,8 @@ class Table extends Component
             default:
                 $defaultPaginated = Role::simplePaginate(10, ['id', 'name']);
                 $this->data = $defaultPaginated->items();
-                $this->dataI = ['id', 'name'];
-                $this->columns = ['ID', 'Nombre del Rol', 'Acción'];
+                $this->dataI = ['name'];
+                $this->columns = ['Nombre del Rol', 'Acción'];
                 break;
         }
 
@@ -208,20 +210,158 @@ class Table extends Component
     }
 
 
-    public function openModal($dato, $row)
+    public function openModal($dato, $row, $case): void
     {
-
-        // $columns.map(function($column){
-        //     if($column == 'action'){
-        //         $this->eliminar = $row[$column] == 'Activo' ? true : false;
-
-        //     }
-        // });
         $this->type = $dato == 'editar' ? 'Editar' : 'Eliminar';
+
+        if ($this->type === 'editar') {
+            dd('Estas editando');
+        } else {
+            switch ($case) {
+                case 'roles':
+                    $this->inDelete = ['rol', $row];
+                    break;
+
+                case 'permisos':
+                    $this->inDelete = ['permiso', $row];
+                    break;
+
+                case 'usuarios':
+                    $this->inDelete = ['usuario', $row];
+                    break;
+
+                case 'cursos':
+                    $this->inDelete = ['curso', $row];
+                    break;
+
+                case 'estudiantes':
+                    $this->inDelete = ['estudiante', $row];
+                    break;
+
+                case 'docentes':
+                    $this->inDelete = ['docente', $row];
+                    break;
+
+                case 'postulantes':
+                    $this->inDelete = ['postulante', $row];
+                    break;
+
+                case 'cargos':
+                    $this->inDelete = ['cargo', $row];
+                    break;
+
+                case 'anio_postulacion':
+                    $this->inDelete = ['año_postulacion', $row];
+                    break;
+
+                default:
+                    $this->inDelete = ['otro', $row];
+                    break;
+            }
+
+        }
         $this->open = true;
-
-
     }
+
+    public function delete()
+    {
+        switch ($this->inDelete[0]) {
+            case 'rol':
+                $rol = Role::find($this->inDelete[1]['id']);
+                if (!$rol) {
+                    throw new \Exception('El rol no existe.');
+                }
+                $rol->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Rol eliminado correctamente.");
+                break;
+
+            case 'permiso':
+                $permiso = Permission::find($this->inDelete[1]['id']);
+                if (!$permiso) {
+                    throw new \Exception('El permiso no existe.');
+                }
+                $permiso->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Permiso eliminado correctamente.");
+                break;
+
+            case 'usuario':
+                $usuario = User::find($this->inDelete[1]['id']);
+                if (!$usuario) {
+                    throw new \Exception('El usuario no existe.');
+                }
+                $usuario->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Usuario eliminado correctamente.");
+                break;
+
+            case 'curso':
+                $curso = Curso::find($this->inDelete[1]['id']);
+                if (!$curso) {
+                    throw new \Exception('El curso no existe.');
+                }
+                $curso->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Curso eliminado correctamente.");
+                break;
+
+            case 'estudiante':
+                $estudiante = Estudiante::find($this->inDelete[1]['id']);
+                if (!$estudiante) {
+                    throw new \Exception('El estudiante no existe.');
+                }
+                $estudiante->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Estudiante eliminado correctamente.");
+                break;
+
+            case 'docente':
+                $docente = Docente::find($this->inDelete[1]['id']);
+                if (!$docente) {
+                    throw new \Exception('El docente no existe.');
+                }
+                $docente->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Docente eliminado correctamente.");
+                break;
+
+            case 'postulante':
+                $postulante = Postulante::find($this->inDelete[1]['id']);
+                if (!$postulante) {
+                    throw new \Exception('El postulante no existe.');
+                }
+                $postulante->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Postulante eliminado correctamente.");
+                break;
+
+            case 'cargo':
+                $cargo = Cargo::find($this->inDelete[1]['id']);
+                if (!$cargo) {
+                    throw new \Exception('El cargo no existe.');
+                }
+                $cargo->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Cargo eliminado correctamente.");
+                break;
+
+            case 'año_postulacion':
+                $postulacion = Postulante::where('anio_postulacion', $this->inDelete[1]['anio_postulacion'])->first();
+                if (!$postulacion) {
+                    throw new \Exception('El año de postulación no existe.');
+                }
+                $postulacion->delete();
+                $this->open = false;
+                $this->dispatch('post-deleted', name: "Postulación eliminada correctamente.");
+                break;
+
+            default:
+                $this->dispatch('post-error');
+                break;
+        }
+    }
+
     public function mount($columns = [], $data = [])
     {
         $this->datos();
@@ -244,7 +384,8 @@ class Table extends Component
         $paginatedData = $this->datos();
         return view('livewire.diagramas.table', [
             'data' => $this->data,
-            'pagination' => $paginatedData // Pasa la colección paginada completa
+            'pagination' => $paginatedData, // Pasa la colección paginada completa
+            'case' => $this->case,
         ]);
     }
 }

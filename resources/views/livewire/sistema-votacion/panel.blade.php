@@ -70,7 +70,10 @@
         <!-- Estadísticas del Curso -->
         @if ($cursoSeleccionado)
             <div class="mt-8 text-center">
-                @livewire('diagramas.torta', ['curso' => $cursoSeleccionado])
+                {{-- @livewire('diagramas.torta', ['curso' => $cursoSeleccionado]) --}}
+                {{-- <livewire:livewire-column-chart key="{{ $columnChartModel->reactiveKey() }}" :column-chart-model="$columnChartModel" /> --}}
+
+                <livewire:livewire-pie-chart key="{{ $cursoSeleccionado->reactiveKey() }}" :pie-chart-model="$cursoSeleccionado" />
         @endif
     @else
         <div class="mx-auto p-6 bg-white rounded-lg shadow-md max-w-6xl">

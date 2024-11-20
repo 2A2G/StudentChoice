@@ -34,11 +34,13 @@ class Postulacion extends Component
         $this->cargo = '';
         $this->curso_postulante = '';
         $this->nombre_postulante = '';
+        $this->imagen = '';
         $this->mensajeError = '';
     }
 
     public function cambiar()
     {
+        $this->dispatch('clear-card');
         $this->open = true;
         $this->clearInput();
     }

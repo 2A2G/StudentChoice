@@ -21,10 +21,21 @@ class Cartas extends Component
         $this->cargo = $cargo;
         $this->curso = $curso;
         $this->imagen = $imagen;
+
+    }
+    //Limpiar los datos de la carta
+    #[On('clear-card')]
+    public function clearInput()
+    {
+        $this->nombre = '';
+        $this->cargo = '';
+        $this->curso = '';
+        $this->imagen = '';
     }
 
     #[On('estudiante-encontrado')]
-    public function estudiante(Estudiante $estudiante){
+    public function estudiante(Estudiante $estudiante)
+    {
         $this->nombre = $estudiante->nombre_estudiante;
         $this->cargo = "Representante de curso ";
         $this->curso = $estudiante->curso->nombre_curso;
@@ -32,7 +43,8 @@ class Cartas extends Component
     }
 
     #[On('upload-image')]
-    public function uploadImage($imagen){
+    public function uploadImage($imagen)
+    {
         $this->imagen = $imagen;
     }
 
