@@ -54,7 +54,7 @@
         <div>
             <x-dialog-modal wire:model="open">
                 <x-slot name="title">
-                    <h1 class="text-lg font-medium">{{ $type }} Usuario</h1>
+                    <h1 class="text-lg font-medium">{{ $type }}</h1>
                 </x-slot>
                 <x-slot name="content">
                     @if ($type === 'Editar')
