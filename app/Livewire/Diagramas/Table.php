@@ -29,6 +29,7 @@ class Table extends Component
     public $open;
     public $type;
     public $inDelete;
+    public $inUpdate;
 
 
     public function datos()
@@ -210,57 +211,62 @@ class Table extends Component
             ?? $docentesPaginate ?? $cargosPaginate ?? $postulantesPaginate ?? $postulacionAnios ?? $cursosPaginate
             ?? null;
     }
-
+    protected array $modelsMap = [
+        'rol' => Role::class,
+        'permiso' => Permission::class,
+        'usuario' => User::class,
+        'curso' => Curso::class,
+        'estudiante' => Estudiante::class,
+        'docente' => Docente::class,
+        'postulante' => Postulante::class,
+        'cargo' => Cargo::class,
+    ];
 
     public function openModal($dato, $row, $case): void
     {
+        $casesMap = [
+            'roles' => 'rol',
+            'permisos' => 'permiso',
+            'usuarios' => 'usuario',
+            'cursos' => 'curso',
+            'estudiantes' => 'estudiante',
+            'docentes' => 'docente',
+            'postulantes' => 'postulante',
+            'cargos' => 'cargo',
+            'anio_postulacion' => 'año_postulacion',
+        ];
+
         $this->type = $dato === 'editar' ? 'Editar' : 'Eliminar';
 
         if ($this->type === 'Editar') {
-            dd('Estas editando');
+            $this->inUpdate = [$casesMap[$case] ?? '', $row];
+            $this->update();
         } else {
-            $casesMap = [
-                'roles' => 'rol',
-                'permisos' => 'permiso',
-                'usuarios' => 'usuario',
-                'cursos' => 'curso',
-                'estudiantes' => 'estudiante',
-                'docentes' => 'docente',
-                'postulantes' => 'postulante',
-                'cargos' => 'cargo',
-                'anio_postulacion' => 'año_postulacion',
-            ];
-            $this->inDelete = [$casesMap[$case] ?? 'otro', $row];
+            $this->inDelete = [$casesMap[$case] ?? '', $row];
+            $this->open = true;
         }
-        $this->open = true;
+    }
+
+    public function update()
+    {
+        dd($this->inUpdate, $this->modelsMap);
     }
 
     public function delete()
     {
-        $modelsMap = [
-            'rol' => Role::class,
-            'permiso' => Permission::class,
-            'usuario' => User::class,
-            'curso' => Curso::class,
-            'estudiante' => Estudiante::class,
-            'docente' => Docente::class,
-            'postulante' => Postulante::class,
-            'cargo' => Cargo::class,
-        ];
-
         $entity = $this->inDelete[0];
         $id = $this->inDelete[1]['id'] ?? null;
 
-        if (isset($modelsMap[$entity])) {
-            $model = $modelsMap[$entity]::find($id);
+        if (isset($this->modelsMap[$entity])) {
+            $model = $this->modelsMap[$entity]::find($id);
             if (!$model) {
-                throw new \Exception("El $entity no existe.");
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$entity' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
             }
             $model->delete();
             $this->open = false;
             $this->dispatch('post-deleted', name: ucfirst($entity) . " eliminado correctamente.");
         } else {
-            $this->dispatch('post-error');
+            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
         }
     }
 
