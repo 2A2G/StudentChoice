@@ -129,21 +129,22 @@ class Table extends Component
 
             case 'docentes':
                 $docentesPaginate = Docente::leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
+                    ->leftJoin('users', 'docentes.user_id', '=', 'users.id')
                     ->select(
                         'docentes.id',
+                        'users.name',
                         'docentes.numero_identidad',
                         'docentes.asignatura',
                         'docentes.sexo',
                         DB::raw('COALESCE(cursos.nombre_curso, \'No\') AS curso'),
                         DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-
                     )
                     ->orderByRaw('docentes.id')
                     ->simplePaginate(10);
 
                 $this->data = $docentesPaginate->items();
-                $this->dataI = ['numero_identidad', 'asignatura', 'sexo', 'curso', 'estado'];
-                $this->columns = ['Número de Identidad', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'name', 'asignatura', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Docente', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
                 break;
 
 
