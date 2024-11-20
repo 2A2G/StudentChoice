@@ -35,7 +35,7 @@
                                     @endif
                                 @endforeach
                                 <td class="px-6 py-4">
-                                    <button wire:click="openModal('editar',{{ $row }})"
+                                    <button wire:click="openModal('editar',{{ $row }}, '{{ $case }}')"
                                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                         Editar
                                     </button>
