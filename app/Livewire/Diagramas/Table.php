@@ -212,37 +212,26 @@ class Table extends Component
             ?? null;
     }
     protected array $modelsMap = [
-        'rol' => Role::class,
-        'permiso' => Permission::class,
-        'usuario' => User::class,
-        'curso' => Curso::class,
-        'estudiante' => Estudiante::class,
-        'docente' => Docente::class,
-        'postulante' => Postulante::class,
-        'cargo' => Cargo::class,
+        'roles' => Role::class,
+        'permisos' => Permission::class,
+        'usuarios' => User::class,
+        'cursos' => Curso::class,
+        'estudiantes' => Estudiante::class,
+        'docentes' => Docente::class,
+        'postulantes' => Postulante::class,
+        'cargos' => Cargo::class,
+        'anio_postulacion' => 'año_postulacion',
     ];
 
-    public function openModal($dato, $row, $case): void
+    public function openModal($dato, $row): void
     {
-        $casesMap = [
-            'roles' => 'rol',
-            'permisos' => 'permiso',
-            'usuarios' => 'usuario',
-            'cursos' => 'curso',
-            'estudiantes' => 'estudiante',
-            'docentes' => 'docente',
-            'postulantes' => 'postulante',
-            'cargos' => 'cargo',
-            'anio_postulacion' => 'año_postulacion',
-        ];
-
         $this->type = $dato === 'editar' ? 'Editar' : 'Eliminar';
 
         if ($this->type === 'Editar') {
-            $this->inUpdate = [$casesMap[$case] ?? '', $row];
+            $this->inUpdate = [$this->modelsMap[$this->case] ?? '', $row];
             $this->update();
         } else {
-            $this->inDelete = [$casesMap[$case] ?? '', $row];
+            $this->inDelete = [$this->modelsMap[$this->case] ?? '', $row];
             $this->open = true;
         }
     }
@@ -252,18 +241,18 @@ class Table extends Component
         $entity = $this->inUpdate[0];
         $data = $this->inUpdate[1] ?? null;
 
-        if (isset($this->modelsMap[$entity])) {
-            $model = $this->modelsMap[$entity]::find($data['id'] ?? null);
+        if (isset($this->inUpdate)) {
+            $model = $this->inUpdate[0]::find($data['id'] ?? null);
             dd($model);
             if (!$model) {
-                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$entity' con ID {$data['id']}. Verifica que el registro exista antes de intentar actualizarlo.");
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID {$data['id']}. Verifica que el registro exista antes de intentar actualizarlo.");
             }
             try {
                 $model->update($data);
                 $this->open = false;
-                $this->dispatch('post-updated', name: ucfirst($entity) . " actualizado correctamente.");
+                $this->dispatch('post-updated', name: ucfirst($this->case) . " actualizado correctamente.");
             } catch (\Exception $e) {
-                throw new \Exception("Ocurrió un error al intentar actualizar el registro del tipo '$entity'. Detalle: " . $e->getMessage());
+                throw new \Exception("Ocurrió un error al intentar actualizar el registro del tipo '$this->case'. Detalle: " . $e->getMessage());
             }
         } else {
             $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar actualizar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
@@ -272,17 +261,16 @@ class Table extends Component
 
     public function delete()
     {
-        $entity = $this->inDelete[0];
         $id = $this->inDelete[1]['id'] ?? null;
 
-        if (isset($this->modelsMap[$entity])) {
-            $model = $this->modelsMap[$entity]::find($id);
+        if (isset($this->inDelete[0])) {
+            $model = $this->inDelete[0]::find($id);
             if (!$model) {
-                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$entity' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
             }
             $model->delete();
             $this->open = false;
-            $this->dispatch('post-deleted', name: ucfirst($entity) . " eliminado correctamente.");
+            $this->dispatch('post-deleted', name: ucfirst($this->case) . " eliminado correctamente.");
         } else {
             $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
         }
