@@ -28,6 +28,8 @@ class Table extends Component
     public $case;
     public $open;
     public $type;
+    public $inDelete;
+    public $inUpdate;
 
 
     public function datos()
@@ -45,8 +47,8 @@ class Table extends Component
                         'estado'
                     ]);
                 $this->data = $rolesPaginated->items();
-                $this->dataI = ['id', 'name', 'estado'];
-                $this->columns = ['ID', 'Nombre del Rol', 'estado'];
+                $this->dataI = ['name', 'estado'];
+                $this->columns = ['Nombre del Rol', 'estado'];
                 break;
 
 
@@ -64,8 +66,8 @@ class Table extends Component
 
 
                 $this->data = $permissionsPaginated->items();
-                $this->dataI = ['id', 'name', 'estado'];
-                $this->columns = ['ID', 'Nombre del Permiso', 'estado', 'Acción'];
+                $this->dataI = ['name', 'estado'];
+                $this->columns = ['Nombre del Permiso', 'estado', 'Acción'];
                 break;
 
 
@@ -79,11 +81,12 @@ class Table extends Component
                         DB::raw('COALESCE(roles.name, \'No\') AS role'),
                         DB::raw('CASE WHEN users.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
+                    ->orderByRaw('users.id')
                     ->simplePaginate(10);
 
                 $this->data = $usuariosPaginate->items();
-                $this->dataI = ['id', 'name', 'email', 'role', 'estado'];
-                $this->columns = ['ID', 'Nombre del Usuario', 'Correo Electrónico', 'Rol', 'estado', 'Acción'];
+                $this->dataI = ['name', 'email', 'role', 'estado'];
+                $this->columns = ['Nombre del Usuario', 'Correo Electrónico', 'Rol', 'estado', 'Acción'];
                 break;
 
             case 'cursos':
@@ -100,8 +103,8 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $cursosPaginate->items();
-                $this->dataI = ['id', 'nombre_curso', 'cantidad_estudiantes', 'estado'];
-                $this->columns = ['ID', 'Nombre del Curso', 'Cantidad de Estudiantes', 'Estado', 'Acción'];
+                $this->dataI = ['nombre_curso', 'cantidad_estudiantes', 'estado'];
+                $this->columns = ['Nombre del Curso', 'Cantidad de Estudiantes', 'Estado', 'Acción'];
                 break;
 
 
@@ -121,27 +124,29 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $estudiantesPaginate->items();
-                $this->dataI = ['id', 'numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
-                $this->columns = ['ID', 'Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
                 break;
 
 
             case 'docentes':
                 $docentesPaginate = Docente::leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
+                    ->leftJoin('users', 'docentes.user_id', '=', 'users.id')
                     ->select(
                         'docentes.id',
+                        'users.name',
                         'docentes.numero_identidad',
                         'docentes.asignatura',
                         'docentes.sexo',
                         DB::raw('COALESCE(cursos.nombre_curso, \'No\') AS curso'),
                         DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-
                     )
+                    ->orderByRaw('docentes.id')
                     ->simplePaginate(10);
 
                 $this->data = $docentesPaginate->items();
-                $this->dataI = ['id', 'numero_identidad', 'asignatura', 'sexo', 'curso', 'estado'];
-                $this->columns = ['ID', 'Número de Identidad', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'name', 'asignatura', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Docente', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
                 break;
 
 
@@ -161,8 +166,8 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $postulantesPaginate->items();
-                $this->dataI = ['id', 'estudiantes', 'cursos', 'cargos', 'estado'];
-                $this->columns = ['id', 'estudiante', 'curso', 'cargo', 'estado', 'accion'];
+                $this->dataI = ['estudiantes', 'cursos', 'cargos', 'estado'];
+                $this->columns = ['estudiante', 'curso', 'cargo', 'estado', 'accion'];
                 break;
 
 
@@ -175,8 +180,8 @@ class Table extends Component
                 )->simplePaginate(10);
 
                 $this->data = $cargosPaginate->items();
-                $this->dataI = ['id', 'nombre_cargo', 'descripcion_cargo', 'estado'];
-                $this->columns = ['id', 'Nombre del cargo', 'Descripcion del cargo', 'estado', 'accion'];
+                $this->dataI = ['nombre_cargo', 'descripcion_cargo', 'estado'];
+                $this->columns = ['Nombre del cargo', 'Descripcion del cargo', 'estado', 'accion'];
                 break;
 
 
@@ -196,8 +201,8 @@ class Table extends Component
             default:
                 $defaultPaginated = Role::simplePaginate(10, ['id', 'name']);
                 $this->data = $defaultPaginated->items();
-                $this->dataI = ['id', 'name'];
-                $this->columns = ['ID', 'Nombre del Rol', 'Acción'];
+                $this->dataI = ['name'];
+                $this->columns = ['Nombre del Rol', 'Acción'];
                 break;
         }
 
@@ -206,22 +211,84 @@ class Table extends Component
             ?? $docentesPaginate ?? $cargosPaginate ?? $postulantesPaginate ?? $postulacionAnios ?? $cursosPaginate
             ?? null;
     }
+    protected array $modelsMap = [
+        'rol' => Role::class,
+        'permiso' => Permission::class,
+        'usuario' => User::class,
+        'curso' => Curso::class,
+        'estudiante' => Estudiante::class,
+        'docente' => Docente::class,
+        'postulante' => Postulante::class,
+        'cargo' => Cargo::class,
+    ];
 
-
-    public function openModal($dato, $row)
+    public function openModal($dato, $row, $case): void
     {
+        $casesMap = [
+            'roles' => 'rol',
+            'permisos' => 'permiso',
+            'usuarios' => 'usuario',
+            'cursos' => 'curso',
+            'estudiantes' => 'estudiante',
+            'docentes' => 'docente',
+            'postulantes' => 'postulante',
+            'cargos' => 'cargo',
+            'anio_postulacion' => 'año_postulacion',
+        ];
 
-        // $columns.map(function($column){
-        //     if($column == 'action'){
-        //         $this->eliminar = $row[$column] == 'Activo' ? true : false;
+        $this->type = $dato === 'editar' ? 'Editar' : 'Eliminar';
 
-        //     }
-        // });
-        $this->type = $dato == 'editar' ? 'Editar' : 'Eliminar';
-        $this->open = true;
-
-
+        if ($this->type === 'Editar') {
+            $this->inUpdate = [$casesMap[$case] ?? '', $row];
+            $this->update();
+        } else {
+            $this->inDelete = [$casesMap[$case] ?? '', $row];
+            $this->open = true;
+        }
     }
+
+    public function update()
+    {
+        $entity = $this->inUpdate[0];
+        $data = $this->inUpdate[1] ?? null;
+
+        if (isset($this->modelsMap[$entity])) {
+            $model = $this->modelsMap[$entity]::find($data['id'] ?? null);
+            dd($model);
+            if (!$model) {
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$entity' con ID {$data['id']}. Verifica que el registro exista antes de intentar actualizarlo.");
+            }
+            try {
+                $model->update($data);
+                $this->open = false;
+                $this->dispatch('post-updated', name: ucfirst($entity) . " actualizado correctamente.");
+            } catch (\Exception $e) {
+                throw new \Exception("Ocurrió un error al intentar actualizar el registro del tipo '$entity'. Detalle: " . $e->getMessage());
+            }
+        } else {
+            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar actualizar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
+        }
+    }
+
+    public function delete()
+    {
+        $entity = $this->inDelete[0];
+        $id = $this->inDelete[1]['id'] ?? null;
+
+        if (isset($this->modelsMap[$entity])) {
+            $model = $this->modelsMap[$entity]::find($id);
+            if (!$model) {
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$entity' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
+            }
+            $model->delete();
+            $this->open = false;
+            $this->dispatch('post-deleted', name: ucfirst($entity) . " eliminado correctamente.");
+        } else {
+            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
+        }
+    }
+
+
     public function mount($columns = [], $data = [])
     {
         $this->datos();
@@ -244,7 +311,8 @@ class Table extends Component
         $paginatedData = $this->datos();
         return view('livewire.diagramas.table', [
             'data' => $this->data,
-            'pagination' => $paginatedData // Pasa la colección paginada completa
+            'pagination' => $paginatedData, // Pasa la colección paginada completa
+            'case' => $this->case,
         ]);
     }
 }

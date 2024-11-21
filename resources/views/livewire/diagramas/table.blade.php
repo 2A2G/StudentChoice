@@ -35,11 +35,13 @@
                                     @endif
                                 @endforeach
                                 <td class="px-6 py-4">
-                                    <button wire:click="openModal('editar',{{$row}})"
+                                    <button wire:click="openModal('editar',{{ $row }}, '{{ $case }}')"
                                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                         Editar
                                     </button>
-                                    <button wire:click="openModal('eliminar',{{$row}})" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    <button
+                                        wire:click="openModal('eliminar',{{ $row }}, '{{ $case }}')"
+                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                                         Eliminar
                                     </button>
                                 </td>
@@ -52,44 +54,57 @@
         <div>
             <x-dialog-modal wire:model="open">
                 <x-slot name="title">
-                    <h1 class="text-lg font-medium">{{$type}}  Usuario</h1>
+                    <h1 class="text-lg font-medium">{{ $type }}</h1>
                 </x-slot>
                 <x-slot name="content">
                     @if ($type === 'Editar')
-                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                        <tr>
-                            @foreach ($columns as $column)
-                                <th scope="col" class="px-6 py-3">
-                                    <div class="flex flex-col">
-                                        {{-- {{ $column }} --}}
-                                        @if($column !== 'estado')
-                                            <input type="text" class="mb-2">
-                                        @endif
-                                    </div>
-                                </th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    
-                    <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                        Guardar usuario
-                    </button>
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                @foreach ($inUpdate[1] as $key => $value)
+                                    <th scope="col" class="px-6 py-3">
+                                        <div class="flex flex-col">
+                                            <label for="{{ $key }}"
+                                                class="mb-2 font-medium">{{ ucfirst($key) }}</label>
+
+                                            @if ($key === 'estado')
+                                                <select id="{{ $key }}"
+                                                    wire:model.defer="inUpdate[1].{{ $key }}"
+                                                    class="form-select">
+                                                    <option value="activo">Activo</option>
+                                                    <option value="inactivo">Inactivo</option>
+                                                </select>
+                                            @else
+                                                <input type="text" id="{{ $key }}"
+                                                    wire:model.defer="inUpdate[1].{{ $key }}"
+                                                    class="mb-2 form-input" value="{{ $value }}">
+                                            @endif
+                                        </div>
+                                    </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+
+                        <button wire:click="update"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                            Actualizar
+                        </button>
                     @endif
                     @if ($type === 'Eliminar')
                         <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
                             ¿Está seguro de eliminar el usuario?
                         </h1>
-                        <button wire:click="store" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105">
-                        Eliminar usuario
+                        <button wire:click="delete"
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105">
+                            Eliminar usuario
                         </button>
                     @endif
 
                     <!-- Botón para guardar usuario -->
                     <br>
                 </x-slot>
-    
+
             </x-dialog-modal>
-    
+
         </div>
         <!-- Pagination Links -->
         <div class="mt-4">
