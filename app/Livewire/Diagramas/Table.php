@@ -29,6 +29,7 @@ class Table extends Component
     public $open;
     public $type;
     public $inDelete;
+    public $inUpdate;
 
 
     public function datos()
@@ -80,6 +81,7 @@ class Table extends Component
                         DB::raw('COALESCE(roles.name, \'No\') AS role'),
                         DB::raw('CASE WHEN users.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
+                    ->orderByRaw('users.id')
                     ->simplePaginate(10);
 
                 $this->data = $usuariosPaginate->items();
@@ -129,21 +131,22 @@ class Table extends Component
 
             case 'docentes':
                 $docentesPaginate = Docente::leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
+                    ->leftJoin('users', 'docentes.user_id', '=', 'users.id')
                     ->select(
                         'docentes.id',
+                        'users.name',
                         'docentes.numero_identidad',
                         'docentes.asignatura',
                         'docentes.sexo',
                         DB::raw('COALESCE(cursos.nombre_curso, \'No\') AS curso'),
                         DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-
                     )
                     ->orderByRaw('docentes.id')
                     ->simplePaginate(10);
 
                 $this->data = $docentesPaginate->items();
-                $this->dataI = ['numero_identidad', 'asignatura', 'sexo', 'curso', 'estado'];
-                $this->columns = ['Número de Identidad', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
+                $this->dataI = ['numero_identidad', 'name', 'asignatura', 'sexo', 'curso', 'estado'];
+                $this->columns = ['Número de Identidad', 'Docente', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
                 break;
 
 
@@ -208,159 +211,71 @@ class Table extends Component
             ?? $docentesPaginate ?? $cargosPaginate ?? $postulantesPaginate ?? $postulacionAnios ?? $cursosPaginate
             ?? null;
     }
+    protected array $modelsMap = [
+        'roles' => Role::class,
+        'permisos' => Permission::class,
+        'usuarios' => User::class,
+        'cursos' => Curso::class,
+        'estudiantes' => Estudiante::class,
+        'docentes' => Docente::class,
+        'postulantes' => Postulante::class,
+        'cargos' => Cargo::class,
+        'anio_postulacion' => 'año_postulacion',
+    ];
 
-
-    public function openModal($dato, $row, $case): void
+    public function openModal($dato, $row): void
     {
-        $this->type = $dato == 'editar' ? 'Editar' : 'Eliminar';
+        $this->type = $dato === 'editar' ? 'Editar' : 'Eliminar';
 
-        if ($this->type === 'editar') {
-            dd('Estas editando');
+        if ($this->type === 'Editar') {
+            $this->inUpdate = [$this->modelsMap[$this->case] ?? '', $row];
+            $this->update();
         } else {
-            switch ($case) {
-                case 'roles':
-                    $this->inDelete = ['rol', $row];
-                    break;
-
-                case 'permisos':
-                    $this->inDelete = ['permiso', $row];
-                    break;
-
-                case 'usuarios':
-                    $this->inDelete = ['usuario', $row];
-                    break;
-
-                case 'cursos':
-                    $this->inDelete = ['curso', $row];
-                    break;
-
-                case 'estudiantes':
-                    $this->inDelete = ['estudiante', $row];
-                    break;
-
-                case 'docentes':
-                    $this->inDelete = ['docente', $row];
-                    break;
-
-                case 'postulantes':
-                    $this->inDelete = ['postulante', $row];
-                    break;
-
-                case 'cargos':
-                    $this->inDelete = ['cargo', $row];
-                    break;
-
-                case 'anio_postulacion':
-                    $this->inDelete = ['año_postulacion', $row];
-                    break;
-
-                default:
-                    $this->inDelete = ['otro', $row];
-                    break;
-            }
-
+            $this->inDelete = [$this->modelsMap[$this->case] ?? '', $row];
+            $this->open = true;
         }
-        $this->open = true;
+    }
+
+    public function update()
+    {
+        $entity = $this->inUpdate[0];
+        $data = $this->inUpdate[1] ?? null;
+
+        if (isset($this->inUpdate)) {
+            $model = $this->inUpdate[0]::find($data['id'] ?? null);
+            dd($model);
+            if (!$model) {
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID {$data['id']}. Verifica que el registro exista antes de intentar actualizarlo.");
+            }
+            try {
+                $model->update($data);
+                $this->open = false;
+                $this->dispatch('post-updated', name: ucfirst($this->case) . " actualizado correctamente.");
+            } catch (\Exception $e) {
+                throw new \Exception("Ocurrió un error al intentar actualizar el registro del tipo '$this->case'. Detalle: " . $e->getMessage());
+            }
+        } else {
+            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar actualizar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
+        }
     }
 
     public function delete()
     {
-        switch ($this->inDelete[0]) {
-            case 'rol':
-                $rol = Role::find($this->inDelete[1]['id']);
-                if (!$rol) {
-                    throw new \Exception('El rol no existe.');
-                }
-                $rol->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Rol eliminado correctamente.");
-                break;
+        $id = $this->inDelete[1]['id'] ?? null;
 
-            case 'permiso':
-                $permiso = Permission::find($this->inDelete[1]['id']);
-                if (!$permiso) {
-                    throw new \Exception('El permiso no existe.');
-                }
-                $permiso->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Permiso eliminado correctamente.");
-                break;
-
-            case 'usuario':
-                $usuario = User::find($this->inDelete[1]['id']);
-                if (!$usuario) {
-                    throw new \Exception('El usuario no existe.');
-                }
-                $usuario->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Usuario eliminado correctamente.");
-                break;
-
-            case 'curso':
-                $curso = Curso::find($this->inDelete[1]['id']);
-                if (!$curso) {
-                    throw new \Exception('El curso no existe.');
-                }
-                $curso->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Curso eliminado correctamente.");
-                break;
-
-            case 'estudiante':
-                $estudiante = Estudiante::find($this->inDelete[1]['id']);
-                if (!$estudiante) {
-                    throw new \Exception('El estudiante no existe.');
-                }
-                $estudiante->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Estudiante eliminado correctamente.");
-                break;
-
-            case 'docente':
-                $docente = Docente::find($this->inDelete[1]['id']);
-                if (!$docente) {
-                    throw new \Exception('El docente no existe.');
-                }
-                $docente->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Docente eliminado correctamente.");
-                break;
-
-            case 'postulante':
-                $postulante = Postulante::find($this->inDelete[1]['id']);
-                if (!$postulante) {
-                    throw new \Exception('El postulante no existe.');
-                }
-                $postulante->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Postulante eliminado correctamente.");
-                break;
-
-            case 'cargo':
-                $cargo = Cargo::find($this->inDelete[1]['id']);
-                if (!$cargo) {
-                    throw new \Exception('El cargo no existe.');
-                }
-                $cargo->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Cargo eliminado correctamente.");
-                break;
-
-            case 'año_postulacion':
-                $postulacion = Postulante::where('anio_postulacion', $this->inDelete[1]['anio_postulacion'])->first();
-                if (!$postulacion) {
-                    throw new \Exception('El año de postulación no existe.');
-                }
-                $postulacion->delete();
-                $this->open = false;
-                $this->dispatch('post-deleted', name: "Postulación eliminada correctamente.");
-                break;
-
-            default:
-                $this->dispatch('post-error');
-                break;
+        if (isset($this->inDelete[0])) {
+            $model = $this->inDelete[0]::find($id);
+            if (!$model) {
+                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
+            }
+            $model->delete();
+            $this->open = false;
+            $this->dispatch('post-deleted', name: ucfirst($this->case) . " eliminado correctamente.");
+        } else {
+            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
         }
     }
+
 
     public function mount($columns = [], $data = [])
     {

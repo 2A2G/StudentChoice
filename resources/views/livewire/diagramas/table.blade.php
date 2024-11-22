@@ -54,18 +54,29 @@
         <div>
             <x-dialog-modal wire:model="open">
                 <x-slot name="title">
-                    <h1 class="text-lg font-medium">{{ $type }} Usuario</h1>
+                    <h1 class="text-lg font-medium">{{ $type }}</h1>
                 </x-slot>
                 <x-slot name="content">
                     @if ($type === 'Editar')
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
-                                @foreach ($columns as $column)
+                                @foreach ($inUpdate[1] as $key => $value)
                                     <th scope="col" class="px-6 py-3">
                                         <div class="flex flex-col">
-                                            {{-- {{ $column }} --}}
-                                            @if ($column !== 'estado')
-                                                <input type="text" class="mb-2">
+                                            <label for="{{ $key }}"
+                                                class="mb-2 font-medium">{{ ucfirst($key) }}</label>
+
+                                            @if ($key === 'estado')
+                                                <select id="{{ $key }}"
+                                                    wire:model.defer="inUpdate[1].{{ $key }}"
+                                                    class="form-select">
+                                                    <option value="activo">Activo</option>
+                                                    <option value="inactivo">Inactivo</option>
+                                                </select>
+                                            @else
+                                                <input type="text" id="{{ $key }}"
+                                                    wire:model.defer="inUpdate[1].{{ $key }}"
+                                                    class="mb-2 form-input" value="{{ $value }}">
                                             @endif
                                         </div>
                                     </th>
@@ -73,9 +84,9 @@
                             </tr>
                         </thead>
 
-                        <button wire:click="store"
-                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                            Guardar usuario
+                        <button wire:click="update"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-4">
+                            Actualizar
                         </button>
                     @endif
                     @if ($type === 'Eliminar')
