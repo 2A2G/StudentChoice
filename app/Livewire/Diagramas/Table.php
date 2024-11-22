@@ -230,6 +230,7 @@ class Table extends Component
         if ($this->type === 'Editar') {
             $this->inUpdate = [$this->modelsMap[$this->case] ?? '', $row];
             $this->update();
+            $this->open = true;
         } else {
             $this->inDelete = [$this->modelsMap[$this->case] ?? '', $row];
             $this->open = true;
@@ -238,7 +239,6 @@ class Table extends Component
 
     public function update()
     {
-        $entity = $this->inUpdate[0];
         $data = $this->inUpdate[1] ?? null;
 
         if (isset($this->inUpdate)) {
@@ -276,7 +276,6 @@ class Table extends Component
         }
     }
 
-
     public function mount($columns = [], $data = [])
     {
         $this->datos();
@@ -287,11 +286,6 @@ class Table extends Component
     public function refresh()
     {
         $this->datos();
-    }
-
-    public function filtrar($case)
-    {
-        //
     }
 
     public function render()
