@@ -29,7 +29,7 @@
                                             </span>
                                         </td>
                                     @else
-                                        <td class="px-6 py-4">
+                                        <td class="px-3 py-4">
                                             {{ $row[$n] }}
                                         </td>
                                     @endif

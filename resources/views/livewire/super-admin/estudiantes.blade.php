@@ -16,7 +16,7 @@
                     Total de Estudiantes</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                   <livewire:animated-counter :targetCount="$totalEstudiantes" />
+                    <livewire:animated-counter :targetCount="$totalEstudiantes" />
                 </h4>
             </div>
         </div>
@@ -76,6 +76,9 @@
                     <option value="Masculino">Masculino</option>
                     <option value="Femenino">Femenino</option>
                 </select>
+                @error('sexo')
+                    {{ $message }}
+                @enderror
 
                 <label class="block mb-2">Selecione el curso</label>
                 <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
@@ -84,6 +87,9 @@
                         <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
                     @endforeach
                 </select>
+                @error('curso_id')
+                    {{ $message }}
+                @enderror
 
                 <!-- Botón para guardar usuario -->
                 <br>
@@ -94,8 +100,80 @@
 
         </x-dialog-modal>
 
+        <x-dialog-modal wire:model="openUpdate">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Actualizar Estudiante</h1>
+            </x-slot>
+            <x-slot name="content">
+                <!-- Campo de nombre completo -->
+                <label class="block mb-2">Número de identidad</label>
+                <input type="number" disabled wire:model.live="numero_identidad"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0" step="1"
+                    oninput="this.value = this.value.slice(0, 10);">
+                @error('numero_identidad')
+                    {{ $message }}
+                @enderror
+                <label class="block mb-2">Nombre</label>
+                <input type="text" disabled wire:model.live="nombre_estudiante"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('nombre_estudiante')
+                    {{ $message }}
+                @enderror
+                <label class="block mb-2">Apellido</label>
+                <input type="text" disabled wire:model.live="apellido_estudiante"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('apellido_estudiante')
+                    {{ $message }}
+                @enderror
+
+
+                <!-- Campo de selección de curso del estudiante -->
+                <label class="block mb-2">Selecione el Sexo</label>
+                <select wire:model="sexo" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un sexo</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+                @error('sexo')
+                    {{ $message }}
+                @enderror
+
+                <label class="block mb-2">Seleccione el curso</label>
+                <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un curso</option>
+                    @foreach ($cursos as $curso)
+                        <option value="{{ $curso['id'] }}">
+                            {{ $curso['nombre_curso'] }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('curso_id')
+                    {{ $message }}
+                @enderror
+
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+
+                <!-- Botón para guardar usuario -->
+                <br>
+                <button wire:click="update"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar Estudiante
+                </button>
+            </x-slot>
+
+        </x-dialog-modal>
+
     </div>
-    
+
     {{-- Alerrta de notificaciones --}}
     <x-notificacion />
 

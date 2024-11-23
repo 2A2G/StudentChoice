@@ -223,39 +223,19 @@ class Table extends Component
         'anio_postulacion' => 'año_postulacion',
     ];
 
+
     public function openModal($dato, $row): void
     {
         $this->type = $dato === 'editar' ? 'Editar' : 'Eliminar';
 
         if ($this->type === 'Editar') {
             $this->inUpdate = [$this->modelsMap[$this->case] ?? '', $row];
-            $this->update();
+            $nameDispacth = "update-" . $this->case;
+            $data = $this->inUpdate[1];
+            $this->dispatch($nameDispacth, $data);
         } else {
             $this->inDelete = [$this->modelsMap[$this->case] ?? '', $row];
             $this->open = true;
-        }
-    }
-
-    public function update()
-    {
-        $entity = $this->inUpdate[0];
-        $data = $this->inUpdate[1] ?? null;
-
-        if (isset($this->inUpdate)) {
-            $model = $this->inUpdate[0]::find($data['id'] ?? null);
-            dd($model);
-            if (!$model) {
-                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID {$data['id']}. Verifica que el registro exista antes de intentar actualizarlo.");
-            }
-            try {
-                $model->update($data);
-                $this->open = false;
-                $this->dispatch('post-updated', name: ucfirst($this->case) . " actualizado correctamente.");
-            } catch (\Exception $e) {
-                throw new \Exception("Ocurrió un error al intentar actualizar el registro del tipo '$this->case'. Detalle: " . $e->getMessage());
-            }
-        } else {
-            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar actualizar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
         }
     }
 
@@ -276,7 +256,6 @@ class Table extends Component
         }
     }
 
-
     public function mount($columns = [], $data = [])
     {
         $this->datos();
@@ -287,11 +266,6 @@ class Table extends Component
     public function refresh()
     {
         $this->datos();
-    }
-
-    public function filtrar($case)
-    {
-        //
     }
 
     public function render()
