@@ -10,7 +10,6 @@
             buttonsStyling: false
         });
         Livewire.on('post-created', (name) => {
-            console.log('post-created', name.name);
             swalWithBootstrapButtons.fire({
                 title: "Actualizacion Exitosa",
                 text: name.name,
@@ -28,7 +27,6 @@
         })
 
         Livewire.on('post-deleted', (name) => {
-            console.log('post-deleted', name.name);
             swalWithBootstrapButtons.fire({
                 title: "Eliminacion Exitosa",
                 text: name.name,
@@ -61,6 +59,5 @@
                 }
             });
         })
-        
     </script>
 @endpush
