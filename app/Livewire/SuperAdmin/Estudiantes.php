@@ -12,7 +12,7 @@ class Estudiantes extends Component
 {
 
     #[Validate('required')]
-    #[Validate("Unique:estudiantes,numeroIdentidad")]
+    #[Validate("Unique:estudiantes,numero_identidad")]
 
     public $open = false;
     public $openUpdate = false;
@@ -20,10 +20,9 @@ class Estudiantes extends Component
     public $numero_identidad;
     public $nombre_estudiante;
     public $apellido_estudiante;
-    public $sexo;
-    public $curso_id;
+    public $sexo = '';
+    public $curso_id = '';
     public $estado;
-    public $dataUpdate;
 
     public function clearInput()
     {
@@ -85,10 +84,9 @@ class Estudiantes extends Component
             $this->estado = $data['estado'];
             $this->openUpdate = true;
         } else {
-            dd('No hay datos');
+            $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, intentelo nuevamente");
         }
     }
-
 
     public function update()
     {
@@ -136,9 +134,6 @@ class Estudiantes extends Component
             throw $th;
         }
     }
-
-
-
 
     public function render()
     {

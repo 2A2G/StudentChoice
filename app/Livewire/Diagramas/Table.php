@@ -239,12 +239,6 @@ class Table extends Component
         }
     }
 
-    public function update()
-    {
-        //
-
-    }
-
     public function delete()
     {
         $id = $this->inDelete[1]['id'] ?? null;

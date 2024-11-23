@@ -76,6 +76,9 @@
                     <option value="Masculino">Masculino</option>
                     <option value="Femenino">Femenino</option>
                 </select>
+                @error('sexo')
+                    {{ $message }}
+                @enderror
 
                 <label class="block mb-2">Selecione el curso</label>
                 <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
@@ -84,6 +87,9 @@
                         <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
                     @endforeach
                 </select>
+                @error('curso_id')
+                    {{ $message }}
+                @enderror
 
                 <!-- Botón para guardar usuario -->
                 <br>
@@ -141,6 +147,10 @@
                         </option>
                     @endforeach
                 </select>
+                @error('curso_id')
+                    {{ $message }}
+                @enderror
+
 
                 <label class="block mb-2">Selecione el Estado</label>
                 <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
