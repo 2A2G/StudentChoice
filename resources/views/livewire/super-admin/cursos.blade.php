@@ -43,7 +43,7 @@
     <div>
         <x-dialog-modal wire:model="open">
             <x-slot name="title">
-                <h1 class="text-lg font-medium">Registrar Docente</h1>
+                <h1 class="text-lg font-medium">Registrar Curso</h1>
             </x-slot>
             <x-slot name="content">
                 <!-- Campo de nombre para el curso -->
@@ -58,6 +58,38 @@
                 <br>
                 <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Guardar Curso
+                </button>
+            </x-slot>
+
+        </x-dialog-modal>
+        <x-dialog-modal wire:model="openUpdate">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Actualizar Curso</h1>
+            </x-slot>
+            <x-slot name="content">
+                <!-- Campo de nombre para el curso -->
+                <label class="block mb-2">Nombre del Curso</label>
+                <input type="text" wire:model.live="nombre_curso"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('nombre_curso')
+                    {{ $message }}
+                @enderror
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+
+                <!-- Botón para guardar usuario -->
+                <br>
+                <button wire:click="update"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar Curso
                 </button>
             </x-slot>
 

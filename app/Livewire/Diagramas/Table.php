@@ -72,7 +72,8 @@ class Table extends Component
 
 
             case 'usuarios':
-                $usuariosPaginate = User::join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+                $usuariosPaginate = User::withTrashed()
+                    ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
                     ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
                     ->select(
                         'users.id',
@@ -130,16 +131,18 @@ class Table extends Component
 
 
             case 'docentes':
-                $docentesPaginate = Docente::leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
+                $docentesPaginate = Docente::withTrashed()
+                    ->leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
                     ->leftJoin('users', 'docentes.user_id', '=', 'users.id')
                     ->select(
                         'docentes.id',
                         'users.name',
+                        'users.email',
                         'docentes.numero_identidad',
                         'docentes.asignatura',
                         'docentes.sexo',
                         DB::raw('COALESCE(cursos.nombre_curso, \'No\') AS curso'),
-                        DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
+                        DB::raw('CASE WHEN docentes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
                     ->orderByRaw('docentes.id')
                     ->simplePaginate(10);
@@ -151,7 +154,8 @@ class Table extends Component
 
 
             case 'postulantes':
-                $postulantesPaginate = Postulante::join('estudiantes', 'postulantes.estudiante_id', '=', 'estudiantes.id')
+                $postulantesPaginate = Postulante::withTrashed()
+                    ->join('estudiantes', 'postulantes.estudiante_id', '=', 'estudiantes.id')
                     ->join('cargos', 'postulantes.cargo_id', '=', 'cargos.id')
                     ->join('cursos', 'estudiantes.curso_id', '=', 'cursos.id')
 
