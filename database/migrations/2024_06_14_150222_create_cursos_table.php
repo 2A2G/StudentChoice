@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('cursos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre_curso');
+            $table->string('nombre_curso')->unique();
 
             $table->softDeletes();
             $table->timestamps();

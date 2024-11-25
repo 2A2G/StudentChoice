@@ -36,7 +36,6 @@ class Estudiantes extends Component
     public function store()
     {
         try {
-
             $this->validate(
                 [
                     'numero_identidad' => 'required',
@@ -68,6 +67,7 @@ class Estudiantes extends Component
 
     public function cambiar()
     {
+        $this->clearInput();
         $this->open = true;
     }
 
