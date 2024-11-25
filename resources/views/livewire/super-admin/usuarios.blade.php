@@ -80,6 +80,55 @@
 
         </x-dialog-modal>
 
+        <x-dialog-modal wire:model="openUpdate">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Actualizar Usuario</h1>
+            </x-slot>
+            <x-slot name="content">
+                <!-- Campo de nombre completo -->
+                <label class="block mb-2">Nombre Completo</label>
+                <input type="text" wire:model.live="name"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('name')
+                    {{ $message }}
+                @enderror
+
+                <!-- Campo de correo electrónico -->
+                <label class="block mb-2">Correo Electronico</label>
+                <input type="email" wire:model.live="email"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('email')
+                    {{ $message }}
+                @enderror
+
+                <!-- Campo de selección de rol del usuario -->
+                <label class="block mb-2">Rol del usuario</label>
+                <select wire:model="role" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un rol</option>
+                    @foreach ($roles as $rol)
+                        <option value="{{ $rol['name'] }}">{{ $rol['name'] }}</option>
+                    @endforeach
+                </select>
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+
+                <!-- Botón para guardar usuario -->
+                <br>
+                <button wire:click="update" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar usuario
+                </button>
+            </x-slot>
+
+        </x-dialog-modal>
+
     </div>
     {{-- Alerrta de notificaciones --}}
     <x-notificacion />

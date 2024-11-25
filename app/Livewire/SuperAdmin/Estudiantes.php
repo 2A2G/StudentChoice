@@ -137,7 +137,6 @@ class Estudiantes extends Component
 
     public function render()
     {
-
         $totalEstudiantes = Estudiante::count();
         $cursos = Curso::all();
         return view('livewire.super-admin.estudiantes', [

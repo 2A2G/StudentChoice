@@ -144,6 +144,7 @@ class Docentes extends Component
                 'asignatura' => $this->asignatura,
                 'curso_id' => $this->curso_id ?: null,
             ]);
+
             $this->openUpdate = false;
             $this->dispatch('post-created', name: "El docente " . $this->name_docente . ", actualizado satisfactoriamente");
             $this->clearInput();
