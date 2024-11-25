@@ -21,8 +21,6 @@ class Roles extends Component
     public function cambiar($name)
     {
         $this->name = $name;
-
-
         $this->open = true;
     }
 
@@ -48,8 +46,6 @@ class Roles extends Component
     {
         $totalRoles = Role::count();
         $totalPermisos = Permission::count();
-
-        // Pasa estos datos a la vista
         return view('livewire.super-admin.roles', [
             'totalRoles' => $totalRoles,
             'totalPermisos' => $totalPermisos
