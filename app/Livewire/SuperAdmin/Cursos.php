@@ -59,8 +59,7 @@ class Cursos extends Component
         $this->open = true;
     }
 
-    #[On('update-cursos')]
-    public function edit($data)
+    #[On('update-cursos')] public function edit($data)
     {
         try {
             $this->curso_id = $data['id'];
@@ -117,11 +116,13 @@ class Cursos extends Component
 
     public function render()
     {
-        $totalCursos = Curso::count();
+        $totalCursosActivos = Curso::all();
+        $totalCursos = Curso::withTrashed()->get();
         return view(
             'livewire..super-admin.cursos',
             [
-                'totalCursos' => $totalCursos
+                'totalCursos' => $totalCursos,
+                'totalCursosActivos' => $totalCursosActivos
             ]
         );
     }
