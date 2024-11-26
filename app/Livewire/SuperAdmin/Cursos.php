@@ -14,6 +14,7 @@ class Cursos extends Component
 
     public $open = false;
     public $openUpdate = false;
+    public $openDelete = false;
     public $nombre_curso = '';
     public $curso_id = '';
     public $estado;
@@ -109,6 +110,42 @@ class Cursos extends Component
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del curso. Intentelo de nuevo");
             $this->clearInput();
+            throw $th;
+        }
+    }
+
+    #[On('delete-cursos')]
+    public function preDelete($data)
+    {
+        if ($data) {
+            $this->openDelete = true;
+            $this->curso_id = $data['id'];
+        } else {
+            $this->dispatch('post-error', name: "Error no se encontraron registros del usuario, intentelo nuevamente");
+        }
+    }
+
+    public function delete()
+    {
+        try {
+            $this->openDelete = false;
+            $curso = Curso::find($this->curso_id);
+            if (!$curso) {
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, intentelo nuevamente");
+                $this->clearInput();
+                return;
+            }
+
+            $curso->estudiantes()->delete();
+            $curso->docentes()->delete();
+            $curso->delete();
+
+            $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
+            $this->openUpdate = false;
+
+        } catch (\Throwable $th) {
+            $this->openUpdate = false;
+            $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
             throw $th;
         }
     }

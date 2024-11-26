@@ -140,7 +140,7 @@ class Usuarios extends Component
     {
         try {
             $this->openDelete = false;
-            $user = User::withTrashed()->where('email', $this->email)->first();
+            $user = User::where('email', $this->email)->first();
             if (!$user) {
                 $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, intentelo nuevamente");
                 $this->clearInput();
@@ -151,11 +151,11 @@ class Usuarios extends Component
 
             $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
+
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
             throw $th;
-
         }
     }
 
