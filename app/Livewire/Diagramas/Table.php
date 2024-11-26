@@ -179,7 +179,7 @@ class Table extends Component
 
 
             case 'cargos':
-                $cargosPaginate = Cargo::select(
+                $cargosPaginate = Cargo::withTrashed()->select(
                     'id',
                     'nombre_cargo',
                     'descripcion_cargo',
@@ -194,7 +194,7 @@ class Table extends Component
 
             case 'anio_postulacion':
                 // Agrupar por año de postulación y mostrar el año y la cantidad de postulantes totales para ese año
-                $postulacionAnios = Postulante::select('anio_postulacion', DB::raw('count(*) as cantidad_postulantes'))
+                $postulacionAnios = Postulante::withTrashed()->select('anio_postulacion', DB::raw('count(*) as cantidad_postulantes'))
                     ->groupBy('anio_postulacion')
                     ->simplePaginate(10);
 
@@ -247,22 +247,6 @@ class Table extends Component
             $this->dispatch($nameDispacth, $data);
         }
     }
-
-    // {
-    //     $id = $this->inDelete[1]['id'] ?? null;
-
-    //     if (isset($this->inDelete[0])) {
-    //         $model = $this->inDelete[0]::find($id);
-    //         if (!$model) {
-    //             throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
-    //         }
-    //         $model->delete();
-    //         $this->open = false;
-    //         $this->dispatch('post-deleted', name: ucfirst($this->case) . " eliminado correctamente.");
-    //     } else {
-    //         $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
-    //     }
-    // }
 
     public function mount($columns = [], $data = [])
     {
