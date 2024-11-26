@@ -154,7 +154,6 @@
                     Confirmar Eliminación
                 </h1>
             </x-slot>
-
             <x-slot name="content">
                 <div class="flex flex-col items-center text-center">
                     <!-- Icono de advertencia -->
