@@ -17,6 +17,7 @@ class Usuarios extends Component
 
     public $open = false;
     public $openUpdate = false;
+    public $openDelete = false;
     public $name;
     public $estado;
     public $role = '';
@@ -121,6 +122,40 @@ class Usuarios extends Component
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo actualizar. Intentelo nuevamente");
             throw $th;
+        }
+    }
+
+    #[On('delete-usuarios')]
+    public function preDelete($data)
+    {
+        if ($data) {
+            $this->openDelete = true;
+            $this->email = $data['email'];
+        } else {
+            $this->dispatch('post-error', name: "Error no se encontraron registros del usuario, intentelo nuevamente");
+        }
+    }
+
+    public function delete()
+    {
+        try {
+            $this->openDelete = false;
+            $user = User::withTrashed()->where('email', $this->email)->first();
+            if (!$user) {
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, intentelo nuevamente");
+                $this->clearInput();
+                return;
+            }
+
+            $user->delete();
+
+            $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
+            $this->openUpdate = false;
+        } catch (\Throwable $th) {
+            $this->openUpdate = false;
+            $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
+            throw $th;
+
         }
     }
 

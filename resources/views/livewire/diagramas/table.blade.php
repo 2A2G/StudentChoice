@@ -89,16 +89,6 @@
                             Actualizar
                         </button>
                     @endif
-                    @if ($type === 'Eliminar')
-                        <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
-                            ¿Está seguro de eliminar el usuario?
-                        </h1>
-                        <button wire:click="delete"
-                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow-md transform transition-transform hover:scale-105">
-                            Eliminar usuario
-                        </button>
-                    @endif
-
                     <!-- Botón para guardar usuario -->
                     <br>
                 </x-slot>

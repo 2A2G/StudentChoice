@@ -148,7 +148,51 @@
 
         </x-dialog-modal>
 
+        <x-dialog-modal wire:model="openDelete">
+            <x-slot name="title">
+                <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Confirmar Eliminación
+                </h1>
+            </x-slot>
+
+            <x-slot name="content">
+                <div class="flex flex-col items-center text-center">
+                    <!-- Icono de advertencia -->
+                    <div class="mb-4">
+                        <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <!-- Mensaje principal -->
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                        ¿Está seguro de eliminar este usuario?
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Esta acción no se puede deshacer. Todos los datos asociados con este usuario se perderán de
+                        forma permanente.
+                    </p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="mt-6 flex justify-center gap-4">
+                    <button wire:click="$set('openDelete', false)"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all">
+                        Cancelar
+                    </button>
+                    <button wire:click="delete"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                        Eliminar
+                    </button>
+                </div>
+            </x-slot>
+        </x-dialog-modal>
+
     </div>
+
     {{-- Alerrta de notificaciones --}}
     <x-notificacion />
 

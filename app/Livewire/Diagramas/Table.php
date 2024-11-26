@@ -218,6 +218,7 @@ class Table extends Component
             ?? $docentesPaginate ?? $cargosPaginate ?? $postulantesPaginate ?? $postulacionAnios ?? $cursosPaginate
             ?? null;
     }
+
     protected array $modelsMap = [
         'roles' => Role::class,
         'permisos' => Permission::class,
@@ -230,7 +231,6 @@ class Table extends Component
         'anio_postulacion' => 'año_postulacion',
     ];
 
-
     public function openModal($dato, $row): void
     {
         $this->type = $dato === 'editar' ? 'Editar' : 'Eliminar';
@@ -242,32 +242,32 @@ class Table extends Component
             $this->dispatch($nameDispacth, $data);
         } else {
             $this->inDelete = [$this->modelsMap[$this->case] ?? '', $row];
-            $this->open = true;
+            $nameDispacth = "delete-" . $this->case;
+            $data = $this->inDelete[1];
+            $this->dispatch($nameDispacth, $data);
         }
     }
 
-    public function delete()
-    {
-        $id = $this->inDelete[1]['id'] ?? null;
+    // {
+    //     $id = $this->inDelete[1]['id'] ?? null;
 
-        if (isset($this->inDelete[0])) {
-            $model = $this->inDelete[0]::find($id);
-            if (!$model) {
-                throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
-            }
-            $model->delete();
-            $this->open = false;
-            $this->dispatch('post-deleted', name: ucfirst($this->case) . " eliminado correctamente.");
-        } else {
-            $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
-        }
-    }
+    //     if (isset($this->inDelete[0])) {
+    //         $model = $this->inDelete[0]::find($id);
+    //         if (!$model) {
+    //             throw new \Exception("No se pudo encontrar el registro correspondiente al tipo '$this->case' con ID $id. Verifica que el registro exista antes de intentar eliminarlo.");
+    //         }
+    //         $model->delete();
+    //         $this->open = false;
+    //         $this->dispatch('post-deleted', name: ucfirst($this->case) . " eliminado correctamente.");
+    //     } else {
+    //         $this->dispatch('post-error', name: 'Ocurrió un error inesperado al intentar eliminar el registro. Por favor, verifica los datos e inténtalo nuevamente.');
+    //     }
+    // }
 
     public function mount($columns = [], $data = [])
     {
         $this->datos();
     }
-
 
     #[On('post-created')]
     public function refresh()
