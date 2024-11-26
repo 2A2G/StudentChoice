@@ -16,6 +16,7 @@ class Docentes extends Component
 
     public $open = false;
     public $openUpdate = false;
+    public $openDelete = false;
     public $name;
     public $numero_identidad;
     public $name_docente;
@@ -153,6 +154,44 @@ class Docentes extends Component
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del docente. Intentelo de nuevo");
             $this->clearInput();
+            throw $th;
+        }
+    }
+
+    #[On('delete-docentes')]
+    public function preDelete($data)
+    {
+        if ($data) {
+            $this->openDelete = true;
+            $this->numero_identidad = $data['numero_identidad'];
+        } else {
+            $this->dispatch('post-error', name: "Error no se encontraron registros del usuario, intentelo nuevamente");
+        }
+    }
+
+    public function delete()
+    {
+        try {
+            $this->openDelete = false;
+            $docente = Docente::where('numero_identidad', $this->numero_identidad)->first();
+            if (!$docente) {
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, intentelo nuevamente");
+                $this->clearInput();
+                return;
+            }
+            $docente->update([
+                'curso_id' => null
+            ]);
+
+            $docente->user()->delete();
+            $docente->delete();
+
+            $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
+            $this->openUpdate = false;
+
+        } catch (\Throwable $th) {
+            $this->openUpdate = false;
+            $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
             throw $th;
         }
     }
