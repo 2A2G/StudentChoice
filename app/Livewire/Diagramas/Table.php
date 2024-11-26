@@ -96,7 +96,9 @@ class Table extends Component
                     ->select(
                         'cursos.id',
                         'cursos.nombre_curso',
-                        DB::raw('count(estudiantes.id) as cantidad_estudiantes'),
+                        DB::raw('SUM(CASE WHEN estudiantes.sexo = \'Masculino\' THEN 1 ELSE 0 END) as cantidad_estudiantes_masculinos'),
+                        DB::raw('SUM(CASE WHEN estudiantes.sexo = \'Femenino\' THEN 1 ELSE 0 END) as cantidad_estudiantes_femeninos'),
+                        DB::raw('COUNT(estudiantes.id) as cantidad_estudiantes'),
                         DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
                     )
                     ->groupBy('cursos.id', 'cursos.nombre_curso', 'cursos.deleted_at')
@@ -104,9 +106,10 @@ class Table extends Component
                     ->simplePaginate(10);
 
                 $this->data = $cursosPaginate->items();
-                $this->dataI = ['nombre_curso', 'cantidad_estudiantes', 'estado'];
-                $this->columns = ['Nombre del Curso', 'Cantidad de Estudiantes', 'Estado', 'Acción'];
+                $this->dataI = ['nombre_curso', 'cantidad_estudiantes_masculinos', 'cantidad_estudiantes_femeninos', 'cantidad_estudiantes', 'estado'];
+                $this->columns = ['Nombre del Curso', 'Cantidad de Estudiantes Masculinos', 'Cantidad de Estudiantes Femeninos', 'Total de Estudiantes', 'Estado', 'Acción'];
                 break;
+
 
 
             case 'estudiantes':

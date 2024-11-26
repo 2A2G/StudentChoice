@@ -1,6 +1,6 @@
 <div class="mt-12">
 
-    <div class="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-1 px-4">
+    <div class="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-2 px-4">
         <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
             <div
                 class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-pink-600 to-pink-400 text-white shadow-pink-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
@@ -12,14 +12,33 @@
             </div>
             <div class="p-4 text-right">
                 <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                    Total de Cursos</p>
+                    Total de Cursos Activos</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$totalCursos" />
+                    <livewire:animated-counter :targetCount="$totalCursosActivos->count()" />
+                </h4>
+            </div>
+        </div>
+        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+            <div
+                class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-pink-600 to-pink-400 text-white shadow-pink-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="#ffffff" fill-rule="evenodd"
+                        d="M11 4.717c-2.286-.58-4.16-.756-7.045-.71A1.99 1.99 0 0 0 2 6v11c0 1.133.934 2.022 2.044 2.007c2.759-.038 4.5.16 6.956.791zm2 15.081c2.456-.631 4.198-.829 6.956-.791A2.013 2.013 0 0 0 22 16.999V6a1.99 1.99 0 0 0-1.955-1.993c-2.885-.046-4.76.13-7.045.71z"
+                        clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="p-4 text-right">
+                <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
+                    Total de Cursos en el sistema</p>
+                <h4
+                    class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+                    <livewire:animated-counter :targetCount="$totalCursos->count()" />
                 </h4>
             </div>
         </div>
     </div>
+
 
     <div class="flex">
         <div class="w-full px-4">

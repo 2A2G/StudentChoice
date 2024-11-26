@@ -126,12 +126,14 @@ class Usuarios extends Component
 
     public function render()
     {
-        $user = User::count();
+        $userActivos = User::all();
+        $user = User::withTrashed()->get();
         $rol = Role::all('id', 'name');
         $permisos = Permission::get();
         return view(
             'livewire.super-admin.usuarios',
             [
+                'userActivos' => $userActivos,
                 'user' => $user,
                 'roles' => $rol,
                 'permisos' => $permisos,
