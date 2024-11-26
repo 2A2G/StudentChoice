@@ -16,6 +16,7 @@ class Estudiantes extends Component
 
     public $open = false;
     public $openUpdate = false;
+    public $openDelete = false;
 
     public $numero_identidad;
     public $nombre_estudiante;
@@ -59,7 +60,7 @@ class Estudiantes extends Component
 
         } catch (\Throwable $th) {
             $this->open = false;
-            $this->dispatch('post-error', name: "Error al registrar el estudiante. Intentelo de nuevo");
+            $this->dispatch('post-error', name: "Error al registrar el estudiante. inténtelo de nuevo");
             $this->clearInput();
             throw $th;
         }
@@ -84,7 +85,7 @@ class Estudiantes extends Component
             $this->estado = $data['estado'];
             $this->openUpdate = true;
         } else {
-            $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, intentelo nuevamente");
+            $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, inténtelo nuevamente");
         }
     }
 
@@ -105,7 +106,7 @@ class Estudiantes extends Component
             // Verificar si el estudiante existe
             if (!$estudiante) {
                 $this->openUpdate = false;
-                $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, intentelo nuevamente");
+                $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, inténtelo nuevamente");
                 $this->clearInput();
             }
 
@@ -129,8 +130,42 @@ class Estudiantes extends Component
 
         } catch (\Throwable $th) {
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del estudiante. Intentelo de nuevo");
+            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del estudiante. Inténtelo de nuevo");
             $this->clearInput();
+            throw $th;
+        }
+    }
+
+    #[On('delete-estudiantes')]
+    public function preDelete($data)
+    {
+        if ($data) {
+            $this->openDelete = true;
+            $this->numero_identidad = $data['numero_identidad'];
+        } else {
+            $this->dispatch('post-error', name: "Error no se encontraron registros del estudinate, inténtelo nuevamente");
+        }
+    }
+
+    public function delete()
+    {
+        try {
+            $this->openDelete = false;
+            $estudiante = Estudiante::where('numero_identidad', $this->numero_identidad)->first();
+            if (!$estudiante) {
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, inténtelo nuevamente");
+                $this->clearInput();
+                return;
+            }
+
+            $estudiante->delete();
+
+            $this->dispatch('post-created', name: "El estudiante ha sido eliminado satisfactoriamente");
+            $this->openUpdate = false;
+
+        } catch (\Throwable $th) {
+            $this->openUpdate = false;
+            $this->dispatch('post-error', name: "El estudiante " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
             throw $th;
         }
     }

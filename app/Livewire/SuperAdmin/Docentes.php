@@ -74,7 +74,7 @@ class Docentes extends Component
             $this->open = false;
         } catch (\Throwable $th) {
             $this->open = false;
-            $this->dispatch('post-error', name: "Error al registrar el docente. Intentelo de nuevo");
+            $this->dispatch('post-error', name: "Error al registrar el docente. inténtelo de nuevo");
             $this->clearInput();
             throw $th;
         }
@@ -108,7 +108,7 @@ class Docentes extends Component
             $this->openUpdate = true;
 
         } else {
-            $this->dispatch('post-error', name: "Error no se encontraron registros del docente, intentelo nuevamente");
+            $this->dispatch('post-error', name: "Error no se encontraron registros del docente, inténtelo nuevamente");
         }
 
     }
@@ -130,7 +130,7 @@ class Docentes extends Component
             $docente = Docente::withTrashed()->where('numero_identidad', $this->numero_identidad);
             if (!$docente) {
                 $this->openUpdate = false;
-                $this->dispatch('post-error', name: "Error no se encontraron registros del docente, intentelo nuevamente");
+                $this->dispatch('post-error', name: "Error no se encontraron registros del docente, inténtelo nuevamente");
                 $this->clearInput();
             }
 
@@ -152,7 +152,7 @@ class Docentes extends Component
 
         } catch (\Throwable $th) {
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del docente. Intentelo de nuevo");
+            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del docente. Inténtelo de nuevo");
             $this->clearInput();
             throw $th;
         }
@@ -165,7 +165,7 @@ class Docentes extends Component
             $this->openDelete = true;
             $this->numero_identidad = $data['numero_identidad'];
         } else {
-            $this->dispatch('post-error', name: "Error no se encontraron registros del usuario, intentelo nuevamente");
+            $this->dispatch('post-error', name: "Error no se encontraron registros del docente, inténtelo nuevamente");
         }
     }
 
@@ -175,7 +175,7 @@ class Docentes extends Component
             $this->openDelete = false;
             $docente = Docente::where('numero_identidad', $this->numero_identidad)->first();
             if (!$docente) {
-                $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, intentelo nuevamente");
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del docente, inténtelo nuevamente");
                 $this->clearInput();
                 return;
             }
@@ -186,12 +186,12 @@ class Docentes extends Component
             $docente->user()->delete();
             $docente->delete();
 
-            $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
+            $this->dispatch('post-created', name: "El docente ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
 
         } catch (\Throwable $th) {
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
+            $this->dispatch('post-error', name: "El docente " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
             throw $th;
         }
     }

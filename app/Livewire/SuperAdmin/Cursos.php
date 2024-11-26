@@ -49,7 +49,7 @@ class Cursos extends Component
             $this->open = false;
         } catch (\Throwable $th) {
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "Error al intentar crear el curso. Intentelo de nuevo");
+            $this->dispatch('post-error', name: "Error al intentar crear el curso. Inténtelo de nuevo");
             throw $th;
         }
     }
@@ -70,10 +70,10 @@ class Cursos extends Component
                 $this->openUpdate = true;
 
             } else {
-                $this->dispatch('post-error', name: "Error no se encontraron registros del curso, intentelo nuevamente");
+                $this->dispatch('post-error', name: "Error no se encontraron registros del curso, inténtelo nuevamente");
             }
         } catch (\Throwable $th) {
-            $this->dispatch('post-error', name: "Error no se encontraron registros del curso, intentelo nuevamente");
+            $this->dispatch('post-error', name: "Error no se encontraron registros del curso, inténtelo nuevamente");
             throw $th;
         }
     }
@@ -90,7 +90,7 @@ class Cursos extends Component
 
             if (!$curso) {
                 $this->openUpdate = false;
-                $this->dispatch('post-error', name: "Error no se encontraron registros del curso, intentelo nuevamente");
+                $this->dispatch('post-error', name: "Error no se encontraron registros del curso, inténtelo nuevamente");
                 $this->clearInput();
             }
 
@@ -108,7 +108,7 @@ class Cursos extends Component
 
         } catch (\Throwable $th) {
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del curso. Intentelo de nuevo");
+            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del curso. Inténtelo de nuevo");
             $this->clearInput();
             throw $th;
         }
@@ -121,7 +121,7 @@ class Cursos extends Component
             $this->openDelete = true;
             $this->curso_id = $data['id'];
         } else {
-            $this->dispatch('post-error', name: "Error no se encontraron registros del usuario, intentelo nuevamente");
+            $this->dispatch('post-error', name: "Error no se encontraron registros del curso, Inténtelo nuevamente");
         }
     }
 
@@ -131,7 +131,7 @@ class Cursos extends Component
             $this->openDelete = false;
             $curso = Curso::find($this->curso_id);
             if (!$curso) {
-                $this->dispatch('post-error', name: "Error: no se encontraron registros del usuario, intentelo nuevamente");
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del curso, inténtelo nuevamente");
                 $this->clearInput();
                 return;
             }
@@ -140,12 +140,12 @@ class Cursos extends Component
             $curso->docentes()->delete();
             $curso->delete();
 
-            $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
+            $this->dispatch('post-created', name: "El curso ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
 
         } catch (\Throwable $th) {
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
+            $this->dispatch('post-error', name: "El curso " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
             throw $th;
         }
     }
