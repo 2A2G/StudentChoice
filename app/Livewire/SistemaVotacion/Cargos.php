@@ -110,6 +110,7 @@ class Cargos extends Component
     public function preDelete($data)
     {
         if ($data) {
+            $this->cargo_id = $data['id'];
             $this->openDelete = true;
         } else {
             $this->dispatch('post-error', name: "Error no se encontraron registros del cargo, inténtelo nuevamente");
@@ -120,7 +121,7 @@ class Cargos extends Component
     {
         try {
             $this->openDelete = false;
-            $cargo = Cargo::where('numero_identidad', $this->numero_identidad)->first();
+            $cargo = Cargo::find($this->cargo_id)->first();
             if (!$cargo) {
                 $this->dispatch('post-error', name: "Error: no se encontraron registros del cargo, inténtelo nuevamente");
                 $this->clearInput();
