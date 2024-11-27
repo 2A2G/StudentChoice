@@ -53,9 +53,9 @@ class Cargos extends Component
     #[On('update-cargos')]
     public function edit($data)
     {
-        $this->cargo_id = $data['id'];
+        // dd($data);
         if ($data) {
-            // dd($data);
+            $this->cargo_id = $data['id'];
             $this->nombre_cargo = $data['nombre_cargo'];
             $this->descripcion_cargo = $data['descripcion_cargo'];
             $this->estado = $data['estado'];
@@ -73,7 +73,8 @@ class Cargos extends Component
                 'descripcion_cargo' => 'required'
             ]);
 
-            $cargo = Cargo::withTrashed()->find($this->cargo_id)->first();
+            $cargo = Cargo::withTrashed()->where('id', $this->cargo_id)->first();
+            // dd($cargo);
 
             // Verificar si el cargo existe
             if (!$cargo) {
