@@ -42,7 +42,7 @@
     <div>
         <x-dialog-modal wire:model="open">
             <x-slot name="title">
-                <h1 class="text-lg font-medium">Registrar Estudiante</h1>
+                <h1 class="text-lg font-medium">Registrar Cargo</h1>
             </x-slot>
             <x-slot name="content">
                 <!--Nombre del cargo-->
@@ -65,6 +65,80 @@
                 <!-- Botón para guardar usuario -->
                 <br>
                 <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Guardar Estudiante
+                </button>
+            </x-slot>
+
+        </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openUpdate">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Editar Cargo</h1>
+            </x-slot>
+            <x-slot name="content">
+                <!--Nombre del cargo-->
+                <label class="block mb-2">Nombre del cargo</label>
+                <input type="text" wire:model.live="nombre_cargo"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('nombre_crgo')
+                    {{ $message }}
+                @enderror
+
+                <!--Descripcion del cargo-->
+                <label class="block mb-2">Descripción del cargo</label>
+                <input type="text" wire:model.live="descripcion_cargo"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('descripcion_cargo')
+                    {{ $message }}
+                @enderror
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+
+
+                <!-- Botón para guardar usuario -->
+                <br>
+                <button wire:click="update"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar Estudiante
+                </button>
+            </x-slot>
+
+        </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openDelete">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Eliminar Cargo</h1>
+            </x-slot>
+            <x-slot name="content">
+                <!--Nombre del cargo-->
+                <label class="block mb-2">Nombre del cargo</label>
+                <input type="text" wire:model.live="nombre_cargo"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('nombre_crgo')
+                    {{ $message }}
+                @enderror
+
+                <!--Descripcion del cargo-->
+                <label class="block mb-2">Descripción del cargo</label>
+                <input type="text" wire:model.live="descripcion_cargo"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('descripcion_cargo')
+                    {{ $message }}
+                @enderror
+
+
+                <!-- Botón para guardar usuario -->
+                <br>
+                <button wire:click="delete"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Guardar Estudiante
                 </button>
             </x-slot>
