@@ -71,8 +71,20 @@
 
                 <!-- Campo del cargo -->
                 <label class="block mb-2">Cargo</label>
-                <input type="text" wire:model="cargo" class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
-                    disabled>
+                @if ($type)
+                    <select wire:model="cargo" wire:change="assignDefaultCargo"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                        <option value="" selected disabled>Seleccione un cargo</option>
+                        <option value="Representente de curso">Representente de curso</option>
+                        <option value="Controlador">Controlador</option>
+                    </select>
+                    @error('cargo')
+                        {{ $message }}
+                    @enderror
+                @else
+                    <input type="text" wire:model="cargo"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
+                @endif
 
                 <!-- Campo para subir la imagen -->
                 <div class="mb-4">
@@ -107,6 +119,116 @@
             </x-slot>
         </x-dialog-modal>
 
+        <x-dialog-modal wire:model="openUpdate">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Actualizar Postulante</h1>
+            </x-slot>
+            <x-slot name="content">
+                <!-- Campo del nombre -->
+                <label class="block mb-2">Nombre del postulante</label>
+                <input type="text" wire:model="nombre_postulante"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
+
+                <!-- Campo del curso -->
+                <label class="block mb-2">Curso</label>
+                <input type="text" wire:model="curso_postulante"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
+
+                <!-- Campo del cargo -->
+                <label class="block mb-2">Cargo</label>
+                @if ($type)
+                    <select wire:model="cargo" wire:change="assignDefaultCargo"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                        <option value="" selected disabled>Seleccione un cargo</option>
+                        <option value="Representente de curso">Representente de curso</option>
+                        <option value="Controlador">Controlador</option>
+                    </select>
+                    @error('cargo')
+                        {{ $message }}
+                    @enderror
+                @else
+                    <input type="text" wire:model="cargo"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
+                @endif
+
+                <!-- Campo para subir la imagen -->
+                <div class="mb-4">
+                    <label for="image-upload" class="block text-gray-700 font-bold mb-2">Imagen del postulante</label>
+                    <div class="relative">
+                        <input type="file" id="image-upload" wire:model="imagen" accept="image/*" class="hidden"
+                            required>
+                        <button type="button" onclick="document.getElementById('image-upload').click()"
+                            class="flex items-center justify-center w-full border border-gray-300 rounded px-3 py-2 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 mr-2"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"
+                                stroke-linejoin="round" stroke-width="2">
+                                <path
+                                    d="M15 17h3a3 3 0 0 0 0-6h-.025a6 6 0 0 0 .025-.5A5.5 5.5 0 0 0 7.207 9.021C7.137 9.017 7.071 9 7 9a4 4 0 1 0 0 8h2.167M12 19v-9m0 0l-2 2m2-2l2 2" />
+                            </svg>
+                            Subir imagen
+                        </button>
+                        @error('imagen')
+                            <span class="text-red-500 block mt-2">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                <!-- Componente de la carta -->
+                @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
+
+                <!-- Botón para guardar usuario -->
+                <br>
+                <button wire:click="store"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar postulante
+                </button>
+            </x-slot>
+
+
+        </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openDelete">
+            <x-slot name="title">
+                <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Confirmar Eliminación
+                </h1>
+            </x-slot>
+            <x-slot name="content">
+                <div class="flex flex-col items-center text-center">
+                    <!-- Icono de advertencia -->
+                    <div class="mb-4">
+                        <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <!-- Mensaje principal -->
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                        ¿Está seguro de eliminar este estudiante?
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Esta acción no se puede deshacer. Todos los datos asociados con este estudiante se perderán
+                        de
+                        forma permanente.
+                    </p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="mt-6 flex justify-center gap-4">
+                    <button wire:click="$set('openDelete', false)"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all">
+                        Cancelar
+                    </button>
+                    <button wire:click="delete"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                        Eliminar
+                    </button>
+                </div>
+            </x-slot>
+        </x-dialog-modal>
     </div>
     {{-- Alerrta de notificaciones --}}
     <x-notificacion />

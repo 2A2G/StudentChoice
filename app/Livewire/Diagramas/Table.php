@@ -164,16 +164,16 @@ class Table extends Component
 
                     ->select(
                         'postulantes.id',
-                        'estudiantes.nombre_estudiante as estudiantes',
+                        DB::raw("CONCAT(estudiantes.nombre_estudiante, ' ', estudiantes.apellido_estudiante) as estudiante"),
                         'cursos.nombre_curso as cursos',
                         'cargos.nombre_cargo as cargos',
-                        DB::raw('CASE WHEN postulantes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-
+                        DB::raw("CASE WHEN postulantes.deleted_at IS NULL THEN 'Activo' ELSE 'Eliminado' END as estado")
                     )
+
                     ->simplePaginate(10);
 
                 $this->data = $postulantesPaginate->items();
-                $this->dataI = ['estudiantes', 'cursos', 'cargos', 'estado'];
+                $this->dataI = ['estudiante', 'cursos', 'cargos', 'estado'];
                 $this->columns = ['estudiante', 'curso', 'cargo', 'estado', 'accion'];
                 break;
 
@@ -264,7 +264,7 @@ class Table extends Component
         $paginatedData = $this->datos();
         return view('livewire.diagramas.table', [
             'data' => $this->data,
-            'pagination' => $paginatedData, // Pasa la colección paginada completa
+            'pagination' => $paginatedData,
             'case' => $this->case,
         ]);
     }

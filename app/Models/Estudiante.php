@@ -19,6 +19,9 @@ class Estudiante extends Model
         'curso_id',
     ];
 
+    const undecimo = 12;
+    const decimo = 11;
+
     public function curso()
     {
         return $this->belongsTo(Curso::class);
