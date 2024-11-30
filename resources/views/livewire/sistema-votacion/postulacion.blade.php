@@ -109,8 +109,9 @@
                 </div>
 
                 <!-- Componente de la carta -->
-                @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
-
+                @if ($cargo)
+                    @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
+                @endif
                 <!-- Botón para guardar usuario -->
                 <br>
                 <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
@@ -174,8 +175,9 @@
                 </div>
 
                 <!-- Componente de la carta -->
-                @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
-
+                @if ($cargo && $image)
+                    @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
+                @endif
                 <!-- Botón para guardar usuario -->
                 <br>
                 <button wire:click="store"
