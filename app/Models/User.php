@@ -73,7 +73,7 @@ class User extends Authenticatable
         return $this->hasOne(Docente::class);
     }
 
-    public static function getUsersWithPagination($perPage = 10)
+    public static function getUserData($perPage = 10)
     {
         return self::withTrashed()
             ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')

@@ -36,34 +36,14 @@ class Table extends Component
     {
         switch ($this->case) {
             case 'roles':
-                $rolesPaginated = Role::select(
-                    'id',
-                    'name',
-                    DB::raw('CASE WHEN deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-                )
-                    ->simplePaginate(10, [
-                        'id',
-                        'name',
-                        'estado'
-                    ]);
+                $rolesPaginated = Role::getRoleData(10);
                 $this->data = $rolesPaginated->items();
                 $this->dataI = ['name', 'estado'];
                 $this->columns = ['Nombre del Rol', 'estado'];
                 break;
 
-
             case 'permisos':
-                $permissionsPaginated = Permission::select(
-                    'id',
-                    'name',
-                    DB::raw('CASE WHEN deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-
-                )->simplePaginate(10, [
-                            'id',
-                            'name',
-                            'estado'
-                        ]);
-
+                $permissionsPaginated = Permission::getPaginatedPermissions(10);
 
                 $this->data = $permissionsPaginated->items();
                 $this->dataI = ['name', 'estado'];
@@ -71,7 +51,7 @@ class Table extends Component
                 break;
 
             case 'usuarios':
-                $usuariosPaginate = User::getUsersWithPagination(10);
+                $usuariosPaginate = User::getUserData(10);
 
                 $this->data = $usuariosPaginate->items();
                 $this->dataI = ['name', 'email', 'role', 'estado'];
@@ -79,119 +59,51 @@ class Table extends Component
                 break;
 
             case 'cursos':
-                $cursosPaginate = Curso::withTrashed()
-                    ->leftJoin('estudiantes', 'cursos.id', '=', 'estudiantes.curso_id')
-                    ->select(
-                        'cursos.id',
-                        'cursos.nombre_curso',
-                        DB::raw('SUM(CASE WHEN estudiantes.sexo = \'Masculino\' THEN 1 ELSE 0 END) as cantidad_estudiantes_masculinos'),
-                        DB::raw('SUM(CASE WHEN estudiantes.sexo = \'Femenino\' THEN 1 ELSE 0 END) as cantidad_estudiantes_femeninos'),
-                        DB::raw('COUNT(estudiantes.id) as cantidad_estudiantes'),
-                        DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-                    )
-                    ->groupBy('cursos.id', 'cursos.nombre_curso', 'cursos.deleted_at')
-                    ->orderByRaw('cursos.id')
-                    ->simplePaginate(10);
+                $cursosPaginate = Curso::getCursoData(10);
 
                 $this->data = $cursosPaginate->items();
                 $this->dataI = ['nombre_curso', 'cantidad_estudiantes_masculinos', 'cantidad_estudiantes_femeninos', 'cantidad_estudiantes', 'estado'];
                 $this->columns = ['Nombre del Curso', 'Cantidad de Estudiantes Masculinos', 'Cantidad de Estudiantes Femeninos', 'Total de Estudiantes', 'Estado', 'Acción'];
                 break;
 
-
-
             case 'estudiantes':
-                $estudiantesPaginate = Estudiante::withTrashed()
-                    ->join('cursos', 'estudiantes.curso_id', '=', 'cursos.id')
-                    ->select(
-                        'estudiantes.id',
-                        'estudiantes.numero_identidad',
-                        'estudiantes.nombre_estudiante',
-                        'estudiantes.apellido_estudiante',
-                        'estudiantes.sexo',
-                        'cursos.nombre_curso as curso',
-                        DB::raw('CASE WHEN estudiantes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-                    )
-                    ->orderByRaw('cursos.id')
-                    ->simplePaginate(10);
+                $estudiantesPaginate = Estudiante::getEstudianteData(10);
 
                 $this->data = $estudiantesPaginate->items();
                 $this->dataI = ['numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
                 $this->columns = ['Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
                 break;
 
-
             case 'docentes':
-                $docentesPaginate = Docente::withTrashed()
-                    ->leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
-                    ->leftJoin('users', 'docentes.user_id', '=', 'users.id')
-                    ->select(
-                        'docentes.id',
-                        'users.name',
-                        'users.email',
-                        'docentes.numero_identidad',
-                        'docentes.asignatura',
-                        'docentes.sexo',
-                        DB::raw('COALESCE(cursos.nombre_curso, \'No\') AS curso'),
-                        DB::raw('CASE WHEN docentes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-                    )
-                    ->orderByRaw('docentes.id')
-                    ->simplePaginate(10);
+                $docentesPaginate = Docente::getDocenteData(10);
 
                 $this->data = $docentesPaginate->items();
                 $this->dataI = ['numero_identidad', 'name', 'asignatura', 'sexo', 'curso', 'estado'];
                 $this->columns = ['Número de Identidad', 'Docente', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
                 break;
 
-
             case 'postulantes':
-                $postulantesPaginate = Postulante::withTrashed()
-                    ->join('estudiantes', 'postulantes.estudiante_id', '=', 'estudiantes.id')
-                    ->join('cargos', 'postulantes.cargo_id', '=', 'cargos.id')
-                    ->join('cursos', 'estudiantes.curso_id', '=', 'cursos.id')
-
-                    ->select(
-                        'postulantes.id',
-                        DB::raw("CONCAT(estudiantes.nombre_estudiante, ' ', estudiantes.apellido_estudiante) as estudiante"),
-                        'cursos.nombre_curso as cursos',
-                        'cargos.nombre_cargo as cargos',
-                        DB::raw("CASE WHEN postulantes.deleted_at IS NULL THEN 'Activo' ELSE 'Eliminado' END as estado")
-                    )
-
-                    ->simplePaginate(10);
+                $postulantesPaginate = Postulante::getPostulanteData(10);
 
                 $this->data = $postulantesPaginate->items();
                 $this->dataI = ['estudiante', 'cursos', 'cargos', 'estado'];
                 $this->columns = ['estudiante', 'curso', 'cargo', 'estado', 'accion'];
                 break;
 
-
             case 'cargos':
-                $cargosPaginate = Cargo::withTrashed()->select(
-                    'id',
-                    'nombre_cargo',
-                    'descripcion_cargo',
-                    DB::raw('CASE WHEN deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-                )->simplePaginate(10);
+                $cargosPaginate = Cargo::getCargoData(10);
 
                 $this->data = $cargosPaginate->items();
                 $this->dataI = ['nombre_cargo', 'descripcion_cargo', 'estado'];
                 $this->columns = ['Nombre del cargo', 'Descripcion del cargo', 'estado', 'accion'];
                 break;
 
-
             case 'anio_postulacion':
-                // Agrupar por año de postulación y mostrar el año y la cantidad de postulantes totales para ese año
-                $postulacionAnios = Postulante::withTrashed()->select('anio_postulacion', DB::raw('count(*) as cantidad_postulantes'))
-                    ->groupBy('anio_postulacion')
-                    ->simplePaginate(10);
-
-                // Ajustar los datos para la vista
+                $postulacionAnios = Postulante::getAnioData(10);
                 $this->data = $postulacionAnios->items();
                 $this->dataI = ['anio_postulacion', 'cantidad_postulantes'];
                 $this->columns = ['Año de postulación', 'Cantidad de postulantes', 'Acción'];
                 break;
-
 
             default:
                 $defaultPaginated = Role::simplePaginate(10, ['id', 'name']);
