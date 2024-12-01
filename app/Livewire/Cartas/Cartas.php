@@ -33,14 +33,24 @@ class Cartas extends Component
         $this->imagen = '';
     }
 
-    #[On('estudiante-encontrado')]
-    public function estudiante(Estudiante $estudiante)
+    #[On('data-postulante')]
+    public function estudiante($dataPostulante)
     {
-        $this->nombre = $estudiante->nombre_estudiante;
-        $this->cargo = "Representante de curso ";
-        $this->curso = $estudiante->curso->nombre_curso;
-        // $this->imagen = $estudiante->imagen;
+
+        $this->nombre = $dataPostulante[0];
+        $this->curso = $dataPostulante[1];
+        $this->cargo = $dataPostulante[2];
     }
+
+
+    // #[On('data-postulante-update')]
+    // public function estudiante(Postulante $postulante)
+    // {
+    //     $this->nombre = $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante;
+    //     $this->cargo = $postulante->cargo->nombre_cargo;
+    //     $this->curso = $postulante->estudiante->curso->nombre_curso;
+    //     $this->imagen = Storage::url('imagenes_postulantes/' . $postulante->fotografia_postulante);
+    // }
 
     #[On('upload-image')]
     public function uploadImage($imagen)
