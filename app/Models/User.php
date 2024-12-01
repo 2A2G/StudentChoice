@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
@@ -70,5 +71,21 @@ class User extends Authenticatable
     public function docente()
     {
         return $this->hasOne(Docente::class);
+    }
+
+    public static function getUsersWithPagination($perPage = 10)
+    {
+        return self::withTrashed()
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                DB::raw('COALESCE(roles.name, \'No\') AS role'),
+                DB::raw('CASE WHEN users.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
+            )
+            ->orderBy('users.id')
+            ->simplePaginate($perPage);
     }
 }

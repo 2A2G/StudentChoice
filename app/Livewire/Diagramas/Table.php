@@ -70,24 +70,12 @@ class Table extends Component
                 $this->columns = ['Nombre del Permiso', 'estado', 'Acción'];
                 break;
 
-
             case 'usuarios':
-                $usuariosPaginate = User::withTrashed()
-                    ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
-                    ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-                    ->select(
-                        'users.id',
-                        'users.name',
-                        'users.email',
-                        DB::raw('COALESCE(roles.name, \'No\') AS role'),
-                        DB::raw('CASE WHEN users.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-                    )
-                    ->orderByRaw('users.id')
-                    ->simplePaginate(10);
+                $usuariosPaginate = User::getUsersWithPagination(10);
 
                 $this->data = $usuariosPaginate->items();
                 $this->dataI = ['name', 'email', 'role', 'estado'];
-                $this->columns = ['Nombre del Usuario', 'Correo Electrónico', 'Rol', 'estado', 'Acción'];
+                $this->columns = ['Nombre del Usuario', 'Correo Electrónico', 'Rol', 'Estado', 'Acción'];
                 break;
 
             case 'cursos':
