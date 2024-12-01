@@ -121,6 +121,7 @@
                     @foreach ($cursos as $curso)
                         <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
                     @endforeach
+                    <option value="{{ null }}">No</option>
                 </select>
 
                 <!-- Botón para guardar docente -->
@@ -192,6 +193,7 @@
                     @foreach ($cursos as $curso)
                         <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
                     @endforeach
+                    <option value="{{ null }}">No</option>
                 </select>
 
                 <label class="block mb-2">Selecione el Estado</label>
