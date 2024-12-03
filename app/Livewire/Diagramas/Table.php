@@ -34,7 +34,6 @@ class Table extends Component
 
     public function datos()
     {
-        // Configuración de casos
         $cases = [
             'roles' => [
                 'model' => Role::class,
@@ -44,7 +43,7 @@ class Table extends Component
             ],
             'permisos' => [
                 'model' => Permission::class,
-                'method' => 'getPaginatedPermissions',
+                'method' => 'getPermissionData',
                 'dataI' => ['name', 'estado'],
                 'columns' => ['Nombre del Permiso', 'Estado', 'Acción']
             ],
@@ -91,11 +90,7 @@ class Table extends Component
                 'columns' => ['Año de Postulación', 'Cantidad de Postulantes', 'Acción']
             ],
             'default' => [
-                'model' => Role::class,
-                'method' => 'simplePaginate',
-                'params' => [10, ['id', 'name']],
-                'dataI' => ['name'],
-                'columns' => ['Nombre del Rol', 'Acción']
+
             ]
         ];
 
