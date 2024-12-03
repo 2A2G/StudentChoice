@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('postulante_id');
             $table->string('cantidad_voto')->default(0);
+            $table->string('voto_blanco')->default(false);
 
             $table->foreign('postulante_id')->references('id')->on('postulantes')->onDelete('cascade');
             $table->softDeletes();

@@ -90,7 +90,11 @@ class Table extends Component
                 'columns' => ['Año de Postulación', 'Cantidad de Postulantes', 'Acción']
             ],
             'default' => [
-
+                'model' => Role::class,
+                'method' => 'simplePaginate',
+                'params' => [10, ['id', 'name']],
+                'dataI' => ['name'],
+                'columns' => ['Nombre del Rol', 'Acción']
             ]
         ];
 

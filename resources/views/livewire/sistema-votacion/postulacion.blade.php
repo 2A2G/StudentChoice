@@ -175,7 +175,7 @@
                 </div>
 
                 <!-- Componente de la carta -->
-                @if ($cargo && $image)
+                @if ($cargo && $imagen)
                     @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
                 @endif
                 <!-- Botón para guardar usuario -->

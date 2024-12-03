@@ -59,5 +59,23 @@
                 }
             });
         })
+        Livewire.on('post-warning', (name) => {
+            console.log('post-warning', name.name);
+            swalWithBootstrapButtons.fire({
+                title: "Advertencia",
+                text: name.name,
+                icon: "warning",
+                timer: 5000,
+                timerProgressBar: true,
+                showConfirmButton: false,
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("La advertencia se cerró automáticamente");
+                }
+            });
+        });
     </script>
 @endpush
