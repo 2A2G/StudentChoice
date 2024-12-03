@@ -34,89 +34,77 @@ class Table extends Component
 
     public function datos()
     {
-        switch ($this->case) {
-            case 'roles':
-                $rolesPaginated = Role::getRoleData(10);
-                $this->data = $rolesPaginated->items();
-                $this->dataI = ['name', 'estado'];
-                $this->columns = ['Nombre del Rol', 'estado'];
-                break;
+        $cases = [
+            'roles' => [
+                'model' => Role::class,
+                'method' => 'getRoleData',
+                'dataI' => ['name', 'estado'],
+                'columns' => ['Nombre del Rol', 'Estado']
+            ],
+            'permisos' => [
+                'model' => Permission::class,
+                'method' => 'getPermissionData',
+                'dataI' => ['name', 'estado'],
+                'columns' => ['Nombre del Permiso', 'Estado', 'Acción']
+            ],
+            'usuarios' => [
+                'model' => User::class,
+                'method' => 'getUserData',
+                'dataI' => ['name', 'email', 'role', 'estado'],
+                'columns' => ['Nombre del Usuario', 'Correo Electrónico', 'Rol', 'Estado', 'Acción']
+            ],
+            'cursos' => [
+                'model' => Curso::class,
+                'method' => 'getCursoData',
+                'dataI' => ['nombre_curso', 'cantidad_estudiantes_masculinos', 'cantidad_estudiantes_femeninos', 'cantidad_estudiantes', 'estado'],
+                'columns' => ['Nombre del Curso', 'Cantidad de Estudiantes Masculinos', 'Cantidad de Estudiantes Femeninos', 'Total de Estudiantes', 'Estado', 'Acción']
+            ],
+            'estudiantes' => [
+                'model' => Estudiante::class,
+                'method' => 'getEstudianteData',
+                'dataI' => ['numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'],
+                'columns' => ['Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción']
+            ],
+            'docentes' => [
+                'model' => Docente::class,
+                'method' => 'getDocenteData',
+                'dataI' => ['numero_identidad', 'name', 'asignatura', 'sexo', 'curso', 'estado'],
+                'columns' => ['Número de Identidad', 'Docente', 'Nombre de la Asignatura', 'Sexo', 'Director del Curso', 'Estado', 'Acción']
+            ],
+            'postulantes' => [
+                'model' => Postulante::class,
+                'method' => 'getPostulanteData',
+                'dataI' => ['estudiante', 'cursos', 'cargos', 'estado'],
+                'columns' => ['Estudiante', 'Curso', 'Cargo', 'Estado', 'Acción']
+            ],
+            'cargos' => [
+                'model' => Cargo::class,
+                'method' => 'getCargoData',
+                'dataI' => ['nombre_cargo', 'descripcion_cargo', 'estado'],
+                'columns' => ['Nombre del Cargo', 'Descripción del Cargo', 'Estado', 'Acción']
+            ],
+            'anio_postulacion' => [
+                'model' => Postulante::class,
+                'method' => 'getAnioData',
+                'dataI' => ['anio_postulacion', 'cantidad_postulantes'],
+                'columns' => ['Año de Postulación', 'Cantidad de Postulantes', 'Acción']
+            ],
+            'default' => [
 
-            case 'permisos':
-                $permissionsPaginated = Permission::getPaginatedPermissions(10);
+            ]
+        ];
 
-                $this->data = $permissionsPaginated->items();
-                $this->dataI = ['name', 'estado'];
-                $this->columns = ['Nombre del Permiso', 'estado', 'Acción'];
-                break;
+        $caseConfig = $cases[$this->case] ?? $cases['default'];
 
-            case 'usuarios':
-                $usuariosPaginate = User::getUserData(10);
+        $paginateMethod = $caseConfig['method'];
+        $params = $caseConfig['params'] ?? [10];
+        $paginatedData = $caseConfig['model']::$paginateMethod(...$params);
 
-                $this->data = $usuariosPaginate->items();
-                $this->dataI = ['name', 'email', 'role', 'estado'];
-                $this->columns = ['Nombre del Usuario', 'Correo Electrónico', 'Rol', 'Estado', 'Acción'];
-                break;
+        $this->data = $paginatedData->items();
+        $this->dataI = $caseConfig['dataI'];
+        $this->columns = $caseConfig['columns'];
 
-            case 'cursos':
-                $cursosPaginate = Curso::getCursoData(10);
-
-                $this->data = $cursosPaginate->items();
-                $this->dataI = ['nombre_curso', 'cantidad_estudiantes_masculinos', 'cantidad_estudiantes_femeninos', 'cantidad_estudiantes', 'estado'];
-                $this->columns = ['Nombre del Curso', 'Cantidad de Estudiantes Masculinos', 'Cantidad de Estudiantes Femeninos', 'Total de Estudiantes', 'Estado', 'Acción'];
-                break;
-
-            case 'estudiantes':
-                $estudiantesPaginate = Estudiante::getEstudianteData(10);
-
-                $this->data = $estudiantesPaginate->items();
-                $this->dataI = ['numero_identidad', 'nombre_estudiante', 'apellido_estudiante', 'sexo', 'curso', 'estado'];
-                $this->columns = ['Número de Identidad', 'Nombre', 'Apellido', 'Sexo', 'Curso', 'Estado', 'Acción'];
-                break;
-
-            case 'docentes':
-                $docentesPaginate = Docente::getDocenteData(10);
-
-                $this->data = $docentesPaginate->items();
-                $this->dataI = ['numero_identidad', 'name', 'asignatura', 'sexo', 'curso', 'estado'];
-                $this->columns = ['Número de Identidad', 'Docente', 'Nombre de la asignatura', 'Sexo', 'Director del Curso', 'estado', 'Acción'];
-                break;
-
-            case 'postulantes':
-                $postulantesPaginate = Postulante::getPostulanteData(10);
-
-                $this->data = $postulantesPaginate->items();
-                $this->dataI = ['estudiante', 'cursos', 'cargos', 'estado'];
-                $this->columns = ['estudiante', 'curso', 'cargo', 'estado', 'accion'];
-                break;
-
-            case 'cargos':
-                $cargosPaginate = Cargo::getCargoData(10);
-
-                $this->data = $cargosPaginate->items();
-                $this->dataI = ['nombre_cargo', 'descripcion_cargo', 'estado'];
-                $this->columns = ['Nombre del cargo', 'Descripcion del cargo', 'estado', 'accion'];
-                break;
-
-            case 'anio_postulacion':
-                $postulacionAnios = Postulante::getAnioData(10);
-                $this->data = $postulacionAnios->items();
-                $this->dataI = ['anio_postulacion', 'cantidad_postulantes'];
-                $this->columns = ['Año de postulación', 'Cantidad de postulantes', 'Acción'];
-                break;
-
-            default:
-                $defaultPaginated = Role::simplePaginate(10, ['id', 'name']);
-                $this->data = $defaultPaginated->items();
-                $this->dataI = ['name'];
-                $this->columns = ['Nombre del Rol', 'Acción'];
-                break;
-        }
-
-        // Devolver la colección paginada completa para la vista
-        return $rolesPaginated ?? $permissionsPaginated ?? $usuariosPaginate ?? $defaultPaginated ?? $estudiantesPaginate
-            ?? $docentesPaginate ?? $cargosPaginate ?? $postulantesPaginate ?? $postulacionAnios ?? $cursosPaginate
-            ?? null;
+        return $paginatedData;
     }
 
     protected array $modelsMap = [
