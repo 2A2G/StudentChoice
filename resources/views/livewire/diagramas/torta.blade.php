@@ -1,20 +1,14 @@
 <div>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <div class="chart-container  height: 400px;  width: 400px;">
+    <div class="chart-container" style="height: 400px; width: 400px;">
         <canvas id="myChart"></canvas>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const ctx = document.getElementById('myChart').getContext('2d');
         const myChart = new Chart(ctx, {
             type: 'polarArea',
             data: {
-                labels: [
-                    'Red',
-                    'Green',
-                    'Yellow',
-                    'Grey',
-                    'Blue'
-                ],
+                labels: ['Red', 'Green', 'Yellow', 'Grey', 'Blue'],
                 datasets: [{
                     label: 'My First Dataset',
                     data: [11, 16, 7, 3, 14],

@@ -11,6 +11,8 @@ use OpenSSLCertificate;
 class Panel extends Component
 {
     public $estadoVotacion = 'activo';
+    public $openCurso = false;
+
     public $estudiantesDisponibles;
     public $cursos;
     public $cursoSeleccionado;
@@ -37,6 +39,7 @@ class Panel extends Component
     }
     public function seleccionarCurso($cursoId)
     {
+        $this->openCurso = true;
         $this->cursoSeleccionado = Curso::find($cursoId);
     }
     public function DataVotos()

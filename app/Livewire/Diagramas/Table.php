@@ -34,7 +34,6 @@ class Table extends Component
 
     public function datos()
     {
-        // Configuración de casos
         $cases = [
             'roles' => [
                 'model' => Role::class,

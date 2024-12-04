@@ -13,12 +13,13 @@ class Torta extends Component
 
     public function mount($curso)
     {
-        $dataCurso = Postulante::with('estudiante')->whereHas('estudiante.curso', function ($query) use ($curso) {
-            $query->where('id', $curso->id);
-        })->get();
+        $dataCurso = Postulante::with('estudiante')
+            ->whereHas('estudiante.curso', function ($query) use ($curso) {
+                $query->where('id', $curso->id);
+            })->get();
+
         $this->cursoSeleccionado = $dataCurso;
     }
-
     public function render()
     {
         return view('livewire.diagramas.torta', [
