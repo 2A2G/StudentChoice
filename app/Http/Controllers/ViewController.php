@@ -107,6 +107,4 @@ class ViewController extends Controller
 
         return view('livewire.invitado.dashboard', compact('caso'));
     }
-
-
 }

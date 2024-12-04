@@ -97,7 +97,7 @@
     <hr>
     <br>
 
-    <div class="w-full px-4">
+    {{-- <div class="w-full px-4">
         <div class="row text-center">
             <div class="col-md-12">
                 <h1 style="font-size: 1.6rem;">
@@ -106,7 +106,7 @@
                 @livewire('diagramas.table', ['case' => 'descargas'])
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <br>
 </div>

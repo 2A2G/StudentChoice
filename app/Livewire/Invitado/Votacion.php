@@ -13,10 +13,9 @@ class Votacion extends Component
     public $postulantes;
 
     #[On('estudiante-votador')]
-    public function dataVotador($data)
+    public function dataVotador(Estudiante $estudianteVotador)
     {
-        $this->dataEstudinate = $data;
-        dd($data);
+        $this->dataEstudinate = $estudianteVotador;
     }
 
     public function updatedDataEstudinate()
