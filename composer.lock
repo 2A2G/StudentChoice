@@ -307,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Dev-Drian/livewire-countUp.git",
-                "reference": "2abe0a5e1b1dad94e09592334aa150a51d2b1bcb"
+                "reference": "bfdaf4e170271a4bdee9b7fc78944ef3aa0354d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Dev-Drian/livewire-countUp/zipball/2abe0a5e1b1dad94e09592334aa150a51d2b1bcb",
-                "reference": "2abe0a5e1b1dad94e09592334aa150a51d2b1bcb",
+                "url": "https://api.github.com/repos/Dev-Drian/livewire-countUp/zipball/bfdaf4e170271a4bdee9b7fc78944ef3aa0354d8",
+                "reference": "bfdaf4e170271a4bdee9b7fc78944ef3aa0354d8",
                 "shasum": ""
             },
             "require": {
@@ -351,7 +351,7 @@
                 "issues": "https://github.com/Dev-Drian/livewire-countUp/issues",
                 "source": "https://github.com/Dev-Drian/livewire-countUp/tree/v1.0.1"
             },
-            "time": "2024-09-25T20:48:57+00:00"
+            "time": "2024-12-02T13:51:31+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -8518,5 +8518,5 @@
         "php": "^8.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

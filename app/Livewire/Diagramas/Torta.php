@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Diagramas;
 
+use App\Models\Curso;
 use App\Models\Postulante;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -12,26 +13,37 @@ class Torta extends Component
     public $postulantesCurso = null;
     public $graficaDatos = [];
 
-    protected $listeners = ['curso-seleccionado' => 'dataCursoPostulante'];
+    #[On('curso-seleccionado')]
+    public function dataCurso(Curso $dataCursoPostulante)
+    {
+        $this->dataCursoPostulante($dataCursoPostulante->id);
+    }
 
     public function dataCursoPostulante($curso_id)
     {
         $this->cursoSeleccionado = $curso_id;
 
-        $this->postulantesCurso = Postulante::with(['estudiante', 'votos'])
-            ->whereHas('estudiante.curso', function ($query) use ($curso_id) {
-                $query->where('id', $curso_id);
-            })
-            ->get();
+        $this->postulantesCurso = Postulante::whereHas('estudiante', function ($query) use ($curso_id) {
+            $query->where('curso_id', $curso_id);
+        })->with(['estudiante', 'votos'])->get();
 
-
-        $this->graficaDatos = $this->postulantesCurso->map(function ($postulante) {
+        $datosPostulantes = $this->postulantesCurso->map(function ($postulante) {
             return [
                 'nombre' => $postulante->estudiante->nombre_estudiante ?? 'Desconocido',
                 'cantidad_votos' => $postulante->votos->sum('cantidad_voto'),
-                'voto_blanco' => $postulante->votos->sum('voto_blanco'),
             ];
         });
+        $votosEnBlanco = [
+            [
+                'nombre' => 'Voto en blanco',
+                'cantidad_votos' => $this->postulantesCurso->flatMap(function ($postulante) {
+                    return $postulante->votos;
+                })->sum('votos_en_blanco'),
+            ]
+        ];
+
+        $this->graficaDatos = array_merge($datosPostulantes->toArray(), $votosEnBlanco);
+        $this->dispatch('grafico', data: $this->graficaDatos);
     }
 
     public function render()
