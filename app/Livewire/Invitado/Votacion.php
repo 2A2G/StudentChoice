@@ -3,12 +3,28 @@
 namespace App\Livewire\Invitado;
 
 use App\Models\Postulante;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Votacion extends Component
 {
     public $selectedCandidato = null;
+    public $dataEstudinate = null;
     public $postulantes;
+
+    #[On('estudiante-votador')]
+    public function dataVotador($data)
+    {
+        $this->dataEstudinate = $data;
+        dd($data);
+    }
+
+    public function updatedDataEstudinate()
+    {
+        if ($this->dataEstudinate) {
+            dd($this->dataEstudinate);
+        }
+    }
 
     public function mount()
     {
@@ -22,15 +38,23 @@ class Votacion extends Component
 
     public function votar()
     {
-        if ($this->selectedCandidato) {
-            $candidato = Postulante::find($this->selectedCandidato);
-            dd($candidato);        
+        try {
+
+            if ($this->selectedCandidato) {
+
+                dd($this->selectedCandidato);
+
+            } else {
+                $this->dispatch('post-warning', name: 'Intentelo de nuevo, hubo un error realizar el proceso de votación');
+            }
+        } catch (\Throwable $th) {
+            $this->dispatch('post-error', name: 'Intentelo de nuevo, hubo un error realizar el proceso de votación');
+            throw $th;
         }
     }
 
     public function render()
     {
-        $postulantes = Postulante::all();
-        return view('livewire.invitado.votacion', compact('postulantes'));
+        return view('livewire.invitado.votacion');
     }
 }

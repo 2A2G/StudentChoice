@@ -68,13 +68,19 @@
         </select>
 
         <!-- Estadísticas del Curso -->
-        @if ($cursoSeleccionado)
-            <div class="mt-8 text-center">
-                {{-- @livewire('diagramas.torta', ['curso' => $cursoSeleccionado]) --}}
-                {{-- <livewire:livewire-column-chart key="{{ $columnChartModel->reactiveKey() }}" :column-chart-model="$columnChartModel" /> --}}
-
-                <livewire:livewire-pie-chart key="{{ $cursoSeleccionado->reactiveKey() }}" :pie-chart-model="$cursoSeleccionado" />
-        @endif
+        <x-dialog-modal wire:model="openCurso">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Estadistica del curso {{ $cursoSeleccionado->nombre_curso ?? null }}
+                </h1>
+            </x-slot>
+            <x-slot name="content">
+                @livewire('diagramas.torta', ['curso' => $curso])
+            </x-slot>
+            <button wire:click="$set('openCurso', false)"
+                class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all">
+                Cancelar
+            </button>
+        </x-dialog-modal>
     @else
         <div class="mx-auto p-6 bg-white rounded-lg shadow-md max-w-6xl">
             <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Las elecciones no están activas</h1>

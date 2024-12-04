@@ -36,6 +36,12 @@ class Postulante extends Model
         return $this->hasMany(OpcionesEstudiante::class);
     }
 
+    public function votos()
+    {
+        return $this->hasMany(Votos::class);
+
+    }
+
     public static function getPostulanteData($page)
     {
         return self::withTrashed()

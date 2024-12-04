@@ -15,7 +15,7 @@
                     Total de Cursos Activos</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$totalCursosActivos->count()" />
+                    <livewire:animated-counter :targetCount="$totalCursosActivos->count()" :key="'countup-counter-' . $totalCursos->count()" />
                 </h4>
             </div>
         </div>
