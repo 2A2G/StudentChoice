@@ -9,7 +9,7 @@ Route::prefix('')->group(
         Route::get('inefrapasa', [ViewController::class, 'welcome'])->name('welcome');
         Route::get('/', [ViewController::class, 'isLogged'])->name('home');
         Route::get('inefrapasa/estudiante', [ViewController::class, 'sveEstudinate'])->name('sveEstudinate');
-        Route::get('inefrapasa/votacion/', [ViewController::class, 'votacion'])->name('sveVotacion');
+        Route::get('inefrapasa/votacion', [ViewController::class, 'votacion'])->name('sveVotacion');
     }
 );
 

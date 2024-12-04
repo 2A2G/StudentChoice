@@ -13,8 +13,7 @@ return new class extends Migration {
         Schema::create('votos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('postulante_id');
-            $table->string('cantidad_voto')->default(0);
-            $table->string('voto_blanco')->default(false);
+            $table->integer('cantidad_voto')->default(0);
 
             $table->foreign('postulante_id')->references('id')->on('postulantes')->onDelete('cascade');
             $table->softDeletes();

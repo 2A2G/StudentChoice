@@ -41,15 +41,16 @@ class Panel extends Component
     {
         $this->openCurso = true;
         $this->cursoSeleccionado = Curso::find($cursoId);
+        $this->dispatch('curso-seleccionado', $this->cursoSeleccionado);
     }
     public function DataVotos()
     {
         // Total de votos blanco
-        $this->totalNoBlanco = opcionesEstudiante::all()->count();
+        // $this->totalNoBlanco = opcionesEstudiante::all()->count();
 
         // Total de votos en blanco
-        $totalVotosBlanco = opcionesEstudiante::where('voto_blanco', operator: true)->count();
-        $this->totalVotosBlanco = $totalVotosBlanco;
+        // $totalVotosBlanco = opcionesEstudiante::where('voto_blanco', operator: true)->count();
+        // $this->totalVotosBlanco = $totalVotosBlanco;
     }
 
     public function render()
