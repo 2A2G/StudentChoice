@@ -5,6 +5,7 @@ namespace App\Livewire\SistemaVotacion;
 use App\Models\Curso;
 use App\Models\Estudiante;
 use App\Models\opcionesEstudiante;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use OpenSSLCertificate;
 
@@ -39,9 +40,18 @@ class Panel extends Component
     }
     public function seleccionarCurso($cursoId)
     {
-        $this->openCurso = true;
         $this->cursoSeleccionado = Curso::find($cursoId);
         $this->dispatch('curso-seleccionado', $this->cursoSeleccionado);
+    }
+
+
+    #[On('modalCurso')]
+    public function abirModalCurso($boolean)
+    {
+        if ($boolean) {
+            $this->openCurso = true;
+        }
+
     }
     public function DataVotos()
     {

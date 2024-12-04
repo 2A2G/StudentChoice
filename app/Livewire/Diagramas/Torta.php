@@ -4,6 +4,7 @@ namespace App\Livewire\Diagramas;
 
 use App\Models\Curso;
 use App\Models\Postulante;
+use App\Models\Votos;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -27,6 +28,12 @@ class Torta extends Component
             $query->where('curso_id', $curso_id);
         })->with(['estudiante', 'votos'])->get();
 
+        if ($this->postulantesCurso->isEmpty()) {
+            $this->dispatch('post-warning', name: 'No hay datos para mostrar para este curso');
+            $this->dispatch('modalCurso', false);
+            return;
+        }
+
         $datosPostulantes = $this->postulantesCurso->map(function ($postulante) {
             return [
                 'nombre' => $postulante->estudiante->nombre_estudiante ?? 'Desconocido',
@@ -36,14 +43,14 @@ class Torta extends Component
         $votosEnBlanco = [
             [
                 'nombre' => 'Voto en blanco',
-                'cantidad_votos' => $this->postulantesCurso->flatMap(function ($postulante) {
-                    return $postulante->votos;
-                })->sum('votos_en_blanco'),
+                'cantidad_votos' => Votos::where('cargo_id', $this->postulantesCurso->first()->cargo_id)->pluck('votos_en_blanco')->first() ?? 0
             ]
         ];
 
         $this->graficaDatos = array_merge($datosPostulantes->toArray(), $votosEnBlanco);
+        $this->dispatch('modalCurso', true);
         $this->dispatch('grafico', data: $this->graficaDatos);
+
     }
 
     public function render()
