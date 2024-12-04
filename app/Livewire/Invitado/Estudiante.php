@@ -24,8 +24,9 @@ class Estudiante extends Component
     {
         try {
             $estudiante = \App\Models\Estudiante::where('numero_identidad', $this->numero_identidad)->first();
-            if ($estudiante) {               
-                return redirect()->route('sveVotacion');
+            if ($estudiante) {
+                // $this->dispatch('estudiante-votador', $estudiante->numero_identidad);
+                return redirect()->route('sveVotacion', compact('estudiante'));
             } else {
                 $this->dispatch('post-error', name: "No se encontro el estudiante o no esta registrado. Intenta de nuevo");
             }
