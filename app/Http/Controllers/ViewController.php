@@ -108,8 +108,7 @@ class ViewController extends Controller
         try {
             $estudiante = Estudiante::where('numero_identidad', $request->numero_identidad)->first();
             if ($estudiante) {
-                $cursoVotar = $estudiante->curso_id;
-                return view('livewire.invitado.dashboard', compact('caso', 'cursoVotar'));
+                return view('livewire.invitado.dashboard', compact('caso', 'estudiante'));
             } else {
                 return back()->withErrors(['numero_identidad' => 'No se encontró el estudiante o no está registrado.']);
             }
