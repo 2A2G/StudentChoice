@@ -8,7 +8,7 @@
                     @break
 
                     @case('votacion')
-                        @livewire('invitado.votacion')
+                        @livewire('invitado.votacion', ['cursoVotar' => $cursoVotar])
                     @break
 
                     @default

@@ -20,26 +20,6 @@ class Estudiante extends Component
     }
 
 
-    public function buscarEstudiante()
-    {
-        try {
-            $estudiante = \App\Models\Estudiante::where('numero_identidad', $this->numero_identidad)->first();
-            if ($estudiante) {
-                // $this->dispatch('estudiante-votador', $estudiante->numero_identidad);
-                return redirect()->route('sveVotacion', compact('estudiante'));
-            } else {
-                $this->dispatch('post-error', name: "No se encontro el estudiante o no esta registrado. Intenta de nuevo");
-            }
-
-            $this->open = false;
-        } catch (\Throwable $th) {
-            $this->dispatch('post-error', name: "Hubo un error al redirigir al estudiante", message: $th->getMessage());
-
-        }
-
-        $this->clearInput();
-
-    }
     public function render()
     {
         return view('livewire.invitado.estudiante');

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Invitado;
 
+use App\Models\Estudiante;
 use App\Models\Postulante;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -10,7 +11,7 @@ class Votacion extends Component
 {
     public $selectedCandidato = null;
     public $dataEstudinate = null;
-    public $postulantes;
+    public $postulantes = null;
 
     #[On('estudiante-votador')]
     public function dataVotador($data)
@@ -26,9 +27,13 @@ class Votacion extends Component
         }
     }
 
-    public function mount()
+    public function mount($cursoVotar)
     {
-        $this->postulantes = Postulante::all();
+        $this->postulantes = Postulante::with('estudiante')
+            ->get()
+            ->filter(function ($postulante) use ($cursoVotar) {
+                return $postulante->estudiante->curso_id == $cursoVotar;
+            });
     }
 
     public function selectCandidato($candidatoId)
