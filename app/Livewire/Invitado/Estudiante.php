@@ -19,7 +19,6 @@ class Estudiante extends Component
         $this->numero_identidad = '';
     }
 
-
     public function buscarEstudiante()
     {
         try {
@@ -41,6 +40,7 @@ class Estudiante extends Component
         $this->clearInput();
 
     }
+  
     public function render()
     {
         return view('livewire.invitado.estudiante');

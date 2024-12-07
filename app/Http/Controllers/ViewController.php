@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -101,10 +102,18 @@ class ViewController extends Controller
         return view('livewire.invitado.dashboard', compact('caso'));
     }
 
-    public function votacion()
+    public function votacion(Request $request)
     {
         $caso = 'votacion';
-
-        return view('livewire.invitado.dashboard', compact('caso'));
+        try {
+            $estudiante = Estudiante::where('numero_identidad', $request->numero_identidad)->first();
+            if ($estudiante) {
+                return view('livewire.invitado.dashboard', compact('caso', 'estudiante'));
+            } else {
+                return back()->withErrors(['numero_identidad' => 'No se encontró el estudiante o no está registrado.']);
+            }
+        } catch (\Throwable $th) {
+            return back()->withErrors(['error' => $th->getMessage()]);
+        }
     }
 }
