@@ -17,6 +17,11 @@ class Cargo extends Model
         'descripcion_cargo',
     ];
 
+    const representanteCurso = 2;
+    const contralor = 3;
+    const personero = 1;
+
+
     public function postulantes()
     {
         return $this->hasMany(Postulante::class);

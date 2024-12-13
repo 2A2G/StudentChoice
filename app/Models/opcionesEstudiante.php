@@ -12,6 +12,7 @@ class opcionesEstudiante extends Model
     protected $fillable = [
         'estudiante_id',
         'cargo_id',
+        'is_active'
     ];
 
     public function estudiante()

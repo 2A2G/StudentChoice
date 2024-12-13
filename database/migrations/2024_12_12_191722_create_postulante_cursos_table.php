@@ -10,16 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('opciones_estudiantes', function (Blueprint $table) {
+        Schema::create('postulante_cursos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('estudiante_id');
-            $table->foreignId('cargo_id');
-            $table->boolean('is_active')->default(false);
+            $table->foreignId('postulante_id');
+            $table->foreignId('curso_id');
 
-            $table->foreign('estudiante_id')->references('id')->on('estudiantes');
-            $table->foreign('cargo_id')->references('id')->on('cargos');
+            $table->foreign('postulante_id')->references('id')->on('postulantes');
+            $table->foreign('curso_id')->references('id')->on('cursos');
             $table->softDeletes();
             $table->timestamps();
+
         });
     }
 
@@ -28,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('opciones_estudiantes');
+        Schema::dropIfExists('postulante_cursos');
     }
 };

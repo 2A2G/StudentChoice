@@ -71,20 +71,18 @@
 
                 <!-- Campo del cargo -->
                 <label class="block mb-2">Cargo</label>
-                @if ($type)
-                    <select wire:model="cargo" wire:change="assignDefaultCargo"
-                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
-                        <option value="" selected disabled>Seleccione un cargo</option>
-                        <option value="Representente de curso">Representente de curso</option>
-                        <option value="Controlador">Controlador</option>
-                    </select>
-                    @error('cargo')
-                        {{ $message }}
-                    @enderror
-                @else
-                    <input type="text" wire:model="cargo"
-                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
-                @endif
+                <select wire:model="cargo" wire:change="dispatchDataPostulante"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un cargo</option>
+                    @foreach ($cargos as $cargo)
+                        <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
+                    @endforeach
+                </select>
+
+                @error('cargo')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
+
 
                 <!-- Campo para subir la imagen -->
                 <div class="mb-4">
@@ -109,9 +107,34 @@
                 </div>
 
                 <!-- Componente de la carta -->
-                @if ($cargo)
-                    @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
+                @if ($cargo && $curso_postulante)
+                    @livewire('cartas.cartas', [
+                        'nombre' => $nombre_postulante,
+                        'curso' => $curso_postulante,
+                        'cargo' => $cargo->nombre_cargo,
+                        'imagen' => $imagen,
+                    ])
+
+                    <!-- Agregar checkbox para seleccionar cursos, alineados horizontalmente -->
+                    <div class="mt-4">
+                        <label class="block mb-2">Cursos a los cuales aplica el postulante</label>
+                        <div class="flex flex-wrap gap-4">
+                            <!-- Ajustamos para que se ajusten al tamaño del contenedor -->
+                            @foreach ($cursosDisponibles as $cursoItem)
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" id="curso_{{ $cursoItem->id }}" value="{{ $cursoItem->id }}"
+                                        wire:model="cursos_seleccionados" class="mr-2"
+                                        {{ in_array($cursoItem->id, $cursos_seleccionados) ? 'checked' : '' }}>
+                                    <label for="curso_{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 @endif
+                @error('cursos_seleccionados')
+                    <span class="text-red-500 block mt-2">{{ $message }}</span>
+                @enderror
+
                 <!-- Botón para guardar usuario -->
                 <br>
                 <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
@@ -137,27 +160,23 @@
 
                 <!-- Campo del cargo -->
                 <label class="block mb-2">Cargo</label>
-                @if ($type)
-                    <select wire:model="cargo" wire:change="assignDefaultCargo"
-                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
-                        <option value="" selected disabled>Seleccione un cargo</option>
-                        <option value="Representente de curso">Representente de curso</option>
-                        <option value="Controlador">Controlador</option>
-                    </select>
-                    @error('cargo')
-                        {{ $message }}
-                    @enderror
-                @else
-                    <input type="text" wire:model="cargo"
-                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
-                @endif
+                <select wire:model="cargo" wire:change="dispatchDataPostulante"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un cargo</option>
+                    @foreach ($cargos as $cargo)
+                        <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
+                    @endforeach
+                </select>
+                @error('cargo')
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                @enderror
 
                 <!-- Campo para subir la imagen -->
                 <div class="mb-4">
                     <label for="image-upload" class="block text-gray-700 font-bold mb-2">Imagen del postulante</label>
                     <div class="relative">
-                        <input type="file" id="image-upload" wire:model="imagen" accept="image/*" class="hidden"
-                            required>
+                        <input type="file" id="image-upload" wire:model="imagen" accept="image/*"
+                            class="hidden">
                         <button type="button" onclick="document.getElementById('image-upload').click()"
                             class="flex items-center justify-center w-full border border-gray-300 rounded px-3 py-2 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 mr-2"
@@ -174,19 +193,47 @@
                     </div>
                 </div>
 
-                <!-- Componente de la carta -->
-                @if ($cargo && $imagen)
-                    @livewire('cartas.cartas', ['nombre' => $nombre_postulante, 'curso' => $curso_postulante, 'cargo' => $cargo, 'imagen' => $imagen])
-                @endif
-                <!-- Botón para guardar usuario -->
+                @livewire('cartas.cartas', [
+                    'nombre' => $nombre_postulante,
+                    'curso' => $curso_postulante,
+                    'cargo' => $cargo->nombre_cargo,
+                    'imagen' => $imagen,
+                ])
+
+                <!-- Cursos seleccionados -->
+                <div class="mt-4">
+                    <label class="block mb-2">Cursos a los cuales aplica el postulante</label>
+                    <div class="flex flex-wrap gap-4">
+                        @foreach ($cursosDisponibles as $cursoItem)
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="curso_{{ $cursoItem->id }}" value="{{ $cursoItem->id }}"
+                                    wire:model="cursos_seleccionados" class="mr-2">
+                                <label for="curso_{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @error('cursos_seleccionados')
+                    <span class="text-red-500 block mt-2">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+
+                <!-- Botón para actualizar usuario -->
                 <br>
-                <button wire:click="store"
+                <button wire:click="update"
                     class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Actualizar postulante
                 </button>
             </x-slot>
-
-
         </x-dialog-modal>
 
         <x-dialog-modal wire:model="openDelete">

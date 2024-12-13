@@ -6,6 +6,8 @@ use App\Models\Cargo;
 use App\Models\Curso;
 use App\Models\Estudiante;
 use App\Models\Postulante;
+use App\Models\PostulanteCurso;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -24,25 +26,38 @@ class Postulacion extends Component
 
     public $open = false;
     public $openUpdate = false;
+    public $openDelete = false;
     public $numero_identidad;
     public $nombre_postulante;
-    public $cargo;
+    public $cargos = '';
+    public $cargo = '';
     public $imagen;
     public $curso_postulante;
+    public $cursos_seleccionados = [];
+    public $cursosDisponibles;
     public $postulante_id;
     public $estado;
     public $mensajeError;
     public $type;
     public $data;
+    public $filePath;
 
     public function clearInput()
     {
         $this->numero_identidad = '';
-        $this->cargo = null;
+        $this->cargo = '';
         $this->curso_postulante = '';
         $this->nombre_postulante = '';
         $this->imagen = null;
+        $this->filePath = null;
         $this->mensajeError = '';
+        $this->cursos_seleccionados = [];
+    }
+
+    public function mount()
+    {
+        $this->cargos = Cargo::all();
+        $this->cursosDisponibles = Curso::all();
     }
 
     public function cambiar()
@@ -68,49 +83,24 @@ class Postulacion extends Component
                 $this->mensajeError = 'Este estudiante ya se encuentra postulado';
                 return;
             }
-            $this->selectionCargo($estudiante);
 
         } else {
             $this->nombre_postulante = '';
             $this->curso_postulante = '';
-            $this->cargo;
+            $this->cargo = null;
             $this->mensajeError = 'No existe ningún estudinate con este  número de identidad';
         }
     }
 
-    public function selectionCargo($data)
+    public function dispatchDataPostulante()
     {
-        $curso_id = $data['curso_id'];
-        $this->data = $data;
-
-        if ($curso_id == Estudiante::decimo) {
-            $this->type = true;
-            $this->assignDefaultCargo();
-        } elseif ($curso_id == Estudiante::undecimo) {
-            $this->type = false;
-            $this->cargo = 'Personero';
-            $this->dispatchDataPostulante();
-        } else {
-            $this->type = false;
-            $this->cargo = 'Representente de curso';
-            $this->dispatchDataPostulante();
-        }
-    }
-
-    public function assignDefaultCargo()
-    {
-        $this->cargo = $this->cargo ?? '';
-        $this->dispatchDataPostulante();
-    }
-
-    private function dispatchDataPostulante()
-    {
+        $nombreCargo = Cargo::find($this->cargo);
         $dataPostulante = [
             $this->nombre_postulante,
             $this->curso_postulante,
-            $this->cargo,
-
+            $nombreCargo->nombre_cargo,
         ];
+
         $this->dispatch('data-postulante', $dataPostulante);
     }
 
@@ -127,33 +117,35 @@ class Postulacion extends Component
     public function store()
     {
         $this->validate([
-            'numero_identidad' => 'required',
+            'numero_identidad' => 'required|exists:estudiantes,numero_identidad',
             'imagen' => 'required|image|max:1024',
+            'cursos_seleccionados' => 'required|array|min:1',
+            'cargo' => 'required|exists:cargos,id',
         ]);
 
         $newPostulante = Estudiante::where('numero_identidad', $this->numero_identidad)->first();
 
         if ($newPostulante) {
-            $cursoPostulante = $newPostulante->curso_id;
+            $fileName = 'P_' . uniqid() . '.' . $this->imagen->getClientOriginalExtension();
+            $this->filePath = $this->imagen->storeAs('public/imagenes_postulantes', $fileName);
 
-            if ($cursoPostulante === 1 || $cursoPostulante <= 10) {
-                $this->cargo = 'Representante de Curso';
-            } elseif ($cursoPostulante === 11) {
-                $this->cargo = 'Contralor';
-            } else {
-                $this->cargo = 'Personero';
-            }
+            DB::transaction(function () use ($newPostulante) {
+                $nuevoPostulante = Postulante::create([
+                    'estudiante_id' => $newPostulante->id,
+                    'cargo_id' => $this->cargo,
+                    'curso_id' => $newPostulante->curso_id,
+                    'fotografia_postulante' => $this->filePath,
+                ]);
 
-            $fileName = 'P_' . $this->numero_identidad . '.' . $this->imagen->getClientOriginalExtension();
-            $this->imagen->storeAs('public/imagenes_postulantes', $fileName);
+                foreach ($this->cursos_seleccionados as $cursoId) {
+                    PostulanteCurso::create([
+                        'postulante_id' => $nuevoPostulante->id,
+                        'curso_id' => $cursoId
+                    ]);
+                }
+            });
 
-            $nuevoPostulante = new Postulante();
-            $nuevoPostulante->estudiante_id = $newPostulante->id;
-            $nuevoPostulante->cargo_id = Cargo::where('nombre_cargo', $this->cargo)->first()->id;
-            $nuevoPostulante->fotografia_postulante = $fileName;
-            $nuevoPostulante->save();
-
-            $this->dispatch('post-created', name: "La postulación de " . $newPostulante->nombre_estudiante . ", para el cargo de " . $this->cargo . " ha sido creada satisfactoriamente");
+            $this->dispatch('post-created', name: "La postulación de {$newPostulante->nombre_estudiante}, para el cargo de {$this->cargo} ha sido creada satisfactoriamente");
 
             $this->open = false;
             $this->clearInput();
@@ -166,24 +158,32 @@ class Postulacion extends Component
     public function edit($data)
     {
         $this->clearInput();
+
         if ($data) {
             $this->postulante_id = $data['id'];
-            $postulante = Postulante::where('id', $data['id'])->first();
-            $estudiante = Estudiante::where('id', $postulante->estudiante_id)->first();
+            $postulante = Postulante::withTrashed()->find($data['id']);
 
-            $this->nombre_postulante = $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante;
-            $this->curso_postulante = $data['cursos'];
-            $this->cargo = $data['cargos'];
-            $this->imagen = $postulante->fotografia_postulante;
-            $this->estado = $data['estado'];
+            if ($postulante) {
+                $cursoPostulante = Curso::find($postulante->curso_id);
+                $cargoPostulante = Cargo::find($postulante->cargo_id);
 
-            $imagePath = 'public/imagenes_postulantes/' . $postulante->fotografia_postulante;
+                $this->nombre_postulante = $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante;
+                $this->curso_postulante = $cursoPostulante->nombre_curso;
+                $this->cargo = $cargoPostulante->id;
+                $this->updatedImagen($postulante->fotografia_postulante);
 
-            $this->updatedImagen($imagePath);
-            $this->selectionCargo($estudiante);
-            $this->openUpdate = true;
+                $cursoPostulante = PostulanteCurso::where('postulante_id', $postulante->id)->get();
+                $this->cursos_seleccionados = $cursoPostulante->pluck('curso_id')->toArray();
+
+                $this->estado = $data['estado'];
+
+                $this->dispatchDataPostulante();
+                $this->openUpdate = true;
+            } else {
+                $this->dispatch('post-error', name: "No se encontró información del postulante, inténtelo nuevamente.");
+            }
         } else {
-            $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, inténtelo nuevamente");
+            $this->dispatch('post-error', name: "Error al cargar datos, por favor intente nuevamente.");
         }
     }
 
@@ -191,59 +191,90 @@ class Postulacion extends Component
     {
         try {
             $this->validate([
-                'numero_identidad' => 'required',
-                'nombre_estudiante' => 'required',
-                'apellido_estudiante' => 'required',
-                'sexo' => 'required',
-                'curso_id' => 'required',
-                'estado' => 'required'
+                'nombre_postulante' => 'required',
+                'cargo' => 'required',
+                'cursos_seleccionados' => 'required|array|min:1',
             ]);
-
-            $estudiante = Estudiante::where('numero_identidad', $this->numero_identidad)->first();
-
-            // Verificar si el estudiante existe
-            if (!$estudiante) {
-                $this->openUpdate = false;
-                $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, inténtelo nuevamente");
+            $postulante = Postulante::withTrashed()->find($this->postulante_id);
+            if (!$postulante) {
+                $this->dispatch('post-error', name: "No se encontró información del postulante, inténtelo nuevamente.");
                 $this->clearInput();
+                return;
             }
 
             if ($this->estado == 'Eliminado') {
-                $estudiante->delete();
+                $postulante->delete();
             } else {
-                $estudiante->restore();
+                $postulante->restore();
             }
 
-            $estudiante->update([
-                'nombre_estudiante' => $this->nombre_estudiante,
-                'apellido_estudiante' => $this->apellido_estudiante,
-                'sexo' => $this->sexo,
-                'curso_id' => $this->curso_id,
+            $postulante->update([
+                'cargo_id' => $this->cargo,
             ]);
+            PostulanteCurso::where('postulante_id', $postulante->id)->delete();
 
+            foreach ($this->cursos_seleccionados as $cursoId) {
+                PostulanteCurso::create([
+                    'postulante_id' => $postulante->id,
+                    'curso_id' => $cursoId,
+                ]);
+            }
 
+            $this->dispatch('post-created', name: "El postulante {$this->nombre_postulante} se actualizó satisfactoriamente.");
             $this->openUpdate = false;
-            $this->dispatch('post-created', name: "El estudiante " . $this->nombre_estudiante . ", actualizado satisfactoriamente");
             $this->clearInput();
 
         } catch (\Throwable $th) {
+            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del postulante. Inténtelo nuevamente.");
             $this->openUpdate = false;
-            $this->dispatch('post-error', name: "Error al intentar actualizar los datos del estudiante. Inténtelo de nuevo");
             $this->clearInput();
             throw $th;
         }
     }
+
+    #[On('delete-postulantes')]
+    public function preDelete($data)
+    {
+        // dd($data);
+        if ($data) {
+            $this->openDelete = true;
+            $this->postulante_id = $data['id'];
+        } else {
+            $this->dispatch('post-error', name: "Error no se encontraron registros del estudinate, inténtelo nuevamente");
+        }
+    }
+
+    public function delete()
+    {
+        try {
+            $this->openDelete = false;
+            $postulante = Postulante::find($this->postulante_id);
+            if (!$postulante) {
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del postulante, inténtelo nuevamente");
+                $this->clearInput();
+                return;
+            }
+
+            $postulante->delete();
+            $this->dispatch('post-created', name: "El postulante ha sido eliminado satisfactoriamente");
+            $this->openUpdate = false;
+
+        } catch (\Throwable $th) {
+            $this->openUpdate = false;
+            $this->dispatch('post-error', name: "No se pudo eliminar el regitro del postulante. Inténtelo nuevamente");
+            throw $th;
+        }
+
+    }
+    
     public function render()
     {
-        $cursos = Curso::all();
-        $cargos = Cargo::all();
         $totalPostulantes = Postulante::count();
         return view(
             'livewire.sistema-votacion.postulacion',
             [
-                'cursos' => $cursos,
-                'cargos' => $cargos,
-                'totalPostulantes' => $totalPostulantes
+                'totalPostulantes' => $totalPostulantes,
+                'cargos' => $this->cargos,
             ]
         );
     }

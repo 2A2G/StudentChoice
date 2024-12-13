@@ -16,9 +16,18 @@ class Curso extends Model
         'nombre_curso'
     ];
 
+    public function postulanteCurso()
+    {
+        return $this->hasMany(PostulanteCurso::class);
+    }
+
     public function estudiantes()
     {
         return $this->hasMany(Estudiante::class);
+    }
+    public function postulante()
+    {
+        return $this->hasMany(Postulante::class);
     }
 
     public function docentes()

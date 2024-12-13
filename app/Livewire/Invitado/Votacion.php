@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Invitado;
 
+use App\Livewire\SistemaVotacion\Cargos;
+use App\Models\Cargo;
 use App\Models\Estudiante;
 use App\Models\opcionesEstudiante;
 use App\Models\Postulante;
@@ -13,10 +15,12 @@ class Votacion extends Component
 {
     public $selectedCandidato = null;
     public $dataEstudinate = null;
-    public $representanteCurso = null;
-    public $contralor = null;
-    public $personero = null;
     public $estudiante = null;
+
+    public $postulantes = [];
+    public $representanteCursos = null;
+    public $contralores = null;
+    public $personeros = null;
 
     public $vctos = [];
 
@@ -36,22 +40,51 @@ class Votacion extends Component
     public function mount($estudiante)
     {
         $this->estudiante = $estudiante;
-        // dd($estudiante);
 
-        // dd($this->estudiante->curso->postulante);
+        $this->postulantes = [];
 
-        $this->representanteCurso = Postulante::with('estudiante')
-            ->whereHas('estudiante', function ($query) {
-                $query->where('curso_id', $this->estudiante->curso_id);
-            })->get();
+        // Representante de curso
+        if (
+            !opcionesEstudiante::where('cargo_id', Cargo::representanteCurso)
+                ->where('estudiante_id', $this->estudiante->id)
+                ->where('is_active', false)
+                ->exists()
+        ) {
+            $this->representanteCursos = Postulante::with('estudiante')
+                ->whereHas('estudiante', function ($query) {
+                    $query->where('curso_id', $this->estudiante->curso_id)
+                        ->where('cargo_id', Cargo::representanteCurso);
+                })->paginate(10); // Paginación
+            $this->postulantes[0] = $this->representanteCursos; // Guardar en el índice 0
 
-        $this->contralor = Postulante::where('cargo_id', 2)->get();
-        $this->personero = Postulante::where('cargo_id', 1)->get();
+        }
 
+        // Contralor
+        if (
+            !opcionesEstudiante::where('cargo_id', Cargo::contralor)
+                ->where('estudiante_id', $this->estudiante->id)
+                ->where('is_active', false)
+                ->exists()
+        ) {
+            $this->contralores = Postulante::where('cargo_id', Cargo::contralor)->paginate(10); // Paginación
+            $this->postulantes[1] = $this->contralores; // Guardar en el índice 1
 
+        }
 
+        // Personero
+        if (
+            !opcionesEstudiante::where('cargo_id', Cargo::personero)
+                ->where('estudiante_id', $this->estudiante->id)
+                ->where('is_active', false)
+                ->exists()
+        ) {
+            $this->personeros = Postulante::where('cargo_id', Cargo::personero)->paginate(10); // Paginación
+
+            $this->postulantes[2] = $this->personeros; // Guardar en el índice 2
+
+        }
+        dd($this->postulantes);
     }
-
 
 
     public function selectCandidato($candidatoId)
