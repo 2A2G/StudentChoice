@@ -3,6 +3,8 @@
 namespace App\Livewire\SistemaVotacion;
 
 use App\Models\Cargo;
+use App\Models\Choice;
+use App\Models\Comicio;
 use App\Models\Curso;
 use App\Models\Estudiante;
 use App\Models\Postulante;
@@ -41,6 +43,9 @@ class Postulacion extends Component
     public $type;
     public $data;
     public $filePath;
+    public $elecciones;
+    public $eleccion = '';
+
 
     public function clearInput()
     {
@@ -58,10 +63,16 @@ class Postulacion extends Component
     {
         $this->cargos = Cargo::all();
         $this->cursosDisponibles = Curso::all();
+        $this->elecciones = Comicio::where('estado', 'activo')->get();
     }
 
     public function cambiar()
     {
+        if ($this->elecciones->isEmpty()) {
+            $this->dispatch('post-error', name: 'Lo sentimos, no hay elecciones abiertas en este momento.');
+            return;
+        }
+
         $this->dispatch('clear-card');
         $this->open = true;
         $this->clearInput();
@@ -121,19 +132,21 @@ class Postulacion extends Component
             'imagen' => 'required|image|max:1024',
             'cursos_seleccionados' => 'required|array|min:1',
             'cargo' => 'required|exists:cargos,id',
+            'elecciones' => 'required',
         ]);
 
         $newPostulante = Estudiante::where('numero_identidad', $this->numero_identidad)->first();
 
         if ($newPostulante) {
             $fileName = 'P_' . uniqid() . '.' . $this->imagen->getClientOriginalExtension();
-            $this->filePath = $this->imagen->storeAs('public/imagenes_postulantes', $fileName);
+            $this->filePath = $this->imagen->storeAs('imagenes_postulantes', $fileName);
 
             DB::transaction(function () use ($newPostulante) {
                 $nuevoPostulante = Postulante::create([
                     'estudiante_id' => $newPostulante->id,
                     'cargo_id' => $this->cargo,
                     'curso_id' => $newPostulante->curso_id,
+                    'comicio_id' => $this->eleccion,
                     'fotografia_postulante' => $this->filePath,
                 ]);
 
@@ -266,7 +279,7 @@ class Postulacion extends Component
         }
 
     }
-    
+
     public function render()
     {
         $totalPostulantes = Postulante::count();

@@ -1,61 +1,65 @@
-<div class="max-w-5xl mx-auto p-6">
-    @foreach ($postulantes as $indice => $coleccion)
-        @if ($coleccion->isNotEmpty())
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-                @switch($indice)
-                    @case(0)
-                        Representantes de Curso
-                    @break
+<div>
+    @if ($candidatos->isNotEmpty())
+        @php
+            $cargoActual = $candidatos->keys()[$paginaActual];
+            $postulantesActuales = $candidatos[$cargoActual];
+        @endphp
 
-                    @case(1)
-                        Contralores
-                    @break
+        <h2 class="font-bold text-2xl text-center mb-6 text-gray-800"> Postulantes al cargo de {{ $cargoActual }}</h2>
 
-                    @case(2)
-                        Personeros
-                    @break
-                @endswitch
-            </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @forelse ($postulantesActuales as $postulante)
+                <div
+                    class="bg-white shadow-lg rounded-lg overflow-hidden text-center flex flex-col items-center p-4 transform hover:scale-105 transition-transform duration-300">
 
-            @foreach ($coleccion as $postulante)
-                <div class="w-full mb-6">
-                    <div class="border rounded-lg shadow-lg cursor-pointer transition-transform transform hover:scale-105
-                                {{ $selectedCandidato === $postulante->id ? 'bg-red-500 text-white' : 'bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white' }}"
-                        wire:click="selectCandidato({{ $postulante->id }})">
-                        <a href="#" class="block overflow-hidden rounded-t-lg">
-                            <img class="w-full h-56 object-cover"
-                                src="{{ $postulante->fotografia_postulante ?? 'https://cdn-icons-png.flaticon.com/512/17236/17236626.png' }}"
-                                alt="Imagen del candidato" />
-                        </a>
-                        <div class="p-5">
-                            <h5 class="text-xl font-semibold tracking-tight mb-2">
-                                {{ $postulante->nombre ?? 'Nombre del Candidato' }}
-                            </h5>
-                        </div>
+                    <!-- Imagen del postulante -->
+                    <div class="w-80 h-64 mb-0">
+                        <img src="{{ Storage::url($postulante->postulante->fotografia_postulante) }}"
+                            alt="Imagen del postulante" class="w-full h-full object-cover border border-gray-300">
                     </div>
+                    <!-- Nombre del postulante -->
+                    <h3 class="font-semibold text-lg text-gray-800 mt-2">
+                        {{ $postulante->postulante->estudiante->nombre_estudiante }}
+                        {{ $postulante->postulante->estudiante->apellido_estudiante }}
+                    </h3>
                 </div>
-            @endforeach
 
-            <!-- Paginación -->
-            <div class="mt-4">
-                {{ $coleccion->links() }}
-            </div>
-        @endif
-    @endforeach
+            @empty
+                <p class="col-span-full text-center text-gray-500">No hay postulantes disponibles.</p>
+            @endforelse
 
-    <!-- Voto en blanco -->
-    <div class="w-full mt-6">
-        <div class="border rounded-lg shadow-lg cursor-pointer transition-transform transform hover:scale-105 bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-            wire:click="selectCandidato(null)">
-            <a href="#" class="block overflow-hidden rounded-t-lg">
-                <img class="w-full h-56 object-cover" src="https://cdn-icons-png.flaticon.com/512/3233/3233483.png"
-                    alt="Voto en Blanco" />
-            </a>
-            <div class="p-5 text-center">
-                <h5 class="text-xl font-semibold tracking-tight mb-2">
-                    Voto en Blanco
-                </h5>
+            <div
+                class="bg-white shadow-lg rounded-lg overflow-hidden text-center flex flex-col items-center p-4 transform hover:scale-105 transition-transform duration-300">
+
+                <!-- Imagen del postulante -->
+                <div class="w-80 h-64 mb-0">
+                    <img src="{{ Storage::url('imagenes_postulantes/voto_blanco.jpg') }}" alt="Imagen voto en blanco"
+                        class="w-full h-full object-cover border border-gray-300 mb-0">
+
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="flex justify-between mt-8">
+            <!-- Botón Anterior -->
+            @if ($paginaActual > 0)
+                <button wire:click="paginaAnterior"
+                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 px-6 py-2 rounded-lg shadow-md">
+                    Anterior
+                </button>
+            @else
+                <span></span>
+            @endif
+
+            <!-- Botón Siguiente -->
+            @if ($paginaActual < count($candidatos) - 1)
+                <button wire:click="paginaSiguiente"
+                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 px-6 py-2 rounded-lg shadow-md">
+                    Siguiente
+                </button>
+            @endif
+        </div>
+    @else
+        <p class="text-center text-gray-500">No hay postulantes disponibles para mostrar.</p>
+    @endif
 </div>

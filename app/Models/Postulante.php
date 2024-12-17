@@ -17,10 +17,16 @@ class Postulante extends Model
         'estudiante_id',
         'curso_id',
         'cargo_id',
+        'comicio_id',
         'cantidad_votos',
         'fotografia_postulante',
         'anio_postulacion',
     ];
+
+    public function comicio()
+    {
+        return $this->belongsTo(Comicio::class);
+    }
 
     public function postulanteCurso()
     {

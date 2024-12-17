@@ -78,10 +78,19 @@
                         <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
                     @endforeach
                 </select>
-
                 @error('cargo')
                     <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
+
+
+                <!-- Campo de la eleccion -->
+                <label class="block mb-2">Elección</label>
+                <select wire:model="eleccion" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un Elección</option>
+                    @foreach ($elecciones as $eleccion)
+                        <option value="{{ $eleccion->id }}">{{ $eleccion->nombre_eleccion }}</option>
+                    @endforeach
+                </select>
 
 
                 <!-- Campo para subir la imagen -->

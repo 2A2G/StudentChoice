@@ -4,9 +4,11 @@ namespace App\Livewire\Invitado;
 
 use App\Livewire\SistemaVotacion\Cargos;
 use App\Models\Cargo;
+use App\Models\Comicio;
 use App\Models\Estudiante;
 use App\Models\opcionesEstudiante;
 use App\Models\Postulante;
+use App\Models\PostulanteCurso;
 use App\Models\Votos;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -16,13 +18,10 @@ class Votacion extends Component
     public $selectedCandidato = null;
     public $dataEstudinate = null;
     public $estudiante = null;
-
     public $postulantes = [];
-    public $representanteCursos = null;
-    public $contralores = null;
-    public $personeros = null;
+    public $candidatos;
+    public $paginaActual = 0;
 
-    public $vctos = [];
 
     #[On('estudiante-votador')]
     public function dataVotador(Estudiante $estudianteVotador)
@@ -33,7 +32,6 @@ class Votacion extends Component
     public function updatedDataEstudinate()
     {
         if ($this->dataEstudinate) {
-            dd($this->dataEstudinate);
         }
     }
 
@@ -41,56 +39,47 @@ class Votacion extends Component
     {
         $this->estudiante = $estudiante;
 
-        $this->postulantes = [];
+        $comicio = Comicio::where('estado', 'activo')->first();
 
-        // Representante de curso
-        if (
-            !opcionesEstudiante::where('cargo_id', Cargo::representanteCurso)
-                ->where('estudiante_id', $this->estudiante->id)
-                ->where('is_active', false)
-                ->exists()
-        ) {
-            $this->representanteCursos = Postulante::with('estudiante')
-                ->whereHas('estudiante', function ($query) {
-                    $query->where('curso_id', $this->estudiante->curso_id)
-                        ->where('cargo_id', Cargo::representanteCurso);
-                })->paginate(10); // Paginación
-            $this->postulantes[0] = $this->representanteCursos; // Guardar en el índice 0
-
+        if (!$comicio) {
+            $this->postulantes = [];
+            return;
         }
 
-        // Contralor
-        if (
-            !opcionesEstudiante::where('cargo_id', Cargo::contralor)
-                ->where('estudiante_id', $this->estudiante->id)
-                ->where('is_active', false)
-                ->exists()
-        ) {
-            $this->contralores = Postulante::where('cargo_id', Cargo::contralor)->paginate(10); // Paginación
-            $this->postulantes[1] = $this->contralores; // Guardar en el índice 1
+        $this->postulantes = PostulanteCurso::with('postulante')->where('curso_id', $this->estudiante->curso_id)->get();
 
-        }
+        // dd($this->postulantes[0]->postulante);
+        $votosEstudiante = OpcionesEstudiante::where('estudiante_id', $this->estudiante->id)
+            ->where('comicio_id', $comicio->id)->pluck('cargo_id')->toArray();
 
-        // Personero
-        if (
-            !opcionesEstudiante::where('cargo_id', Cargo::personero)
-                ->where('estudiante_id', $this->estudiante->id)
-                ->where('is_active', false)
-                ->exists()
-        ) {
-            $this->personeros = Postulante::where('cargo_id', Cargo::personero)->paginate(10); // Paginación
+        $this->postulantes = collect($this->postulantes)->filter(function ($postulante) use ($votosEstudiante) {
+            return !in_array($postulante->postulante->cargo_id, $votosEstudiante);
+        });
 
-            $this->postulantes[2] = $this->personeros; // Guardar en el índice 2
-
-        }
-        dd($this->postulantes);
+        $this->candidatos = collect($this->postulantes)->groupBy(function ($postulante) {
+            return $postulante->postulante->cargo->nombre_cargo;
+        });
     }
+
+    public function paginaSiguiente()
+    {
+        if ($this->paginaActual < count($this->candidatos) - 1) {
+            $this->paginaActual++;
+        }
+    }
+
+    public function paginaAnterior()
+    {
+        if ($this->paginaActual > 0) {
+            $this->paginaActual--;
+        }
+    }
+
 
 
     public function selectCandidato($candidatoId)
     {
         $this->selectedCandidato = ($this->selectedCandidato === $candidatoId) ? null : $candidatoId;
-        // dd($this->selectedCandidato);
     }
 
     public function votar()
