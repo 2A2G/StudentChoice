@@ -1,121 +1,85 @@
-<div class="max-w-5xl mx-auto p-6">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        <h1>asjdjasdjasd</h1>
-        @forelse ($representanteCurso as $postulante)
-            <!-- Tarjetas de candidatos -->
-            <div class="w-full">
-                <div class="border rounded-lg shadow-lg cursor-pointer transition-transform transform hover:scale-105
-                            {{ $selectedCandidato === $postulante->id ? 'bg-red-500 text-white' : 'bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white' }}"
-                    wire:click="selectCandidato({{ $postulante->id }},{{$postulante}})">
-                    <a href="#" class="block overflow-hidden rounded-t-lg">
-                        <img class="w-full h-56 object-cover"
-                            src="https://cdn-icons-png.flaticon.com/512/17236/17236626.png" alt="Imagen del candidato" />
-                    </a>
-                    <div class="p-5">
-                        <h5 class="text-xl font-semibold tracking-tight mb-2">
-                            {{ $postulante->estudiante->nombre_estudiante }}
-                            {{ $postulante->estudiante->apellido_estudiante }}
-                        </h5>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-                No hay candidatos
-            </h1>
-        @endforelse
-        <br>
+<div>
+    <x-notificacion />
 
-        <div class="w-full grid-">
-            <h1>Contralor</h1>
+    @if ($candidatos->isNotEmpty())
+        @php
+            $cargoActual = $candidatos->keys()[$paginaActual];
+            $postulantesActuales = $candidatos[$cargoActual];
+        @endphp
 
-            @forelse ($contralor as $postulante)
-                <!-- Tarjetas de candidatos -->
-                <div class="w-full">
-                    <div class="border rounded-lg shadow-lg cursor-pointer transition-transform transform hover:scale-105
-                            {{ $selectedCandidato === $postulante->id ? 'bg-red-500 text-white' : 'bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white' }}"
-                        wire:click="selectCandidato({{ $postulante->id }})">
-                        <a href="#" class="block overflow-hidden rounded-t-lg">
-                            <img class="w-full h-56 object-cover"
-                                src="https://cdn-icons-png.flaticon.com/512/17236/17236626.png"
-                                alt="Imagen del candidato" />
-                        </a>
-                        <div class="p-5">
-                            <h5 class="text-xl font-semibold tracking-tight mb-2">
-                                {{ $postulante->estudiante->nombre_estudiante }}
-                                {{ $postulante->estudiante->apellido_estudiante }}
-                            </h5>
+        <!-- Título -->
+        <h2 class="font-bold text-2xl text-center mb-6 text-gray-800">
+            Postulantes al cargo de {{ $cargoActual }}
+        </h2>
+
+        <!-- Cartas de los postulantes -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @forelse ($postulantesActuales as $postulante)
+                <button type="button" wire:click="selectCandidato('{{ $postulante->id }}' ,'{{ $cargoActual }}')">
+                    <div
+                        class="bg-white shadow-lg rounded-lg overflow-hidden text-center flex flex-col items-center p-4 transform hover:scale-105 transition-transform duration-300
+                        {{ $selectedCandidato === $postulante->id ? 'bg-blue-500 text-white border-4 border-blue-700' : '' }}">
+                        <div class="w-80 h-64 mb-0">
+                            <img src="{{ Storage::url($postulante->postulante->fotografia_postulante) }}"
+                                alt="Imagen del postulante" class="w-full h-full object-cover">
                         </div>
+                        <h3 class="font-semibold text-lg mt-2">
+                            {{ $postulante->postulante->estudiante->nombre_estudiante }}
+                            {{ $postulante->postulante->estudiante->apellido_estudiante }}
+                        </h3>
+                    </div>
+                </button>
+            @empty
+                <p class="col-span-full text-center text-gray-500">No hay postulantes disponibles.</p>
+            @endforelse
+
+            <!-- Voto en blanco -->
+            <button type="button" wire:click="selectCandidato('voto_en_blanco', '{{ $cargoActual }}')">
+                <div
+                    class="bg-white shadow-lg rounded-lg overflow-hidden text-center flex flex-col items-center p-4 transform hover:scale-105 transition-transform duration-300
+                    {{ $selectedCandidato === 'voto_en_blanco' ? 'bg-blue-500 text-white border-4 border-blue-700' : '' }}">
+                    <div class="w-80 h-72 mb-0">
+                        <img src="{{ Storage::url('imagenes_postulantes/voto_blanco.jpg') }}"
+                            alt="Imagen voto en blanco" class="w-full h-full object-fill">
                     </div>
                 </div>
-            @empty
-                <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-                    No hay candidatos
-                </h1>
-            @endforelse
-            <br>
-
-
+            </button>
 
         </div>
 
-        <h2>jasdjasds</h2>
-
-        @forelse ($personero as $postulante)
-            <!-- Tarjetas de candidatos -->
-            <div class="w-full">
-                <div class="border rounded-lg shadow-lg cursor-pointer transition-transform transform hover:scale-105
-                        {{ $selectedCandidato === $postulante->id ? 'bg-red-500 text-white' : 'bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white' }}"
-                    wire:click="selectCandidato({{ $postulante->id }})">
-                    <a href="#" class="block overflow-hidden rounded-t-lg">
-                        <img class="w-full h-56 object-cover"
-                            src="https://cdn-icons-png.flaticon.com/512/17236/17236626.png"
-                            alt="Imagen del candidato" />
-                    </a>
-                    <div class="p-5">
-                        <h5 class="text-xl font-semibold tracking-tight mb-2">
-                            {{ $postulante->estudiante->nombre_estudiante }}
-                            {{ $postulante->estudiante->apellido_estudiante }}
-                        </h5>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
-                No hay candidatos
-            </h1>
-        @endforelse
-
-
-        <!-- Tarjeta de "Voto en Blanco" -->
-        {{-- @if ($postulantes->isNotEmpty())
-            <div class="w-full">
-                <div class="w-full border rounded-lg shadow-lg cursor-pointer transition-transform transform hover:scale-105
-                            {{ $selectedCandidato === 'voto_en_blanco' ? 'bg-red-500 text-white' : 'bg-gray-50 text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-white' }}"
-                    wire:click="selectCandidato('voto_en_blanco')">
-                    <a href="#" class="block overflow-hidden rounded-t-lg">
-                        <div class="flex items-center justify-center h-56 bg-gray-200 dark:bg-gray-700">
-                            <span class="text-5xl font-bold text-gray-500 dark:text-gray-300">V</span>
-                        </div>
-                    </a>
-                    <div class="p-5 text-center">
-                        <h5 class="text-xl font-semibold tracking-tight">
-                            Voto en Blanco
-                        </h5>
-                    </div>
-                </div>
-            </div>
-        @endif
-    </div> --}}
-
-        {{-- @if ($postulantes->isNotEmpty())
-        <div class="text-center mt-8">
+        <!-- Botón Votar -->
+        <div class="flex justify-center mt-6">
             <button wire:click="votar"
-                class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75">
+                class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transition duration-300">
                 Votar
             </button>
         </div>
-    @endif --}}
 
-        <x-notificacion />
-    </div>
+        <!-- Navegación -->
+        <div class="flex justify-between mt-8">
+            @if ($paginaActual > 0)
+                <button wire:click="paginaAnterior"
+                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 px-6 py-2 rounded-lg shadow-md">
+                    Anterior
+                </button>
+            @else
+                <span></span>
+            @endif
+
+            @if ($paginaActual < count($candidatos) - 1)
+                <button wire:click="paginaSiguiente"
+                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 px-6 py-2 rounded-lg shadow-md">
+                    Siguiente
+                </button>
+            @endif
+        </div>
+    @else
+        <p class="text-center text-gray-500">No hay postulantes disponibles para mostrar.</p>
+        <a type="button" href="{{ route('sveEstudinate') }}"
+            class="mt-4 px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300">
+            Volver
+        </a>
+    @endif
+
+
+</div>

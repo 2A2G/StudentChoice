@@ -2,21 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Votos extends Model
+class PostulanteCurso extends Model
 {
-    use HasFactory;
+    use SoftDeletes;
     protected $fillable = [
         'postulante_id',
-        'cargo_id',
-        'cantidad_voto',
-        'votos_en_blanco',
+        'curso_id'
     ];
+
+    public function cursos()
+    {
+        return $this->belongsTo(Curso::class);
+    }
 
     public function postulante()
     {
         return $this->belongsTo(Postulante::class);
     }
+
 }

@@ -12,6 +12,7 @@ class opcionesEstudiante extends Model
     protected $fillable = [
         'estudiante_id',
         'cargo_id',
+        'comicio_id'
     ];
 
     public function estudiante()
@@ -21,5 +22,9 @@ class opcionesEstudiante extends Model
     public function cargo()
     {
         return $this->belongsTo(Cargo::class);
+    }
+    public function comicio()
+    {
+        return $this->belongsTo(Comicio::class);
     }
 }

@@ -14,12 +14,19 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('estudiante_id');
             $table->foreignId('cargo_id');
+            $table->foreignId('comicio_id');
 
             $table->foreign('estudiante_id')->references('id')->on('estudiantes');
             $table->foreign('cargo_id')->references('id')->on('cargos');
+            $table->foreign('comicio_id')->references('id')->on('comicios');
+
+            $table->unique(['estudiante_id', 'cargo_id', 'comicio_id']);
+
             $table->softDeletes();
             $table->timestamps();
         });
+
+
     }
 
     /**
