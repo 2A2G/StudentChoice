@@ -15,6 +15,16 @@ class Comicio extends Model
         'nombre_eleccion'
     ];
 
+    public static function getComicioActive()
+    {
+        $comicio = Comicio::where('estado', 'activo')->first();
+
+        if (!$comicio) {
+            throw new \Exception('No hay un comicio activo');
+        }
+        return $comicio->id;
+    }
+
     public function opcionEstudiante()
     {
         return $this->hasMany(opcionesEstudiante::class);

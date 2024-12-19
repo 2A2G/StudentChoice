@@ -187,7 +187,7 @@
                                                 d="M3 9a2 2 0 0 1 2-2h4.157a2 2 0 0 1 1.656.879L12.249 10H3zm0 3v7a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-7z" />
                                         </g>
                                     </svg>
-                                    <p class="text-base leading-4  ">Historial</p>
+                                    <p class="text-base leading-4  ">Elecciones</p>
                                 </a>
                             @endcan
                             @can('view postulacion')

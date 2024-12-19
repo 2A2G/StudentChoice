@@ -24,24 +24,6 @@ return new class extends Migration {
 
             $table->timestamps();
         });
-
-        DB::statement('
-            ALTER TABLE votos
-            ADD CONSTRAINT chk_votos_en_blanco_postulante
-            CHECK (
-                (postulante_id IS NULL AND votos_en_blanco > 0) OR
-                (postulante_id IS NOT NULL AND votos_en_blanco = 0)
-            )
-        ');
-
-        DB::statement('
-            ALTER TABLE votos
-            ADD CONSTRAINT chk_votos_en_blanco_cantidad_voto
-            CHECK (
-                (cantidad_voto > 0 AND votos_en_blanco = 0) OR
-                (cantidad_voto = 0 AND votos_en_blanco >= 0)
-            )
-        ');
     }
 
     /**
