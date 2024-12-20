@@ -15,15 +15,22 @@
         <!-- Cartas de los postulantes -->
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse ($postulantesActuales as $postulante)
-                <button type="button" wire:click="selectCandidato('{{ $postulante->id }}' ,'{{ $cargoActual }}')">
+                <button type="button"
+                    wire:click="selectCandidato('{{ $postulante->postulante_id }}' ,'{{ $cargoActual }}')">
                     <div
                         class="bg-white shadow-lg rounded-lg overflow-hidden text-center flex flex-col items-center p-4 transform hover:scale-105 transition-transform duration-300
-                        {{ $selectedCandidato === $postulante->id ? 'bg-blue-500 text-white border-4 border-blue-700' : '' }}">
-                        <div class="w-80 h-64 mb-0">
-                            <img src="{{ Storage::url($postulante->postulante->fotografia_postulante) }}"
+                        {{ $selectedCandidato == $postulante->postulante_id ? 'bg-blue-200 text-blue-800 border-4 border-blue-700' : '' }}">
+                        <!-- Imagen -->
+                        <div class="w-80 h-64 mb-0 relative">
+                            <img src="{{ Storage::url('imagenes_postulantes/' . $postulante->postulante->fotografia_postulante) }}"
                                 alt="Imagen del postulante" class="w-full h-full object-cover">
+                            @if ($selectedCandidato == $postulante->postulante_id)
+                                <div class="absolute inset-0 bg-blue-500 opacity-30"></div>
+                            @endif
                         </div>
-                        <h3 class="font-semibold text-lg mt-2">
+
+                        <!-- Nombre -->
+                        <h3 class="font-semibold text-lg mt-2 relative z-10">
                             {{ $postulante->postulante->estudiante->nombre_estudiante }}
                             {{ $postulante->postulante->estudiante->apellido_estudiante }}
                         </h3>
@@ -37,14 +44,19 @@
             <button type="button" wire:click="selectCandidato('voto_en_blanco', '{{ $cargoActual }}')">
                 <div
                     class="bg-white shadow-lg rounded-lg overflow-hidden text-center flex flex-col items-center p-4 transform hover:scale-105 transition-transform duration-300
-                    {{ $selectedCandidato === 'voto_en_blanco' ? 'bg-blue-500 text-white border-4 border-blue-700' : '' }}">
-                    <div class="w-80 h-72 mb-0">
+                    {{ $selectedCandidato === 'voto_en_blanco' ? 'bg-blue-200 text-blue-800 border-4 border-blue-700' : '' }}">
+
+                    <!-- Imagen Voto en Blanco -->
+                    <div class="w-80 h-72 mb-0 relative">
                         <img src="{{ Storage::url('imagenes_postulantes/voto_blanco.jpg') }}"
                             alt="Imagen voto en blanco" class="w-full h-full object-fill">
+                        <!-- Marcado Voto en Blanco -->
+                        @if ($selectedCandidato === 'voto_en_blanco')
+                            <div class="absolute inset-0 bg-blue-500 opacity-30"></div>
+                        @endif
                     </div>
                 </div>
             </button>
-
         </div>
 
         <!-- Botón Votar -->
@@ -54,25 +66,6 @@
                 Votar
             </button>
         </div>
-
-        <!-- Navegación -->
-        <div class="flex justify-between mt-8">
-            @if ($paginaActual > 0)
-                <button wire:click="paginaAnterior"
-                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 px-6 py-2 rounded-lg shadow-md">
-                    Anterior
-                </button>
-            @else
-                <span></span>
-            @endif
-
-            @if ($paginaActual < count($candidatos) - 1)
-                <button wire:click="paginaSiguiente"
-                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 px-6 py-2 rounded-lg shadow-md">
-                    Siguiente
-                </button>
-            @endif
-        </div>
     @else
         <p class="text-center text-gray-500">No hay postulantes disponibles para mostrar.</p>
         <a type="button" href="{{ route('sveEstudinate') }}"
@@ -80,6 +73,4 @@
             Volver
         </a>
     @endif
-
-
 </div>

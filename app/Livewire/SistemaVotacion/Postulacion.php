@@ -139,15 +139,17 @@ class Postulacion extends Component
 
         if ($newPostulante) {
             $fileName = 'P_' . uniqid() . '.' . $this->imagen->getClientOriginalExtension();
-            $this->filePath = $this->imagen->storeAs('imagenes_postulantes', $fileName);
 
-            DB::transaction(function () use ($newPostulante) {
+            $this->imagen->storeAs('imagenes_postulantes', $fileName, 'public');
+            $filePath = $fileName;
+
+            DB::transaction(function () use ($newPostulante, $filePath) {
                 $nuevoPostulante = Postulante::create([
                     'estudiante_id' => $newPostulante->id,
                     'cargo_id' => $this->cargo,
                     'curso_id' => $newPostulante->curso_id,
                     'comicio_id' => $this->eleccion,
-                    'fotografia_postulante' => $this->filePath,
+                    'fotografia_postulante' => $filePath,
                 ]);
 
                 foreach ($this->cursos_seleccionados as $cursoId) {
@@ -157,8 +159,9 @@ class Postulacion extends Component
                     ]);
                 }
             });
+            $nombreCargo = Cargo::find($this->cargo)->first();
 
-            $this->dispatch('post-created', name: "La postulación de {$newPostulante->nombre_estudiante}, para el cargo de {$this->cargo} ha sido creada satisfactoriamente");
+            $this->dispatch('post-created', name: "La postulación de {$newPostulante->nombre_estudiante}, para el cargo de " . $nombreCargo->nombre_cargo . ", ha sido creada satisfactoriamente");
 
             $this->open = false;
             $this->clearInput();
