@@ -42,11 +42,13 @@ class Votacion extends Component
         if ($this->estudiante) {
 
             $comicio = Comicio::where('estado', 'activo')->first();
-            
+
             if (!$comicio) {
                 $this->postulantes = [];
                 return;
             }
+            // dd($this->estudiante);
+            $this->candidatos = null;
 
             $this->postulantes = PostulanteCurso::with('postulante')->where('curso_id', $this->estudiante->curso_id)->get();
 
@@ -60,6 +62,8 @@ class Votacion extends Component
             $this->candidatos = collect($this->postulantes)->groupBy(function ($postulante) {
                 return $postulante->postulante->cargo->nombre_cargo;
             });
+            // dd($this->candidatos);
+
         }
     }
 
@@ -149,10 +153,10 @@ class Votacion extends Component
 
     public function refreshVotacion()
     {
+        $this->selectedCandidato = null;
         $this->dispatch('post-created', name: 'Has ejercido tú derecho al voto');
         $this->mount($this->estudiante);
     }
-
 
     public function render()
     {
