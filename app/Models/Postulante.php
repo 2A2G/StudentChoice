@@ -75,15 +75,4 @@ class Postulante extends Model
 
             ->simplePaginate($page);
     }
-
-    public static function getAnioData($page)
-    {
-        return self::withTrashed()
-            ->select(
-                'anio_postulacion',
-                DB::raw('count(*) as cantidad_postulantes')
-            )
-            ->groupBy('anio_postulacion')
-            ->simplePaginate($page);
-    }
 }

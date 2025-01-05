@@ -17,6 +17,9 @@
             @error('numero_identidad')
                 <span class="text-red-500 text-sm">{{ $message }}</span>
             @enderror
+            @error('estado_eleccion')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
         </div>
         <button type="submit"
             class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 w-full">Entrar</button>

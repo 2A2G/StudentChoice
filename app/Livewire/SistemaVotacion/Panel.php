@@ -2,16 +2,16 @@
 
 namespace App\Livewire\SistemaVotacion;
 
+use App\Models\Comicio;
 use App\Models\Curso;
 use App\Models\Estudiante;
 use App\Models\opcionesEstudiante;
 use Livewire\Attributes\On;
 use Livewire\Component;
-use OpenSSLCertificate;
 
 class Panel extends Component
 {
-    public $estadoVotacion = 'activo';
+    public $estadoVotacion;
     public $openCurso = false;
 
     public $estudiantesDisponibles;
@@ -20,15 +20,44 @@ class Panel extends Component
     public $totalNoBlanco;
     public $totalVotosBlanco;
 
+    public function mount()
+    {
+        $comicio = Comicio::where('estado', 'activo')->first();
+        if (empty($comicio) || $comicio->estado_eleccion !== false) {
+            $this->estadoVotacion = $comicio->estado_eleccion;
+        } else {
+            $this->estadoVotacion = false;
+        }
+    }
     public function iniciarVotacion()
     {
-        dd('Iniciar votación');
-        $this->estadoVotacion = 'activo';
+        try {
+            $comicio = Comicio::where('estado', 'activo')->first();
+            $comicio->update([
+                'estado_eleccion' => true
+            ]);
+
+            // $this->dispatch('post-created', name: "Se ha activado el comicio " . $comicio->nombre_eleccion);
+            $this->mount();
+
+        } catch (\Throwable $th) {
+            $this->dispatch('post-error', name: "Error al intentar activar el comicio" . $comicio->nombre_eleccion);
+        }
     }
     public function finalizarVotacion()
     {
-        dd('Finalizar votación');
-        $this->estadoVotacion = 'inactivo';
+        try {
+            $comicio = Comicio::where('estado', 'activo')->first();
+            $comicio->update([
+                'estado_eleccion' => false
+            ]);
+
+            // $this->dispatch('post-created', name: "Se ha finalizado el comicio " . $comicio->nombre_eleccion);
+            $this->mount();
+
+        } catch (\Throwable $th) {
+            $this->dispatch('post-error', name: "Error al intentar finalizar el comicio" . $comicio->nombre_eleccion);
+        }
     }
     public function estudiantesHabilitados()
     {
@@ -44,7 +73,6 @@ class Panel extends Component
         $this->dispatch('curso-seleccionado', $this->cursoSeleccionado);
     }
 
-
     #[On('modalCurso')]
     public function abirModalCurso($boolean)
     {
@@ -53,10 +81,11 @@ class Panel extends Component
         }
 
     }
+
     public function DataVotos()
     {
         // Total de votos blanco
-        // $this->totalNoBlanco = opcionesEstudiante::all()->count();
+        $this->totalNoBlanco = opcionesEstudiante::all()->count();
 
         // Total de votos en blanco
         // $totalVotosBlanco = opcionesEstudiante::where('voto_blanco', operator: true)->count();

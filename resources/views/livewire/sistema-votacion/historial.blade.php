@@ -42,7 +42,7 @@
                     <span class="ml-2">Crear Elecciones</span>
                 </a>
             </div>
-            @livewire('diagramas.table', ['case' => 'anio_postulacion'])
+            @livewire('diagramas.table', ['case' => 'comicio'])
         </div>
     </div>
 

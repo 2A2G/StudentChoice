@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comicio;
 use App\Models\Estudiante;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -106,6 +107,11 @@ class ViewController extends Controller
     {
         $caso = 'votacion';
         try {
+            $comicio = Comicio::where('estado', 'activo')->first();
+            if (empty($comicio) || $comicio->estado_eleccion !== true) {
+                return back()->withErrors(['estado_eleccion' => 'Actualmente no hay elecciones activas disponibles']);
+            }
+
             $estudiante = Estudiante::where('numero_identidad', $request->numero_identidad)->first();
             if ($estudiante) {
                 return view('livewire.invitado.dashboard', compact('caso', 'estudiante'));
