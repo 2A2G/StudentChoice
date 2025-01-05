@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Comicio extends Model
 {
@@ -12,7 +13,8 @@ class Comicio extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'nombre_eleccion'
+        'nombre_eleccion',
+        'estado_eleccion'
     ];
 
     public static function getComicioActive()
@@ -24,6 +26,15 @@ class Comicio extends Model
         }
         return $comicio->id;
     }
+
+    public static function getComicio($page)
+    {
+        return self::with('postulante')
+            ->select('nombre_eleccion')
+            ->withCount(['postulante as cantidad_postulantes'])
+            ->simplePaginate($page);
+    }
+
 
     public function opcionEstudiante()
     {

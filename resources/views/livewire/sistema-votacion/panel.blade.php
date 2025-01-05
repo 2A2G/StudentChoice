@@ -1,6 +1,13 @@
 <div class="mx-auto p-6 bg-white rounded-lg shadow-md max-w-6xl">
-    @if ($estadoVotacion == 'activo')
+    @if ($estadoVotacion === true)
+        <div class="justify-self-end">
+            <button wire:click="finalizarVotacion"
+                class="px-6 py-3 bg-red-500 text-white font-bold rounded-md shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                Finalizar Votaciones
+            </button>
+        </div>
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Estatus de las Elecciones Institucionales</h1>
+        <!-- Finalizar votaciones -->
         <div class="flex gap-6">
             <!-- Estudiantes disponibles para votar -->
             <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md w-1/3">
@@ -41,6 +48,7 @@
 
             <!-- Votos en blanco -->
             <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md w-1/3">
+
                 <div
                     class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-blue-600 to-blue-400 text-white shadow-blue-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">

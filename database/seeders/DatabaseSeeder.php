@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call(CargoSeeder::class);
         $this->call(EstudianteSeeder::class);
         $this->call(DocenteSeeder::class);
+        $this->call(ComicioSeeder::class);
 
         $superAdmin = User::create([
             'name' => 'Aldair',

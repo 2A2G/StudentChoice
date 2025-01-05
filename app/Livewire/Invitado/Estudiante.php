@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Invitado;
 
+use App\Models\Comicio;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -40,7 +41,7 @@ class Estudiante extends Component
         $this->clearInput();
 
     }
-  
+
     public function render()
     {
         return view('livewire.invitado.estudiante');

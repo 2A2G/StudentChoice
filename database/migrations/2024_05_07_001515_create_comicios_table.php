@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('nombre_eleccion');
             $table->string('estado')->default('activo');
             $table->string('anio_eleccion')->default(date('Y'));
+            $table->boolean('estado_eleccion')->default('false');
 
             $table->softDeletes();
             $table->timestamps();

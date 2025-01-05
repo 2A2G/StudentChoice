@@ -4,6 +4,7 @@ namespace App\Livewire\Diagramas;
 
 use App\Livewire\SuperAdmin\Cursos;
 use App\Models\Cargo;
+use App\Models\Comicio;
 use App\Models\Curso;
 use App\Models\Docente;
 use App\Models\Estudiante;
@@ -83,10 +84,10 @@ class Table extends Component
                 'dataI' => ['nombre_cargo', 'descripcion_cargo', 'estado'],
                 'columns' => ['Nombre del Cargo', 'Descripción del Cargo', 'Estado', 'Acción']
             ],
-            'anio_postulacion' => [
-                'model' => Postulante::class,
-                'method' => 'getAnioData',
-                'dataI' => ['anio_postulacion', 'cantidad_postulantes'],
+            'comicio' => [
+                'model' => Comicio::class,
+                'method' => 'getComicio',
+                'dataI' => ['nombre_eleccion', 'cantidad_postulantes'],
                 'columns' => ['Año de Postulación', 'Cantidad de Postulantes', 'Acción']
             ],
             'default' => [
