@@ -31,15 +31,17 @@ class RoleSeeder extends Seeder
             'edit user' => ['super-admin', 'rector'],
             'delete user' => ['super-admin'],
 
-            'view estudiantes' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            'create estudiante' => ['super-admin', 'rector', 'secretaria'],
-            'edit estudiante' => ['super-admin', 'rector', 'secretaria'],
-            'delete estudiante' => ['super-admin'],
+            'view students' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'create student' => ['super-admin', 'rector', 'secretaria'],
+            'edit student' => ['super-admin', 'rector', 'secretaria'],
+            'delete student' => ['super-admin'],
 
-            'view docentes' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            'create docente' => ['super-admin', 'rector'],
-            'edit docente' => ['super-admin', 'rector'],
-            'delete docente' => ['super-admin'],
+            'view teachers' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'create teacher' => ['super-admin', 'rector'],
+            'edit teacher' => ['super-admin', 'rector'],
+            'delete teacher' => ['super-admin'],
+
+            'view roles and permission' => ['super-admin', 'rector'],
 
             'view roles' => ['super-admin', 'rector'],
             'create role' => ['super-admin', 'rector'],
@@ -51,22 +53,31 @@ class RoleSeeder extends Seeder
             'edit permission' => ['super-admin', 'rector', 'secretaria'],
             'delete permission' => ['super-admin'],
 
-            'view cargos' => ['super-admin', 'rector', 'secretaria'],
-            'create cargos' => ['super-admin', 'rector'],
-            'edit cargos' => ['super-admin', 'rector'],
+            'view positions' => ['super-admin', 'rector', 'secretaria'],
+            'create position' => ['super-admin', 'rector'],
+            'edit position' => ['super-admin', 'rector'],
 
-            'view cursos' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            'create curso' => ['super-admin', 'rector'],
-            'edit curso' => ['super-admin', 'rector', 'secretaria'],
-            'delete curso' => ['super-admin'],
+            'view courses' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'create course' => ['super-admin', 'rector'],
+            'edit course' => ['super-admin', 'rector', 'secretaria'],
+            'delete course' => ['super-admin'],
 
-            'view panel votacion' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            'view postulacion' => ['super-admin', 'rector', 'secretaria'],
-            'inicar votacion' => ['super-admin', 'rector'],
-            'cerrar votacion' => ['super-admin', 'rector'],
+            'view voting panel' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'start voting' => ['super-admin', 'rector'],
+            'close voting' => ['super-admin', 'rector'],
 
-            'ver resultados' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            'view historial votacion' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'view results' => ['super-admin', 'rector', 'secretaria', 'docente'],
+
+            'view voting history' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'create election' => ['super-admin', 'rector', 'secretaria'],
+            'edit election' => ['super-admin', 'rector', 'secretaria'],
+            'delete election' => ['super-admin', 'rector', 'secretaria'],
+
+            'view application' => ['super-admin', 'rector', 'secretaria'],
+            'view applicants' => ['super-admin', 'rector', 'secretaria'],
+            'create applicant' => ['super-admin', 'rector', 'secretaria'],
+            'general deletion or editing' => ['super-admin', 'rector', 'secretaria'],
+
         ];
 
         foreach ($permissions as $permissionName => $roleNames) {
