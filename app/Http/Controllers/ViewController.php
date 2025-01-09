@@ -15,6 +15,7 @@ class ViewController extends Controller
         $this->middleware('can:view users')->only('usuarios');
         $this->middleware('can:view students')->only('estudiante');
         $this->middleware('can:view teachers')->only('docentes');
+        $this->middleware('can:view view roles and permission')->only('rolesPermisos');
         $this->middleware('can:view courses')->only('cursos');
 
         // Sistema de Votacion
@@ -37,7 +38,7 @@ class ViewController extends Controller
     {
         return view('livewire.welcome');
     }
-    
+
     // Gestion
     public function index()
     {

@@ -41,6 +41,8 @@ class RoleSeeder extends Seeder
             'edit teacher' => ['super-admin', 'rector'],
             'delete teacher' => ['super-admin'],
 
+            'view roles and permission' => ['super-admin', 'rector'],
+
             'view roles' => ['super-admin', 'rector'],
             'create role' => ['super-admin', 'rector'],
             'edit role' => ['super-admin', 'rector'],
@@ -65,7 +67,7 @@ class RoleSeeder extends Seeder
             'close voting' => ['super-admin', 'rector'],
 
             'view results' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            
+
             'view voting history' => ['super-admin', 'rector', 'secretaria', 'docente'],
             'create election' => ['super-admin', 'rector', 'secretaria'],
             'edit election' => ['super-admin', 'rector', 'secretaria'],
