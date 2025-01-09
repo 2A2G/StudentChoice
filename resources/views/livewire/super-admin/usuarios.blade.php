@@ -43,16 +43,18 @@
         <div class="w-full px-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Usuarios</h2>
-                <a data-modal-target="static-modal" data-modal-toggle="static-modal" href="#" wire:click="cambiar"
-                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                        class="w-6 h-6 text-white">
-                        <path fill-rule="evenodd"
-                            d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-2">Nuevo usuario</span>
-                </a>
+                @can('create user')
+                    <a data-modal-target="static-modal" data-modal-toggle="static-modal" href="#" wire:click="cambiar"
+                        class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                            class="w-6 h-6 text-white">
+                            <path fill-rule="evenodd"
+                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="ml-2">Nuevo usuario</span>
+                    </a>
+                @endCan
             </div>
             @livewire('diagramas.table', ['case' => 'usuarios'])
         </div>

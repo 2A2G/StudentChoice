@@ -61,14 +61,19 @@ class RoleSeeder extends Seeder
             'delete course' => ['super-admin'],
 
             'view voting panel' => ['super-admin', 'rector', 'secretaria', 'docente'],
-            'view application' => ['super-admin', 'rector', 'secretaria'],
             'start voting' => ['super-admin', 'rector'],
             'close voting' => ['super-admin', 'rector'],
 
             'view results' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            
             'view voting history' => ['super-admin', 'rector', 'secretaria', 'docente'],
+            'create election' => ['super-admin', 'rector', 'secretaria'],
+            'edit election' => ['super-admin', 'rector', 'secretaria'],
+            'delete election' => ['super-admin', 'rector', 'secretaria'],
 
+            'view application' => ['super-admin', 'rector', 'secretaria'],
             'view applicants' => ['super-admin', 'rector', 'secretaria'],
+            'create applicant' => ['super-admin', 'rector', 'secretaria'],
             'general deletion or editing' => ['super-admin', 'rector', 'secretaria'],
 
         ];
