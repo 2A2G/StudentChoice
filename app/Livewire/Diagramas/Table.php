@@ -44,7 +44,7 @@ class Table extends Component
             ],
             'permisos' => [
                 'model' => Permission::class,
-                'method' => 'getPermissionData',
+                'method' => 'getPermissionsData',
                 'dataI' => ['name', 'estado'],
                 'columns' => ['Nombre del Permiso', 'Estado', 'Acción']
             ],

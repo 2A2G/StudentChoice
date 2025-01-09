@@ -98,7 +98,7 @@
                                     <p class="text-base leading-4  ">Usuarios</p>
                                 </a>
                             @endcan
-                            @can('view cursos')
+                            @can('view courses')
                                 <a href="{{ route('viewCursos') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2  w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -110,7 +110,7 @@
                                     <p class="text-base leading-4 ">Cursos</p>
                                 </a>
                             @endcan
-                            @can('view docentes')
+                            @can('view teachers')
                                 <a href="{{ route('viewDocentes') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2  w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -122,7 +122,7 @@
                                     <p class="text-base leading-4 ">Docentes</p>
                                 </a>
                             @endcan
-                            @can('view estudiantes')
+                            @can('view student')
                                 <a href="{{ route('viewEstudiantes') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2 w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -150,7 +150,7 @@
                         </button>
 
                         <div id="menu2" class="flex justify-start  flex-col w-full md:w-auto items-start pb-1 ">
-                            @can('view cargos')
+                            @can('view positions')
                                 <a href="{{ route('viewCargos') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2 w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -163,7 +163,7 @@
                                 </a>
                             @endcan
 
-                            @can('view panel votacion')
+                            @can('view voting panel')
                                 <a href="{{ route('viewPanelVotacion') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2  w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -175,7 +175,7 @@
                                     <p class="text-base leading-4  ">Panel de votación</p>
                                 </a>
                             @endcan
-                            @can('view historial votacion')
+                            @can('view voting history')
                                 <a href="{{ route('viewHistorialVotacion') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2  w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
@@ -190,7 +190,7 @@
                                     <p class="text-base leading-4  ">Elecciones</p>
                                 </a>
                             @endcan
-                            @can('view postulacion')
+                            @can('view applicants')
                                 <a href="{{ route('viewPostulacion') }}"
                                     class="flex justify-start items-center space-x-6 hover:text-white focus:bg-gray-700 focus:text-white hover:bg-gray-700 text-gray-400 rounded px-3 py-2 w-full md:w-52">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"

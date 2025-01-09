@@ -10,12 +10,21 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             @foreach ($columns as $column)
-                                <th scope="col" class="px-6 py-3">
-                                    {{ $column }}
-                                </th>
+                                @if ($column === 'Acción')
+                                    @can('general deletion or editing')
+                                        <th scope="col" class="px-6 py-3">
+                                            {{ $column }}
+                                        </th>
+                                    @endcan
+                                @else
+                                    <th scope="col" class="px-6 py-3">
+                                        {{ $column }}
+                                    </th>
+                                @endif
                             @endforeach
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach ($data as $row)
                             <tr
@@ -34,17 +43,19 @@
                                         </td>
                                     @endif
                                 @endforeach
-                                <td class="px-6 py-4">
-                                    <button wire:click="openModal('editar',{{ $row }}, '{{ $case }}')"
-                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                        Editar
-                                    </button>
-                                    <button
-                                        wire:click="openModal('eliminar',{{ $row }}, '{{ $case }}')"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                        Eliminar
-                                    </button>
-                                </td>
+                                @can('general deletion or editing')
+                                    <td class="px-6 py-4">
+                                        <button wire:click="openModal('editar',{{ $row }}, '{{ $case }}')"
+                                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                            Editar
+                                        </button>
+                                        <button
+                                            wire:click="openModal('eliminar',{{ $row }}, '{{ $case }}')"
+                                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                @endCan
                             </tr>
                         @endforeach
                     </tbody>

@@ -1,11 +1,13 @@
 <div class="mx-auto p-6 bg-white rounded-lg shadow-md max-w-6xl">
     @if ($estadoVotacion === true)
-        <div class="justify-self-end">
-            <button wire:click="finalizarVotacion"
-                class="px-6 py-3 bg-red-500 text-white font-bold rounded-md shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-green-300">
-                Finalizar Votaciones
-            </button>
-        </div>
+        @can('cerrar votacion')
+            <div class="justify-self-end">
+                <button wire:click="finalizarVotacion"
+                    class="px-6 py-3 bg-red-500 text-white font-bold rounded-md shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                    Finalizar Votaciones
+                </button>
+            </div>
+        @endCan
         <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Estatus de las Elecciones Institucionales</h1>
         <!-- Finalizar votaciones -->
         <div class="flex gap-6">
@@ -94,13 +96,14 @@
             <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Las elecciones no están activas</h1>
             <p class="text-center text-gray-600 mb-6">Actualmente las elecciones institucionales están cerradas. Si eres
                 un administrador, puedes iniciar las votaciones a continuación.</p>
-
-            <div class="text-center">
-                <button wire:click="iniciarVotacion"
-                    class="px-6 py-3 bg-green-500 text-white font-bold rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
-                    Iniciar Votaciones
-                </button>
-            </div>
+            @can('inicar votacion')
+                <div class="text-center">
+                    <button wire:click="iniciarVotacion"
+                        class="px-6 py-3 bg-green-500 text-white font-bold rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                        Iniciar Votaciones
+                    </button>
+                </div>
+            @endCan
         </div>
     @endif
 </div>

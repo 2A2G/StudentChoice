@@ -11,14 +11,18 @@ class ViewController extends Controller
 {
     public function __construct()
     {
-        // $this->middleware('can:view permission')->only('rolesPermisos');
-        // $this->middleware('can:view usuarios')->only('usuarios');
-        // $this->middleware('can:view estudiante')->only('estudiante');
-        // $this->middleware('can:view docentes')->only('docentes');
+        //Gestión
+        $this->middleware('can:view users')->only('usuarios');
+        $this->middleware('can:view students')->only('estudiante');
+        $this->middleware('can:view teachers')->only('docentes');
+        $this->middleware('can:view courses')->only('cursos');
+
+        // Sistema de Votacion
+        $this->middleware('can:view positions')->only('cargos');
+        $this->middleware('can:view voting panel')->only('panelVotacion');
+        $this->middleware('can:view voting history')->only('historialVotacion');
+        $this->middleware('can:view applicants')->only('postulacion');
     }
-
-
-
 
     public function isLogged()
     {
@@ -33,16 +37,11 @@ class ViewController extends Controller
     {
         return view('livewire.welcome');
     }
+    
     // Gestion
     public function index()
     {
         $caso = 'dashboard';
-        return view('livewire.dashboard', compact('caso'));
-    }
-
-    public function rolesPermisos()
-    {
-        $caso = 'rolesPermisos';
         return view('livewire.dashboard', compact('caso'));
     }
 
@@ -52,9 +51,9 @@ class ViewController extends Controller
         return view('livewire.dashboard', compact('caso'));
     }
 
-    public function cursos()
+    public function estudiante()
     {
-        $caso = 'cursos';
+        $caso = 'estudiante';
         return view('livewire.dashboard', compact('caso'));
     }
 
@@ -64,11 +63,18 @@ class ViewController extends Controller
         return view('livewire.dashboard', compact('caso'));
     }
 
-    public function estudiante()
+    public function rolesPermisos()
     {
-        $caso = 'estudiante';
+        $caso = 'rolesPermisos';
         return view('livewire.dashboard', compact('caso'));
     }
+
+    public function cursos()
+    {
+        $caso = 'cursos';
+        return view('livewire.dashboard', compact('caso'));
+    }
+
 
     // Sistema de Votacion
     public function cargos()
@@ -99,7 +105,6 @@ class ViewController extends Controller
     public function sveEstudinate()
     {
         $caso = 'estudiante';
-
         return view('livewire.invitado.dashboard', compact('caso'));
     }
 
