@@ -19,8 +19,12 @@ class Roles extends Component
     public $id_rol;
     public $permisosDisponibles;
     public $permiso_seleccionado = [];
-
     public $estado = '';
+
+    public $openUpdatePermisos = false;
+    public $openDeletePermisos = false;
+    public $name_permiso;
+    public $id_permiso;
 
 
     #[Validate('required')]
@@ -161,6 +165,92 @@ class Roles extends Component
             throw $th;
         }
     }
+
+
+    // Permisos
+    #[On('update-permisos')]
+    public function editPermisos($data)
+    {
+        if ($data) {
+            $this->name_permiso = $data['name'];
+            $this->id_permiso = $data['id'];
+            $this->estado = $data['estado'];
+            $this->openUpdatePermisos = true;
+
+        } else {
+            $this->dispatch('post-error', name: "Error, no se encontraron registros del rol. Inténtelo nuevamente.");
+            $this->clearInput();
+        }
+    }
+
+    public function updatePermiso()
+    {
+        try {
+            $this->validate([
+                'estado' => 'required',
+            ]);
+
+            $permisoUpdate = Permission::withTrashed()->find($this->id_permiso);
+
+            if (!$permisoUpdate) {
+                $this->dispatch('post-error', name: "El permiso no existe.");
+                return;
+            }
+            if ($this->estado == 'Eliminado') {
+                $permisoUpdate->delete();
+            } else {
+                $permisoUpdate->restore();
+            }
+
+            $this->dispatch('post-created', name: "Se ha actualizado satisfactoriamente el permiso, " . $this->name_permiso);
+            $this->openUpdatePermisos = false;
+            $this->clearInput();
+
+        } catch (\Throwable $th) {
+            $this->dispatch('post-error', name: "Error al registrar el permiso. Inténtelo de nuevo");
+            $this->clearInput();
+            $this->openUpdatePermisos = false;
+            throw $th;
+        }
+    }
+
+    #[On('delete-permisos')]
+    public function preeDeletePermisos($data)
+    {
+        if ($data) {
+            $this->name_permiso = $data['name'];
+            $this->id_permiso = $data['id'];
+            $this->openDeletePermisos = true;
+        } else {
+            $this->dispatch('post-error', name: "Error no se encontraron registros del permiso, inténtelo nuevamente");
+            $this->clearInput();
+        }
+    }
+
+    public function deletePermisos()
+    {
+        try {
+            $this->openDeletePermisos = false;
+            $permisoDelete = Permission::find($this->id_permiso);
+            if (!$permisoDelete) {
+                $this->dispatch('post-error', name: "Error: no se encontraron registros del permiso, inténtelo nuevamente");
+                $this->clearInput();
+                return;
+            }
+
+            $permisoDelete->delete();
+
+            $this->dispatch('post-created', name: "El permiso ha sido eliminado satisfactoriamente");
+            $this->clearInput();
+
+        } catch (\Throwable $th) {
+            $this->openDeletePermisos = false;
+            $this->dispatch('post-error', name: "El permiso " . $this->name_permiso . " no se pudo eliminar. Inténtelo nuevamente");
+            $this->clearInput();
+            throw $th;
+        }
+    }
+
 
     public function render()
     {
