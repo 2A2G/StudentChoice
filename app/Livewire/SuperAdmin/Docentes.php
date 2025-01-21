@@ -25,7 +25,8 @@ class Docentes extends Component
     public $asignatura = '';
     public $curso = '';
     public $curso_id = null;
-    public $estado;
+    public $estado = '';
+
 
     public function clearInput()
     {
@@ -35,7 +36,8 @@ class Docentes extends Component
         $this->name_docente = '';
         $this->sexo = '';
         $this->asignatura = '';
-        $this->curso = ';¿';
+        $this->curso = '';
+        $this->estado = '';
         $this->curso_id = null;
     }
 

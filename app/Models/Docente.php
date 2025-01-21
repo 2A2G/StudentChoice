@@ -46,6 +46,6 @@ class Docente extends Model
                 DB::raw('CASE WHEN docentes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
             )
             ->orderByRaw('docentes.id')
-            ->simplePaginate(10);
+            ->simplePaginate($page);
     }
 }
