@@ -43,6 +43,7 @@
             </p>
         </div>
     </div>
+    <div class="page-break"></div>
 
     <div class="page break-after-page">
         <div class="px-6 py-8 bg-white shadow-lg rounded-lg max-w-full">
@@ -61,12 +62,15 @@
                     <span class="text-gray-500">- Página 3</span>
                 </li>
                 @foreach ($cursos as $index => $curso)
-                    <li>
-                        <a href="#curso-{{ $curso->id }}" class="text-blue-600 font-medium hover:underline">
-                            Resultados de {{ $curso->nombre_curso }}
-                        </a>
-                        <span class="text-gray-500">- Página {{ $index + 4 }}</span>
-                    </li>
+                    @if ($curso->postulante->isNotEmpty())
+                        <!-- Verifica si el curso tiene postulantes -->
+                        <li>
+                            <a href="#curso-{{ $curso->id }}" class="text-blue-600 font-medium hover:underline">
+                                Resultados de {{ $curso->nombre_curso }}
+                            </a>
+                            <span class="text-gray-500">- Página {{ $index + 4 }}</span>
+                        </li>
+                    @endif
                 @endforeach
                 <li>
                     <a href="#resultados" class="text-blue-600 font-medium hover:underline">
@@ -83,7 +87,7 @@
             </ul>
         </div>
     </div>
-
+    <div class="page-break"></div>
 
     <div id="responsabilidades-cargos" class="page break-after-page">
         <div class="px-8 py-12 bg-gray-50">
@@ -97,6 +101,7 @@
             @endforeach
         </div>
     </div>
+    <div class="page-break"></div>
 
     <div id="fundamento-legal" class="page break-after-page">
         <div class="px-8 py-12 bg-gray-50">
@@ -117,43 +122,55 @@
             </div>
         </div>
     </div>
+    <div class="page-break"></div>
 
     @foreach ($cursos as $curso)
-        <div id="curso-{{ $curso->id }}" class="page break-after-page px-8 py-12">
-            <h2 class="text-4xl font-bold text-center text-blue-900 mb-8">Resultados del curso
-                {{ $curso->nombre_curso }}</h2>
+        @if ($curso->postulante->isNotEmpty())
+            <div id="curso-{{ $curso->id }}" class="page break-after-page px-8 py-12">
+                <h2 class="text-4xl font-bold text-center text-blue-900 mb-8">Resultados del curso
+                    {{ $curso->nombre_curso }}</h2>
 
-            <div class="text-lg text-gray-800 mb-6">
-                <p class="mb-4">
-                    <span class="font-semibold">Número de estudiantes: {{ $curso->estudiantes->count() }}</span>
+                <p class="text-lg text-gray-800 mb-6">
+                    En esta sección se presentan los resultados correspondientes al curso
+                    <strong>{{ $curso->nombre_curso }}</strong>, incluyendo el número total de estudiantes que han
+                    participado, la lista de postulantes junto con los cargos que ocupan, y las estadísticas generales
+                    del
+                    curso, tales como los votos totales, los votos en blanco y el número de estudiantes que aún no han
+                    votado.
                 </p>
-            </div>
 
-            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Postulantes</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-                @foreach ($curso->postulante as $postulante)
-                    <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
-                        <h4 class="text-xl font-semibold text-gray-800">
-                            {{ $postulante->estudiante->nombre_estudiante }}
-                        </h4>
-                        <p class="mt-2 text-lg text-gray-700">
-                            Cargo: {{ $postulante->cargo->nombre_cargo }}
-                        </p>
+                <div class="text-lg text-gray-800 mb-6">
+                    <p class="mb-4">
+                        <span class="font-semibold">Número de estudiantes: {{ $curso->estudiantes->count() }}</span>
+                    </p>
+                </div>
 
-                        <div class="mt-4">
-                            @php
-                                $totalVotos = $votos->where('postulante_id', $postulante->id)->sum('cantidad_voto');
-                            @endphp
-
-                            <p class="text-lg text-gray-700 leading-relaxed">
-                                Cantidad de votos: <span
-                                    class="font-semibold text-blue-600">{{ $totalVotos > 0 ? $totalVotos : '0' }}</span>
+                <h3 class="text-2xl font-semibold text-blue-700 mt-6">Postulantes</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+                    @foreach ($curso->postulante as $postulante)
+                        <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
+                            <h4 class="text-xl font-semibold text-gray-800">
+                                {{ $postulante->estudiante->nombre_estudiante }}
+                            </h4>
+                            <p class="mt-2 text-lg text-gray-700">
+                                Cargo: {{ $postulante->cargo->nombre_cargo }}
                             </p>
+
+                            <div class="mt-4">
+                                @php
+                                    $totalVotos = $votos->where('postulante_id', $postulante->id)->sum('cantidad_voto');
+                                @endphp
+
+                                <p class="text-lg text-gray-700 leading-relaxed">
+                                    Cantidad de votos: <span
+                                        class="font-semibold text-blue-600">{{ $totalVotos > 0 ? $totalVotos : '0' }}</span>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                @endforeach
-            </div>
-            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Estadísticas</h2>
+                    @endforeach
+                </div>
+
+                <h3 class="text-2xl font-semibold text-blue-700 mt-6">Estadísticas</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 mt-4">
                     <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
                         <h4 class="text-xl font-semibold text-gray-800">Votos Totales</h4>
@@ -177,19 +194,22 @@
                         </p>
                     </div>
                 </div>
+            </div>
+            <div class="page-break"></div>
+        @endif
     @endforeach
-
-
-
 
     <div id="resultados" class="page">
         <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
-            <h2 class="text-4xl font-bold text-center text-blue-900">Resultados</h2>
-
-
+            <h2 class="text-4xl font-bold text-center text-blue-900 mb-6">Resultados</h2>
+            <p class="text-lg text-gray-800 mb-8 text-center">
+                En esta sección se presentan los ganadores de cada postulante. Aquí podrás ver los estudiantes
+                que han obtenido la mayor cantidad de votos, junto con sus respectivos cargos. Además, si algún
+                cargo tiene más de un ganador debido a un empate, también se indicará.
+            </p>
         </div>
     </div>
-
+    <div class="page-break"></div>
 
     <div id="conclusion" class="page">
         <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
