@@ -9,10 +9,10 @@
 </head>
 
 <body class="bg-gray-50 font-serif text-gray-900">
-    <!-- Primera Página -->
     <div class="page break-after-page">
         <div class="flex flex-col items-center justify-center h-screen px-8 bg-gray-50">
-            <h1 class="text-5xl font-extrabold text-center text-blue-900">{{ $nameInstitucion }}</h1>
+            <h1 class="text-5xl font-extrabold text-center text-blue-900">INSTITUCIÓN EDUCATIVA {{ $nameInstitucion }}
+            </h1>
             <p class="mt-8 text-lg text-justify max-w-3xl text-gray-700 leading-relaxed">
                 La institución educativa <span class="font-semibold text-blue-800">{{ $nameInstitucion }}</span>, en
                 cumplimiento de lo
@@ -44,31 +44,41 @@
         </div>
     </div>
 
-    <!-- Tabla de Contenido -->
     <div class="page break-after-page">
-        <div class="px-8 py-12 bg-white shadow-md rounded-md">
-            <h2 class="text-4xl font-bold text-center text-blue-900">Tabla de Contenido</h2>
-            <ul class="mt-8 text-lg text-gray-700 leading-relaxed list-disc list-inside">
+        <div class="px-6 py-8 bg-white shadow-lg rounded-lg max-w-full">
+            <h2 class="text-3xl font-extrabold text-center text-blue-800 mb-4">Tabla de Contenido</h2>
+            <ul class="text-sm text-gray-700 leading-relaxed space-y-2">
                 <li>
-                    <a href="#responsabilidades-cargos" class="text-blue-600 hover:underline">
+                    <a href="#responsabilidades-cargos" class="text-blue-600 font-medium hover:underline">
                         Responsabilidades de los Cargos
-                    </a> - Página 2
+                    </a>
+                    <span class="text-gray-500">- Página 2</span>
                 </li>
                 <li>
-                    <a href="#fundamento-legal" class="text-blue-600 hover:underline">
+                    <a href="#fundamento-legal" class="text-blue-600 font-medium hover:underline">
                         Fundamento Legal
-                    </a> - Página 3
+                    </a>
+                    <span class="text-gray-500">- Página 3</span>
                 </li>
+                @foreach ($cursos as $index => $curso)
+                    <li>
+                        <a href="#curso-{{ $curso->id }}" class="text-blue-600 font-medium hover:underline">
+                            Resultados de {{ $curso->nombre_curso }}
+                        </a>
+                        <span class="text-gray-500">- Página {{ $index + 4 }}</span>
+                    </li>
+                @endforeach
                 <li>
-                    <a href="#conclusion" class="text-blue-600 hover:underline">
+                    <a href="#conclusion" class="text-blue-600 font-medium hover:underline">
                         Conclusión
-                    </a> - Página 4
+                    </a>
+                    <span class="text-gray-500">- Página {{ $cursos->count() + 4 }}</span>
                 </li>
             </ul>
         </div>
     </div>
 
-    <!-- Segunda Página - Responsabilidades -->
+
     <div id="responsabilidades-cargos" class="page break-after-page">
         <div class="px-8 py-12 bg-gray-50">
             <h2 class="text-4xl font-bold text-center text-blue-900">Responsabilidades de los Cargos</h2>
@@ -82,7 +92,6 @@
         </div>
     </div>
 
-    <!-- Tercera Página - Fundamento Legal -->
     <div id="fundamento-legal" class="page break-after-page">
         <div class="px-8 py-12 bg-gray-50">
             <h2 class="text-4xl font-bold text-center text-blue-900">Fundamento Legal</h2>
@@ -103,7 +112,43 @@
         </div>
     </div>
 
-    <!-- Página Final - Conclusión -->
+    @foreach ($cursos as $curso)
+        <div id="curso-{{ $curso->id }}" class="page break-after-page px-8 py-12">
+            <h2 class="text-4xl font-bold text-center text-blue-900 mb-8">Resultados del curso
+                {{ $curso->nombre_curso }}</h2>
+            <div class="text-lg text-gray-800">
+                <p class="mb-4">
+                    <span class="font-semibold">Número de estudiantes:</span>
+                </p>
+            </div>
+            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Postulantes</h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+                @foreach ($postulantes->where('curso_id', $curso->id) as $postulante)
+                    <div class="p-4 bg-white rounded-md shadow-md">
+                        <h4 class="text-xl font-semibold text-gray-800">
+                            {{ $postulante->estudiante->nombre_estudiante }}</h4>
+                        <p class="mt-2 text-lg text-gray-700 leading-relaxed">
+                            {{ $postulante->cargo->nombre_cargo }}
+                        </p>
+                    </div>
+                @endforeach
+            </div>
+
+
+            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Resultados de los comicios</h3>
+            <ul class="list-disc pl-5 text-lg mt-4">
+                {{-- @foreach ($curso->resultados as $resultado)
+                    <li>
+                        <span class="font-semibold">{{ $resultado->nombre_cargo }}:</span>
+                        {{ $resultado->estudiante_elegido }}
+                    </li>
+                @endforeach --}}
+            </ul>
+        </div>
+    @endforeach
+
+
     <div id="conclusion" class="page">
         <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
             <h2 class="text-4xl font-bold text-center text-blue-900">Conclusión</h2>
@@ -117,7 +162,7 @@
                 aprendizaje y liderazgo, fomentando valores esenciales para nuestra sociedad.
             </p>
             <p class="mt-8 text-lg text-center font-semibold text-gray-600">
-                {{ $nameInstitucion }} - {{ \Carbon\Carbon::now()->format('Y') }}
+                INSTITUCIÓN EDUCATIVA {{ $nameInstitucion }} - {{ \Carbon\Carbon::now()->format('Y') }}
             </p>
         </div>
     </div>

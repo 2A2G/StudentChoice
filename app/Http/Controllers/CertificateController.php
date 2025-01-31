@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Livewire\SistemaVotacion\Cargos;
 use App\Models\Cargo;
+use App\Models\Curso;
+use App\Models\Postulante;
 use Illuminate\Http\Request;
 
 class CertificateController extends Controller
@@ -12,6 +14,9 @@ class CertificateController extends Controller
     {
         $nameInstitucion = env('NAME_INSTITUCION', 'Nombre de la Institución');
         $fechaComicios = '2025-02-10';
+
+        $cursos = Curso::all();
+        $postulantes = Postulante::all();
 
         $normas = [
             [
@@ -26,7 +31,7 @@ class CertificateController extends Controller
 
         $cargos = Cargo::all();
 
-        return view('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos'));
+        return view('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes'));
     }
 
 }
