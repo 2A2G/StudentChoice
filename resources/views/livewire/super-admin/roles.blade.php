@@ -47,7 +47,7 @@
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Roles</h2>
                 @can('create role')
-                    <button data-modal-target="static-modal" data-modal-toggle="static-modal" wire:click="cambiar('rol')"
+                    <button data-modal-target="static-modal" data-modal-toggle="static-modal" wire:click="openCreateRol"
                         class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
                             class="w-6 h-6 text-white">
@@ -70,23 +70,207 @@
     </div>
 
     <div>
+        <!-- Roles -->
         <x-dialog-modal wire:model="open">
             <x-slot name="title">
-                <h1 class="text-lg font-medium">Crear nuevo {{ $name }}</h1>
+                <h1 class="text-lg font-medium">Crear nuevo rol</h1>
             </x-slot>
             <x-slot name="content">
-                <label class="block mb-2">Nombre del nuevo {{ $name }}</label>
-                <input type="text" wire:model.live="role"
+                <label class="block mb-2">Nombre del nuevo rol</label>
+                <input type="text" wire:model.live="name_rol"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
-                @error('role')
+                @error('name_rol')
                     {{ $message }}
                 @enderror
+
+                <div class="mt-4">
+                    <label class="block mb-2">Permisos que se aplicarán al rol</label>
+                    <div class="flex flex-wrap gap-4">
+                        @foreach ($permisosDisponibles as $permisoItem)
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="curso_{{ $permisoItem->id }}" value="{{ $permisoItem->id }}"
+                                    wire:model="permiso_seleccionado" class="mr-2"
+                                    {{ in_array($permisoItem->id, $permiso_seleccionado) ? 'checked' : '' }}>
+                                <label for="curso_{{ $permisoItem->id }}">{{ $permisoItem->name }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @error('permiso_seleccionado')
+                    <span class="text-red-500 block mt-2">{{ $message }}</span>
+                @enderror
                 <br>
-                <button wire:click="crear" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+
+                <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Crear
                 </button>
             </x-slot>
             <x-slot name="footer"></x-slot>
+        </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openUpdate">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Actualizar rol</h1>
+            </x-slot>
+            <x-slot name="content">
+                <label class="block mb-2">Nombre del rol</label>
+                <input type="text" wire:model.live="name_rol"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                @error('name_rol')
+                    {{ $message }}
+                @enderror
+
+                <div class="mt-4">
+                    <label class="block mb-2">Permisos que se aplicarán al rol</label>
+                    <div class="flex flex-wrap gap-4">
+                        @foreach ($permisosDisponibles as $permisoItem)
+                            <div class="flex items-center space-x-2">
+                                <input type="checkbox" id="curso_{{ $permisoItem->id }}" value="{{ $permisoItem->id }}"
+                                    wire:model="permiso_seleccionado" class="mr-2"
+                                    {{ in_array($permisoItem->id, $permiso_seleccionado) ? 'checked' : '' }}>
+                                <label for="curso_{{ $permisoItem->id }}">{{ $permisoItem->name }}</label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @error('permiso_seleccionado')
+                    <span class="text-red-500 block mt-2">{{ $message }}</span>
+                @enderror
+                <br>
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+                <br>
+
+                <button wire:click="update"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar rol
+                </button>
+            </x-slot>
+            <x-slot name="footer"></x-slot>
+        </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openDelete">
+            <x-slot name="title">
+                <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Confirmar Eliminación
+                </h1>
+            </x-slot>
+            <x-slot name="content">
+                <div class="flex flex-col items-center text-center">
+                    <!-- Icono de advertencia -->
+                    <div class="mb-4">
+                        <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <!-- Mensaje principal -->
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                        ¿Está seguro de eliminar este rol?
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Esta acción no se puede deshacer. Todos los datos asociados con este estudiante se perderán de
+                        forma permanente.
+                    </p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="mt-6 flex justify-center gap-4">
+                    <button wire:click="$set('openDelete', false)"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all">
+                        Cancelar
+                    </button>
+                    <button wire:click="delete"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                        Eliminar
+                    </button>
+                </div>
+            </x-slot>
+        </x-dialog-modal>
+
+        <!-- Permisos -->
+        <x-dialog-modal wire:model="openUpdatePermisos">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Detalles del permiso</h1>
+            </x-slot>
+            <x-slot name="content">
+                <label class="block mb-2">Nombre del permiso</label>
+                <input type="text" wire:model.live="name_permiso"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" disabled>
+                @error('name_permiso')
+                    {{ $message }}
+                @enderror
+
+                <label class="block mb-2">Selecione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    {{ $message }}
+                @enderror
+                <br>
+
+                <button wire:click="updatePermiso"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Actualizar rol
+                </button>
+            </x-slot>
+            <x-slot name="footer"></x-slot>
+        </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openDeletePermisos">
+            <x-slot name="title">
+                <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    Confirmar Eliminación
+                </h1>
+            </x-slot>
+            <x-slot name="content">
+                <div class="flex flex-col items-center text-center">
+                    <!-- Icono de advertencia -->
+                    <div class="mb-4">
+                        <svg class="w-16 h-16 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z">
+                            </path>
+                        </svg>
+                    </div>
+
+                    <!-- Mensaje principal -->
+                    <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                        ¿Está seguro de eliminar este permiso?
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                        Esta acción no se puede deshacer. Todos los datos asociados con este estudiante se perderán de
+                        forma permanente.
+                    </p>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="mt-6 flex justify-center gap-4">
+                    <button wire:click="$set('openDeletePermisos', false)"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-all">
+                        Cancelar
+                    </button>
+                    <button wire:click="deletePermisos"
+                        class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg transition-all transform hover:scale-105">
+                        Eliminar
+                    </button>
+                </div>
+            </x-slot>
         </x-dialog-modal>
     </div>
     {{-- Alerrta de notificaciones --}}

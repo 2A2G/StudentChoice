@@ -159,6 +159,7 @@ class Postulacion extends Component
                     ]);
                 }
             });
+            
             $nombreCargo = Cargo::find($this->cargo)->first();
 
             $this->dispatch('post-created', name: "La postulación de {$newPostulante->nombre_estudiante}, para el cargo de " . $nombreCargo->nombre_cargo . ", ha sido creada satisfactoriamente");

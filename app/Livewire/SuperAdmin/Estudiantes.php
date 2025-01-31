@@ -140,8 +140,8 @@ class Estudiantes extends Component
     public function preDelete($data)
     {
         if ($data) {
-            $this->openDelete = true;
             $this->numero_identidad = $data['numero_identidad'];
+            $this->openDelete = true;
         } else {
             $this->dispatch('post-error', name: "Error no se encontraron registros del estudinate, inténtelo nuevamente");
         }
@@ -161,10 +161,10 @@ class Estudiantes extends Component
             $estudiante->delete();
 
             $this->dispatch('post-created', name: "El estudiante ha sido eliminado satisfactoriamente");
-            $this->openUpdate = false;
+            $this->openDelete = false;
 
         } catch (\Throwable $th) {
-            $this->openUpdate = false;
+            $this->openDelete = false;
             $this->dispatch('post-error', name: "El estudiante " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
             throw $th;
         }

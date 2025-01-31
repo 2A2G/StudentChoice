@@ -31,7 +31,8 @@ class Table extends Component
     public $type;
     public $inDelete;
     public $inUpdate;
-
+    public $filters = [];
+    public $openFilter = false;
 
     public function datos()
     {
@@ -150,6 +151,10 @@ class Table extends Component
     public function refresh()
     {
         $this->datos();
+    }
+    public function filter()
+    {
+        $this->openFilter = true;
     }
 
     public function render()
