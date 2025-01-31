@@ -69,10 +69,16 @@
                     </li>
                 @endforeach
                 <li>
+                    <a href="#resultados" class="text-blue-600 font-medium hover:underline">
+                        Resultados
+                    </a>
+                    <span class="text-gray-500">- Página {{ $cursos->count() + 4 }}</span>
+                </li>
+                <li>
                     <a href="#conclusion" class="text-blue-600 font-medium hover:underline">
                         Conclusión
                     </a>
-                    <span class="text-gray-500">- Página {{ $cursos->count() + 4 }}</span>
+                    <span class="text-gray-500">- Página {{ $cursos->count() + 5 }}</span>
                 </li>
             </ul>
         </div>
@@ -116,37 +122,73 @@
         <div id="curso-{{ $curso->id }}" class="page break-after-page px-8 py-12">
             <h2 class="text-4xl font-bold text-center text-blue-900 mb-8">Resultados del curso
                 {{ $curso->nombre_curso }}</h2>
-            <div class="text-lg text-gray-800">
+
+            <div class="text-lg text-gray-800 mb-6">
                 <p class="mb-4">
-                    <span class="font-semibold">Número de estudiantes:</span>
+                    <span class="font-semibold">Número de estudiantes: {{ $curso->estudiantes->count() }}</span>
                 </p>
             </div>
-            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Postulantes</h3>
 
+            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Postulantes</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-                @foreach ($postulantes->where('curso_id', $curso->id) as $postulante)
-                    <div class="p-4 bg-white rounded-md shadow-md">
+                @foreach ($curso->postulante as $postulante)
+                    <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
                         <h4 class="text-xl font-semibold text-gray-800">
-                            {{ $postulante->estudiante->nombre_estudiante }}</h4>
-                        <p class="mt-2 text-lg text-gray-700 leading-relaxed">
-                            {{ $postulante->cargo->nombre_cargo }}
+                            {{ $postulante->estudiante->nombre_estudiante }}
+                        </h4>
+                        <p class="mt-2 text-lg text-gray-700">
+                            Cargo: {{ $postulante->cargo->nombre_cargo }}
                         </p>
+
+                        <div class="mt-4">
+                            @php
+                                $totalVotos = $votos->where('postulante_id', $postulante->id)->sum('cantidad_voto');
+                            @endphp
+
+                            <p class="text-lg text-gray-700 leading-relaxed">
+                                Cantidad de votos: <span
+                                    class="font-semibold text-blue-600">{{ $totalVotos > 0 ? $totalVotos : '0' }}</span>
+                            </p>
+                        </div>
                     </div>
                 @endforeach
             </div>
-
-
-            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Resultados de los comicios</h3>
-            <ul class="list-disc pl-5 text-lg mt-4">
-                {{-- @foreach ($curso->resultados as $resultado)
-                    <li>
-                        <span class="font-semibold">{{ $resultado->nombre_cargo }}:</span>
-                        {{ $resultado->estudiante_elegido }}
-                    </li>
-                @endforeach --}}
-            </ul>
-        </div>
+            <h3 class="text-2xl font-semibold text-blue-700 mt-6">Estadísticas</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-6 mt-4">
+                    <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
+                        <h4 class="text-xl font-semibold text-gray-800">Votos Totales</h4>
+                        <p class="mt-2 text-lg text-gray-700">
+                            <span
+                                class="font-semibold text-blue-600">{{ $votos->where('curso_id', $curso->id)->sum('cantidad_voto') }}</span>
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
+                        <h4 class="text-xl font-semibold text-gray-800">Votos en Blanco</h4>
+                        <p class="mt-2 text-lg text-gray-700">
+                            <span
+                                class="font-semibold text-blue-600">{{ $votos->where('curso_id', $curso->id)->where('cantidad_voto', 1)->count() }}</span>
+                        </p>
+                    </div>
+                    <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
+                        <h4 class="text-xl font-semibold text-gray-800">Estudiantes sin Votar</h4>
+                        <p class="mt-2 text-lg text-gray-700">
+                            <span
+                                class="font-semibold text-blue-600">{{ $curso->estudiantes->count() - $votos->where('curso_id', $curso->id)->count() }}</span>
+                        </p>
+                    </div>
+                </div>
     @endforeach
+
+
+
+
+    <div id="resultados" class="page">
+        <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
+            <h2 class="text-4xl font-bold text-center text-blue-900">Resultados</h2>
+
+
+        </div>
+    </div>
 
 
     <div id="conclusion" class="page">
