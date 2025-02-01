@@ -203,19 +203,66 @@
         <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
             <h2 class="text-4xl font-bold text-center text-blue-900 mb-6">Resultados</h2>
             <p class="text-lg text-gray-800 mb-8 text-center">
-                En esta sección se presentan los ganadores de cada postulante. Aquí podrás ver los estudiantes
-                que han obtenido la mayor cantidad de votos, junto con sus respectivos cargos. Además, si algún
-                cargo tiene más de un ganador debido a un empate, también se indicará.
+                Aquí se presentan los ganadores de las elecciones estudiantiles. Los resultados se dividen por cargos y
+                cursos, mostrando cualquier empate si ocurre.
             </p>
         </div>
+
+        <!-- Representantes de Curso -->
+        <h3 class="text-2xl font-semibold text-blue-800 mt-8">Representantes de Curso</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
+            @foreach ($resultados['representantes'] as $curso => $detalle)
+                <div class="bg-white shadow-md rounded-lg p-4">
+                    <h4 class="text-lg font-bold text-gray-700">{{ $curso }}</h4>
+                    @if ($detalle['empate'])
+                        <p class="text-red-600 mt-2">Empate:</p>
+                    @endif
+                    <ul>
+                        @foreach ($detalle['ganadores'] as $ganador)
+                            <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Contralor -->
+        <h3 class="text-2xl font-semibold text-blue-800 mt-8">Contralor</h3>
+        <div class="bg-white shadow-md rounded-lg p-4">
+            @if ($resultados['contralor']['empate'])
+                <p class="text-red-600">Empate:</p>
+            @endif
+            <ul>
+                @foreach ($resultados['contralor']['ganadores'] as $ganador)
+                    <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
+                @endforeach
+            </ul>
+        </div>
+
+        <!-- Personero -->
+        <h3 class="text-2xl font-semibold text-blue-800 mt-8">Personero</h3>
+        <div class="bg-white shadow-md rounded-lg p-4">
+            @if ($resultados['personero']['empate'])
+                <p class="text-red-600">Empate:</p>
+            @endif
+            <ul>
+                @foreach ($resultados['personero']['ganadores'] as $ganador)
+                    <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
+                @endforeach
+            </ul>
+        </div>
     </div>
+
+
+
     <div class="page-break"></div>
 
     <div id="conclusion" class="page">
         <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
             <h2 class="text-4xl font-bold text-center text-blue-900">Conclusión</h2>
             <p class="mt-6 text-lg text-justify max-w-3xl text-gray-700 leading-relaxed">
-                La institución educativa <span class="font-semibold">{{ $nameInstitucion }}</span> agradece a toda la
+                La institución educativa <span class="font-semibold">{{ $nameInstitucion }}</span> agradece a toda
+                la
                 comunidad estudiantil por su activa participación en este proceso democrático, que fortalece la
                 convivencia, la transparencia y el compromiso ciudadano.
             </p>
