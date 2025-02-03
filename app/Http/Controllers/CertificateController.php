@@ -38,36 +38,39 @@ class CertificateController extends Controller
         $cargoPersonero = Cargo::where('nombre_cargo', 'Personero')->first();
 
         $cursos = Curso::with('estudiantes')->get();
-
         $resultados = [
             'representantes' => [],
             'contralor' => [],
             'personero' => []
         ];
 
-        // Calcular ganadores para Representantes de Curso
+        // Calcular ganadores para Representante de cada Curso
         foreach ($cursos as $curso) {
-            $votosCurso = Votos::where('cargo_id', $cargoRepresenteCurso->id)
+            $representantes = Votos::where('cargo_id', $cargoRepresenteCurso->id)
                 ->whereHas('postulante', function ($query) use ($curso) {
-                    $query->where('curso_id', $curso->id); // Filtrar postulantes por curso
+                    $query->where('curso_id', $curso->id);
                 })
-                ->with('postulante') // Traer datos del postulante
-                ->get()
-                ->groupBy('postulante_id')
-                ->map(function ($grupo) {
-                    return $grupo->sum('cantidad_voto');
-                })
-                ->sortDesc();
+                ->orderBy('cantidad_voto', 'desc')
+                ->get();
 
-            $maxVotos = $votosCurso->first(); // Máxima cantidad de votos
-            $ganadores = $votosCurso->filter(fn($votos) => $votos === $maxVotos)->keys(); // Postulantes con máximo de votos
+            if ($representantes->isEmpty()) {
+                continue;
+            }
 
-            $resultados['representantes'][$curso->nombre] = [
-                'ganadores' => Postulante::whereIn('id', $ganadores)->get(),
-                'empate' => $ganadores->count() > 1
-            ];
+            $maxVotos = $representantes->first()->cantidad_voto;
+            $ganadores = $representantes->filter(function ($representante) use ($maxVotos) {
+                return $representante->cantidad_voto == $maxVotos;
+            });
+
+            // Preparar los resultados
+            foreach ($ganadores as $ganador) {
+                $resultados['representantes'][] = [
+                    'curso' => $curso->nombre_curso,
+                    'ganador' => $ganador->postulante->estudiante->nombre_estudiante . ' ' . $ganador->postulante->estudiante->apellido_estudiante ?? 'Nombre no disponible',
+                    'votos' => $ganador->cantidad_voto
+                ];
+            }
         }
-
 
         dd($resultados);
 
