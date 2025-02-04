@@ -44,7 +44,7 @@ class CertificateController extends Controller
             'personero' => []
         ];
 
-        // Calcular ganadores para Representante de cada Curso
+        // Ganadores para Representante de cada Curso
         foreach ($cursos as $curso) {
             $representantes = Votos::where('cargo_id', $cargoRepresenteCurso->id)
                 ->whereHas('postulante', function ($query) use ($curso) {
@@ -62,17 +62,18 @@ class CertificateController extends Controller
                 return $representante->cantidad_voto == $maxVotos;
             });
 
-            // Preparar los resultados
             foreach ($ganadores as $ganador) {
-                $resultados['representantes'][] = [
-                    'curso' => $curso->nombre_curso,
-                    'ganador' => $ganador->postulante->estudiante->nombre_estudiante . ' ' . $ganador->postulante->estudiante->apellido_estudiante ?? 'Nombre no disponible',
-                    'votos' => $ganador->cantidad_voto
+                $cursoNombre = $curso->nombre_curso;
+                if (!isset($resultados['representantes'][$cursoNombre])) {
+                    $resultados['representantes'][$cursoNombre] = [];
+                }
+
+                $resultados['representantes'][$cursoNombre][] = [
+                    'nombre' => $ganador->postulante->estudiante->nombre_estudiante . ' ' . $ganador->postulante->estudiante->apellido_estudiante ?? 'Nombre no disponible',
+                    'votos' => $ganador->cantidad_voto,
                 ];
             }
         }
-
-        dd($resultados);
 
         // Calcular ganador para Contralor
         $votosContralor = Votos::where('cargo_id', $cargoContralor->id)

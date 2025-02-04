@@ -211,20 +211,28 @@
         <!-- Representantes de Curso -->
         <h3 class="text-2xl font-semibold text-blue-800 mt-8">Representantes de Curso</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-            @foreach ($resultados['representantes'] as $curso => $detalle)
-                <div class="bg-white shadow-md rounded-lg p-4">
-                    <h4 class="text-lg font-bold text-gray-700">{{ $curso }}</h4>
-                    @if ($detalle['empate'])
-                        <p class="text-red-600 mt-2">Empate:</p>
-                    @endif
-                    <ul>
-                        @foreach ($detalle['ganadores'] as $ganador)
-                            <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
-                        @endforeach
-                    </ul>
+            @foreach ($resultados['representantes'] as $curso => $ganadores)
+                <div class="col-span-full">
+                    <div class="flex items-center justify-between bg-blue-100 p-4 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold text-blue-800">{{ $curso }}</h4>
+                        @if (count($ganadores) > 1)
+                            <span class="text-sm font-medium text-red-600 bg-red-100 px-2 py-1 rounded-md">
+                                ⚠️ Hay empate en este curso
+                            </span>
+                        @endif
+                    </div>
                 </div>
+                @foreach ($ganadores as $ganador)
+                    <div class="bg-white shadow-md rounded-lg p-4">
+                        <p class="text-lg font-semibold text-gray-800">{{ $ganador['nombre'] }}</p>
+                        <p class="text-gray-700">Votos: <span
+                                class="font-medium text-blue-700">{{ $ganador['votos'] }}</span></p>
+                    </div>
+                @endforeach
             @endforeach
         </div>
+
+
 
         <!-- Contralor -->
         <h3 class="text-2xl font-semibold text-blue-800 mt-8">Contralor</h3>
