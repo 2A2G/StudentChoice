@@ -211,70 +211,90 @@
         <!-- Representantes de Curso -->
         <h3 class="text-2xl font-semibold text-blue-800 mt-8">Representantes de Curso</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-            @foreach ($resultados['representantes'] as $curso => $detalle)
-                <div class="bg-white shadow-md rounded-lg p-4">
-                    <h4 class="text-lg font-bold text-gray-700">{{ $curso }}</h4>
-                    @if ($detalle['empate'])
-                        <p class="text-red-600 mt-2">Empate:</p>
-                    @endif
-                    <ul>
-                        @foreach ($detalle['ganadores'] as $ganador)
-                            <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
-                        @endforeach
-                    </ul>
+            @foreach ($resultados['representantes'] as $curso => $ganadores)
+                <div class="col-span-full">
+                    <div class="bg-blue-100 p-4 rounded-lg shadow-md">
+                        <h4 class="text-xl font-bold text-blue-800">{{ $curso }}</h4>
+                        @if (count($ganadores) > 1)
+                            <span class="text-sm font-medium text-red-600 bg-red-100 px-2 py-1 rounded-md mt-2 block">
+                                ⚠️ Hay empate en este curso
+                            </span>
+                        @endif
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                    @foreach ($ganadores as $ganador)
+                        <div class="bg-white shadow-md rounded-lg p-4 border border-gray-200">
+                            <p class="text-lg font-semibold text-gray-800">{{ $ganador['nombre'] }}</p>
+                            <p class="text-gray-700">Votos obtenidos: <span
+                                    class="font-medium text-blue-700">{{ $ganador['votos'] }}</span></p>
+                        </div>
+                    @endforeach
                 </div>
             @endforeach
         </div>
 
         <!-- Contralor -->
         <h3 class="text-2xl font-semibold text-blue-800 mt-8">Contralor</h3>
-        <div class="bg-white shadow-md rounded-lg p-4">
-            @if ($resultados['contralor']['empate'])
-                <p class="text-red-600">Empate:</p>
+        <div class="bg-white shadow-md rounded-lg p-6">
+            @if (count($resultados['contralor']) > 1)
+                <div
+                    class="flex items-center bg-red-100 border border-red-300 text-red-700 text-sm font-medium px-4 py-3 rounded-md mb-4">
+                    <span class="mr-2">⚠️</span>
+                    <span>Se ha producido un empate en este cargo</span>
+                </div>
             @endif
-            <ul>
-                @foreach ($resultados['contralor']['ganadores'] as $ganador)
-                    <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach ($resultados['contralor'] as $ganador)
+                    <div
+                        class="bg-gray-50 shadow-lg rounded-lg p-5 border border-gray-200 hover:shadow-xl transition-shadow duration-200">
+                        <p class="text-lg font-bold text-gray-800">{{ $ganador['nombre'] }}</p>
+                        <p class="text-sm text-gray-600 mt-1">Votos obtenidos:
+                            <span class="text-gray-900 font-medium">{{ $ganador['votos'] }}</span>
+                        </p>
+                    </div>
                 @endforeach
-            </ul>
+            </div>
         </div>
 
         <!-- Personero -->
         <h3 class="text-2xl font-semibold text-blue-800 mt-8">Personero</h3>
         <div class="bg-white shadow-md rounded-lg p-4">
-            @if ($resultados['personero']['empate'])
-                <p class="text-red-600">Empate:</p>
+            @if (count($resultados['personero']) > 1)
+                <span class="text-sm font-medium text-red-600 bg-red-100 px-2 py-1 rounded-md mt-2 block">
+                    ⚠️ Hay empate en este cargo
+                </span>
             @endif
-            <ul>
-                @foreach ($resultados['personero']['ganadores'] as $ganador)
-                    <li>{{ $ganador->nombre }} - {{ $ganador->votos->sum('cantidad_voto') }} votos</li>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+                @foreach ($resultados['personero'] as $ganador)
+                    <div class="bg-gray-50 shadow rounded-lg p-4 border border-gray-200">
+                        <p class="text-lg font-semibold text-gray-800">{{ $ganador['nombre'] }}</p>
+                        <p class="text-gray-700">Votos obtenidos: {{ $ganador['votos'] }}</p>
+                    </div>
                 @endforeach
-            </ul>
+            </div>
         </div>
-    </div>
 
+        <div class="page-break"></div>
 
-
-    <div class="page-break"></div>
-
-    <div id="conclusion" class="page">
-        <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
-            <h2 class="text-4xl font-bold text-center text-blue-900">Conclusión</h2>
-            <p class="mt-6 text-lg text-justify max-w-3xl text-gray-700 leading-relaxed">
-                La institución educativa <span class="font-semibold">{{ $nameInstitucion }}</span> agradece a toda
-                la
-                comunidad estudiantil por su activa participación en este proceso democrático, que fortalece la
-                convivencia, la transparencia y el compromiso ciudadano.
-            </p>
-            <p class="mt-6 text-lg text-justify max-w-3xl text-gray-700 leading-relaxed">
-                Seguiremos trabajando para garantizar que este tipo de actividades continúen siendo un espacio de
-                aprendizaje y liderazgo, fomentando valores esenciales para nuestra sociedad.
-            </p>
-            <p class="mt-8 text-lg text-center font-semibold text-gray-600">
-                INSTITUCIÓN EDUCATIVA {{ $nameInstitucion }} - {{ \Carbon\Carbon::now()->format('Y') }}
-            </p>
+        <div id="conclusion" class="page">
+            <div class="flex flex-col items-center justify-center px-8 py-12 bg-gray-50">
+                <h2 class="text-4xl font-bold text-center text-blue-900">Conclusión</h2>
+                <p class="mt-6 text-lg text-justify max-w-3xl text-gray-700 leading-relaxed">
+                    La institución educativa <span class="font-semibold">{{ $nameInstitucion }}</span> agradece a toda
+                    la
+                    comunidad estudiantil por su activa participación en este proceso democrático, que fortalece la
+                    convivencia, la transparencia y el compromiso ciudadano.
+                </p>
+                <p class="mt-6 text-lg text-justify max-w-3xl text-gray-700 leading-relaxed">
+                    Seguiremos trabajando para garantizar que este tipo de actividades continúen siendo un espacio de
+                    aprendizaje y liderazgo, fomentando valores esenciales para nuestra sociedad.
+                </p>
+                <p class="mt-8 text-lg text-center font-semibold text-gray-600">
+                    INSTITUCIÓN EDUCATIVA {{ $nameInstitucion }} - {{ \Carbon\Carbon::now()->format('Y') }}
+                </p>
+            </div>
         </div>
-    </div>
 </body>
 
 </html>
