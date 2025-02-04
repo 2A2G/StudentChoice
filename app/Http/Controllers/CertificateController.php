@@ -103,11 +103,15 @@ class CertificateController extends Controller
         $maxVotosPersonero = $votosPersonero->first();
         $ganadoresPersonero = $votosPersonero->filter(fn($votos) => $votos === $maxVotosPersonero)->keys();
 
-        $resultados['personero'] = [
-            'ganadores' => Postulante::whereIn('id', $ganadoresPersonero)->get(),
-            'empate' => $ganadoresPersonero->count() > 1
-        ];
+        foreach ($ganadoresPersonero as $ganadorId) {
+            $ganador = Postulante::find($ganadorId);
+            $resultados['personero'][] = [
+                'nombre' => $ganador->estudiante->nombre_estudiante . ' ' . $ganador->estudiante->apellido_estudiante ?? 'Nombre no disponible',
+                'votos' => $votosPersonero[$ganadorId],
+            ];
+        }
 
+        // dd($resultados)['personero'];
 
         return view('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados'));
     }
