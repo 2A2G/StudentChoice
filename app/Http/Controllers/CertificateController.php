@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Livewire\SistemaVotacion\Cargos;
-use App\Models\Cargo;
+use App\Services\VotacionService;
 use App\Models\Curso;
+use App\Models\Cargo;
 use App\Models\Postulante;
 use App\Models\Votos;
 use Illuminate\Http\Request;
 
 class CertificateController extends Controller
 {
+    protected $votacionService;
+
+    public function __construct(VotacionService $votacionService)
+    {
+        $this->votacionService = $votacionService;
+    }
+
     public function generarBoletin()
     {
         $nameInstitucion = env('NAME_INSTITUCION', 'Nombre de la Institución');
@@ -36,86 +43,36 @@ class CertificateController extends Controller
         $cargoContralor = Cargo::where('nombre_cargo', 'Contralor')->first();
         $cargoPersonero = Cargo::where('nombre_cargo', 'Personero')->first();
 
-        $cursos = Curso::with('estudiantes')->get();
         $resultados = [
             'representantes' => [],
             'contralor' => [],
             'personero' => []
         ];
 
-        // Ganadores para Representante de cada Curso
         foreach ($cursos as $curso) {
-            $representantes = Votos::where('cargo_id', $cargoRepresenteCurso->id)
-                ->whereHas('postulante', function ($query) use ($curso) {
-                    $query->where('curso_id', $curso->id);
-                })
-                ->orderBy('cantidad_voto', 'desc')
-                ->get();
+            $ganadoresRepresentante = $this->votacionService->calcularGanadoresPorCurso($cargoRepresenteCurso, $curso);
 
-            if ($representantes->isEmpty()) {
-                continue;
-            }
-
-            $maxVotos = $representantes->first()->cantidad_voto;
-            $ganadores = $representantes->filter(function ($representante) use ($maxVotos) {
-                return $representante->cantidad_voto == $maxVotos;
-            });
-
-            foreach ($ganadores as $ganador) {
-                $cursoNombre = $curso->nombre_curso;
-                if (!isset($resultados['representantes'][$cursoNombre])) {
-                    $resultados['representantes'][$cursoNombre] = [];
-                }
-
-                $resultados['representantes'][$cursoNombre][] = [
-                    'nombre' => $ganador->postulante->estudiante->nombre_estudiante . ' ' . $ganador->postulante->estudiante->apellido_estudiante ?? 'Nombre no disponible',
-                    'votos' => $ganador->cantidad_voto,
-                ];
+            if ($ganadoresRepresentante) {
+                $resultados['representantes'][$curso->nombre_curso] = $ganadoresRepresentante;
             }
         }
 
         // Contralor
-        $votosContralor = Votos::where('cargo_id', $cargoContralor->id)
-            ->get()
-            ->groupBy('postulante_id')
-            ->map(fn($grupo) => $grupo->sum('cantidad_voto'))
-            ->sortDesc();
+        $ganadoresContralor = $this->votacionService->calcularResultadosPorCargo($cargoContralor);
 
-        $maxVotosContralor = $votosContralor->first();
-        $ganadoresContralor = $votosContralor->filter(fn($votos) => $votos === $maxVotosContralor)->keys();
-
-
-        foreach (Postulante::whereIn('id', $ganadoresContralor)->get() as $ganador) {
-            $resultados['contralor'][] = [
-                'nombre' => $ganador->estudiante->nombre_estudiante . ' ' . $ganador->estudiante->apellido_estudiante ?? 'Nombre no disponible',
-                'votos' => $votosContralor[$ganador->id],
-            ];
+        if ($ganadoresContralor->isNotEmpty()) {
+            $resultados['contralor'] = $ganadoresContralor->toArray();
         }
 
+        // Personero
+        $ganadoresPersonero = $this->votacionService->calcularResultadosPorCargo($cargoPersonero);
 
-        // Calcular ganador para Personero
-        $votosPersonero = Votos::where('cargo_id', $cargoPersonero->id)
-            ->get()
-            ->groupBy('postulante_id')
-            ->map(fn($grupo) => $grupo->sum('cantidad_voto'))
-            ->sortDesc();
-
-        $maxVotosPersonero = $votosPersonero->first();
-        $ganadoresPersonero = $votosPersonero->filter(fn($votos) => $votos === $maxVotosPersonero)->keys();
-
-        foreach ($ganadoresPersonero as $ganadorId) {
-            $ganador = Postulante::find($ganadorId);
-            $resultados['personero'][] = [
-                'nombre' => $ganador->estudiante->nombre_estudiante . ' ' . $ganador->estudiante->apellido_estudiante ?? 'Nombre no disponible',
-                'votos' => $votosPersonero[$ganadorId],
-            ];
+        if ($ganadoresPersonero->isNotEmpty()) {
+            $resultados['personero'] = $ganadoresPersonero->toArray();
         }
 
-        // dd($resultados)['personero'];
-
+        // Retornamos la vista
         return view('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados'));
     }
-
-
 
 }
