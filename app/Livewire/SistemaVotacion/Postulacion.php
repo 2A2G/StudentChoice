@@ -63,7 +63,7 @@ class Postulacion extends Component
     {
         $this->cargos = Cargo::all();
         $this->cursosDisponibles = Curso::all();
-        $this->elecciones = Comicio::where('estado', 'activo')->get();
+        $this->elecciones = Comicio::where('estado', true)->get();
     }
 
     public function cambiar()
@@ -159,7 +159,7 @@ class Postulacion extends Component
                     ]);
                 }
             });
-            
+
             $nombreCargo = Cargo::find($this->cargo)->first();
 
             $this->dispatch('post-created', name: "La postulación de {$newPostulante->nombre_estudiante}, para el cargo de " . $nombreCargo->nombre_cargo . ", ha sido creada satisfactoriamente");

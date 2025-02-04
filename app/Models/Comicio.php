@@ -30,7 +30,7 @@ class Comicio extends Model
     public static function getComicio($page)
     {
         return self::with('postulante')
-            ->select('nombre_eleccion')
+            ->select('nombre_eleccion', 'id', 'estado', 'estado_eleccion', )
             ->withCount(['postulante as cantidad_postulantes'])
             ->simplePaginate($page);
     }

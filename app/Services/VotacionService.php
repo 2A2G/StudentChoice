@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class VotacionService
 {
-    public function calcularResultadosPorCargo(Cargo $cargo, $filtro = null): Collection
+    public function calcularResultadosPorCargo(Cargo $cargo, $filtro = null, $comicioId): Collection
     {
         $votos = Votos::where('cargo_id', $cargo->id);
 
@@ -26,7 +26,7 @@ class VotacionService
         $maxVotos = $votos->first();
         $ganadores = $votos->filter(fn($votos) => $votos === $maxVotos)->keys();
 
-        $ganadoresPostulantes = Postulante::whereIn('id', $ganadores)->get();
+        $ganadoresPostulantes = Postulante::whereIn('id', $ganadores)->where('comicio_id', $comicioId)->get();
 
         return $ganadoresPostulantes->map(function ($ganador) use ($votos) {
             return [
@@ -36,11 +36,12 @@ class VotacionService
         });
     }
 
-    public function calcularGanadoresPorCurso(Cargo $cargo, $curso): ?array
+    public function calcularGanadoresPorCurso(Cargo $cargo, $curso, $comicioId): ?array
     {
         $representantes = Votos::where('cargo_id', $cargo->id)
-            ->whereHas('postulante', function ($query) use ($curso) {
-                $query->where('curso_id', $curso->id);
+            ->whereHas('postulante', function ($query) use ($curso, $comicioId) {
+                $query->where('curso_id', $curso->id)
+                    ->where('comicio_id', $comicioId);
             })
             ->orderBy('cantidad_voto', 'desc')
             ->get();
@@ -50,17 +51,22 @@ class VotacionService
         }
 
         $maxVotos = $representantes->first()->cantidad_voto;
-
         $ganadores = $representantes->filter(function ($representante) use ($maxVotos) {
             return $representante->cantidad_voto == $maxVotos;
         });
 
         return $ganadores->map(function ($ganador) {
+            $nombreCompleto = $ganador->postulante->estudiante->nombre_estudiante
+                . ' '
+                . $ganador->postulante->estudiante->apellido_estudiante
+                ?? 'Nombre no disponible';
+
             return [
-                'nombre' => $ganador->postulante->estudiante->nombre_estudiante . ' ' . $ganador->postulante->estudiante->apellido_estudiante ?? 'Nombre no disponible',
+                'nombre' => $nombreCompleto,
                 'votos' => $ganador->cantidad_voto,
             ];
         })->toArray();
     }
+
 
 }

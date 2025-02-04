@@ -10,11 +10,8 @@ use Livewire\Component;
 
 class Historial extends Component
 {
-
     public $open = false;
-
     public $nombre_eleccion;
-
     public $estado = '';
 
     public function clearInput()
@@ -36,11 +33,19 @@ class Historial extends Component
         ]);
 
         try {
-            Comicio::create([
-                'nombre_eleccion' => $this->nombre_eleccion,
-            ]);
+            $comicio = Comicio::where('estado', true)->first();
 
-            $this->dispatch('post-created', name: "La elección " . $this->nombre_eleccion . ", creado satisfactoriamente");
+            if ($comicio) {
+                $this->dispatch('post-warning', name: "No se puede crear una nueva elección, ya que hay una elección activa");
+            } else {
+                $comicio = Comicio::create([
+                    'nombre_eleccion' => $this->nombre_eleccion,
+                    'estado' => true,
+                ]);
+
+                $this->dispatch('post-created', name: "La elección " . $this->nombre_eleccion . " ha sido creada satisfactoriamente");
+            }
+
             $this->clearInput();
             $this->open = false;
 
@@ -49,15 +54,22 @@ class Historial extends Component
         }
     }
 
+    public function showResults($comcioId)
+    {
+        return redirect()->route('viewResultados', ['comicioId' => $comcioId]);
+    }
 
 
     public function render()
     {
         $totalPostulantesAnios = Postulante::all()->count();
+        $comicioData = Comicio::getComicio(10);
+
         return view(
             'livewire.sistema-votacion.historial',
             [
-                'totalPostulantesAnios' => $totalPostulantesAnios
+                'totalPostulantesAnios' => $totalPostulantesAnios,
+                'comicioData' => $comicioData,
             ]
         );
     }

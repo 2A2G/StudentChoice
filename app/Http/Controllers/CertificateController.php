@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Services\VotacionService;
@@ -7,7 +6,7 @@ use App\Models\Curso;
 use App\Models\Cargo;
 use App\Models\Postulante;
 use App\Models\Votos;
-use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CertificateController extends Controller
 {
@@ -18,7 +17,7 @@ class CertificateController extends Controller
         $this->votacionService = $votacionService;
     }
 
-    public function generarBoletin()
+    public function generarBoletin($comicioId)
     {
         $nameInstitucion = env('NAME_INSTITUCION', 'Nombre de la Institución');
         $fechaComicios = '2025-02-10';
@@ -50,29 +49,27 @@ class CertificateController extends Controller
         ];
 
         foreach ($cursos as $curso) {
-            $ganadoresRepresentante = $this->votacionService->calcularGanadoresPorCurso($cargoRepresenteCurso, $curso);
+            $ganadoresRepresentante = $this->votacionService->calcularGanadoresPorCurso($cargoRepresenteCurso, $curso, $comicioId);
 
             if ($ganadoresRepresentante) {
                 $resultados['representantes'][$curso->nombre_curso] = $ganadoresRepresentante;
             }
         }
 
-        // Contralor
-        $ganadoresContralor = $this->votacionService->calcularResultadosPorCargo($cargoContralor);
+        $ganadoresContralor = $this->votacionService->calcularResultadosPorCargo($cargoContralor, null, $comicioId);
 
         if ($ganadoresContralor->isNotEmpty()) {
             $resultados['contralor'] = $ganadoresContralor->toArray();
         }
 
-        // Personero
-        $ganadoresPersonero = $this->votacionService->calcularResultadosPorCargo($cargoPersonero);
+        $ganadoresPersonero = $this->votacionService->calcularResultadosPorCargo($cargoPersonero, null, $comicioId);
 
         if ($ganadoresPersonero->isNotEmpty()) {
             $resultados['personero'] = $ganadoresPersonero->toArray();
         }
 
-        // Retornamos la vista
-        return view('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados'));
-    }
+        $pdf = Pdf::loadView('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados'));
 
+        return $pdf->download('boletin_comicios.pdf');
+    }
 }

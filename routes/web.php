@@ -32,7 +32,7 @@ Route::middleware(['auth'])->group(
                 Route::get('/votacion', [ViewController::class, 'panelVotacion'])->name('viewPanelVotacion');
                 Route::get('/historial', [ViewController::class, 'historialVotacion'])->name('viewHistorialVotacion');
                 Route::get('/postulacion', [ViewController::class, 'postulacion'])->name('viewPostulacion');
-                Route::get('/resultados', [CertificateController::class, 'generarBoletin'])->name('viewResultados');
+                Route::get('/resultados/{comicioId}', [CertificateController::class, 'generarBoletin'])->name('viewResultados');
             });
         });
     }
