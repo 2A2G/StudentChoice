@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Livewire\SistemaVotacion\Cargos;
 use App\Models\Cargo;
 use App\Models\Curso;
-use App\Models\Estudiante;
 use App\Models\Postulante;
 use App\Models\Votos;
 use Illuminate\Http\Request;
@@ -75,7 +74,7 @@ class CertificateController extends Controller
             }
         }
 
-        // Calcular ganador para Contralor
+        // Contralor
         $votosContralor = Votos::where('cargo_id', $cargoContralor->id)
             ->get()
             ->groupBy('postulante_id')
@@ -85,10 +84,14 @@ class CertificateController extends Controller
         $maxVotosContralor = $votosContralor->first();
         $ganadoresContralor = $votosContralor->filter(fn($votos) => $votos === $maxVotosContralor)->keys();
 
-        $resultados['contralor'] = [
-            'ganadores' => Postulante::whereIn('id', $ganadoresContralor)->get(),
-            'empate' => $ganadoresContralor->count() > 1
-        ];
+
+        foreach (Postulante::whereIn('id', $ganadoresContralor)->get() as $ganador) {
+            $resultados['contralor'][] = [
+                'nombre' => $ganador->estudiante->nombre_estudiante . ' ' . $ganador->estudiante->apellido_estudiante ?? 'Nombre no disponible',
+                'votos' => $votosContralor[$ganador->id],
+            ];
+        }
+
 
         // Calcular ganador para Personero
         $votosPersonero = Votos::where('cargo_id', $cargoPersonero->id)
