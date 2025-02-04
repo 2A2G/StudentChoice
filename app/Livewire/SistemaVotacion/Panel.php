@@ -6,6 +6,7 @@ use App\Models\Comicio;
 use App\Models\Curso;
 use App\Models\Estudiante;
 use App\Models\opcionesEstudiante;
+use Exception;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -19,20 +20,22 @@ class Panel extends Component
     public $cursoSeleccionado;
     public $totalNoBlanco;
     public $totalVotosBlanco;
+    public $estadoComicio;
 
     public function mount()
     {
-        $comicio = Comicio::where('estado', 'activo')->first();
-        if (empty($comicio) || $comicio->estado_eleccion !== false) {
+        $comicio = Comicio::where('estado', true)->first();
+        if (!empty($comicio)) {
             $this->estadoVotacion = $comicio->estado_eleccion;
         } else {
             $this->estadoVotacion = false;
+            $this->estadoComicio = false;
         }
     }
     public function iniciarVotacion()
     {
         try {
-            $comicio = Comicio::where('estado', 'activo')->first();
+            $comicio = Comicio::where('estado', true)->first();
             $comicio->update([
                 'estado_eleccion' => true
             ]);
@@ -47,10 +50,15 @@ class Panel extends Component
     public function finalizarVotacion()
     {
         try {
-            $comicio = Comicio::where('estado', 'activo')->first();
-            $comicio->update([
-                'estado_eleccion' => false
-            ]);
+            $comicio = Comicio::where('estado', true)->first();
+
+            if ($comicio) {
+                $comicio->estado = false;
+                $comicio->estado_eleccion = false;
+                $comicio->save();
+            } else {
+                throw new Exception('No hay un comicio con estado "activo".');
+            }
 
             // $this->dispatch('post-created', name: "Se ha finalizado el comicio " . $comicio->nombre_eleccion);
             $this->mount();

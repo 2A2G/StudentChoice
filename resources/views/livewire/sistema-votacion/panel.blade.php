@@ -99,9 +99,11 @@
             @can('start voting')
                 <div class="text-center">
                     <button wire:click="iniciarVotacion"
-                        class="px-6 py-3 bg-green-500 text-white font-bold rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300">
+                        class="px-6 py-3 bg-green-500 text-white font-bold rounded-md shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-300"
+                        @if ($estadoComicio === false) disabled @endif>
                         Iniciar Votaciones
                     </button>
+
                 </div>
             @endCan
         </div>

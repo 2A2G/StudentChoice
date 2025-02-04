@@ -85,12 +85,6 @@ class Table extends Component
                 'dataI' => ['nombre_cargo', 'descripcion_cargo', 'estado'],
                 'columns' => ['Nombre del Cargo', 'Descripción del Cargo', 'Estado', 'Acción']
             ],
-            'comicio' => [
-                'model' => Comicio::class,
-                'method' => 'getComicio',
-                'dataI' => ['nombre_eleccion', 'cantidad_postulantes'],
-                'columns' => ['Año de Postulación', 'Cantidad de Postulantes', 'Acción']
-            ],
             'default' => [
                 'model' => Role::class,
                 'method' => 'simplePaginate',

@@ -43,66 +43,115 @@
                     </button>
                 @endCan
             </div>
-            @livewire('diagramas.table', ['case' => 'comicio'])
+            <div>
+                <table class="table-auto w-full text-left">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Nombre de la Elección</th>
+                            <th scope="col" class="px-6 py-3">Cantidad de Postulantes</th>
+                            <th scope="col" class="px-6 py-3">Estado del comicio</th>
+                            <th scope="col" class="px-6 py-3">Estado de la elección</th>
+                            <th scope="col" class="px-6 py-3">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($comicioData as $comicio)
+                            <tr>
+                                <td class="px-6 py-4">{{ $comicio->nombre_eleccion }}</td>
+                                <td class="px-6 py-4">{{ $comicio->cantidad_postulantes }}</td>
+
+                                <td class="px-6 py-4">
+                                    @if ($comicio->estado)
+                                        <span class="px-2 py-1 bg-green-500 text-white rounded-full">Activo</span>
+                                    @else
+                                        <span class="px-2 py-1 bg-gray-400 text-white rounded-full">Finalizado</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4">
+                                    @if ($comicio->estado_eleccion)
+                                        <span class="px-2 py-1 bg-blue-500 text-white rounded-full">En Curso</span>
+                                    @elseif($comicio->estado)
+                                        <span class="px-2 py-1 bg-orange-500 text-white rounded-full">Pendiente</span>
+                                    @else
+                                        <span class="px-2 py-1 bg-gray-600 text-white rounded-full">Finalizada</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button wire:click="showResults({{ $comicio->id }})"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                                        Ver resultados
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay datos disponibles
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+
+
+                <div class="mt-4">
+                    {{ $comicioData->links() }}
+                </div>
+            </div>
         </div>
-    </div>
+
+        <div>
+            <x-dialog-modal wire:model="open">
+                <x-slot name="title">
+                    <h1 class="text-lg font-medium">Datos de la elección</h1>
+                </x-slot>
+
+                <x-slot name="content">
+                    <label class="block mb-2">Nombre de la elección</label>
+                    <input type="text" wire:model="nombre_eleccion"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required maxlength="255">
+                    @error('nombre_eleccion')
+                        <span class="text-red-500">{{ $message }}</span>
+                    @enderror
+
+                    <br>
+                    <button wire:click="store"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Crear Elección
+                    </button>
+                </x-slot>
+            </x-dialog-modal>
 
 
-    <div>
-        <x-dialog-modal wire:model="open">
-            <x-slot name="title">
-                <h1 class="text-lg font-medium">Datos de la elección</h1>
-            </x-slot>
+            <x-dialog-modal wire:model="openUpdate">
+                <x-slot name="title">
+                    <h1 class="text-lg font-medium">Datos de la elección</h1>
+                </x-slot>
 
-            <x-slot name="content">
-                <!-- Campo de nombre de la elección -->
-                <label class="block mb-2">Nombre de la elección</label>
-                <input type="text" wire:model="nombre_eleccion"
-                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required maxlength="255">
-                @error('nombre_eleccion')
-                    <span class="text-red-500">{{ $message }}</span>
-                @enderror
+                <x-slot name="content">
+                    <label class="block mb-2">Nombre de la elección</label>
+                    <input type="text" wire:model="nombre_eleccion"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required maxlength="255">
+                    @error('nombre_eleccion')
+                        <span class="text-red-500">{{ $message }}</span>
+                    @enderror
 
-                <!-- Botón para crear elección -->
-                <br>
-                <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                    Crear Elección
-                </button>
-            </x-slot>
-        </x-dialog-modal>
+                    <label class="block mb-2">Estado</label>
+                    <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
+                        <option disabled value="">Seleccione el estado</option>
+                        <option value="activa">Activa</option>
+                        <option value="inactiva">Inactiva</option>
+                    </select>
+                    @error('estado')
+                        <span class="text-red-500">{{ $message }}</span>
+                    @enderror
 
-
-        <x-dialog-modal wire:model="openUpdate">
-            <x-slot name="title">
-                <h1 class="text-lg font-medium">Datos de la elección</h1>
-            </x-slot>
-
-            <x-slot name="content">
-                <!-- Campo de nombre de la elección -->
-                <label class="block mb-2">Nombre de la elección</label>
-                <input type="text" wire:model="nombre_eleccion"
-                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required maxlength="255">
-                @error('nombre_eleccion')
-                    <span class="text-red-500">{{ $message }}</span>
-                @enderror
-
-                <!-- Campo de estado -->
-                <label class="block mb-2">Estado</label>
-                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
-                    <option disabled value="">Seleccione el estado</option>
-                    <option value="activa">Activa</option>
-                    <option value="inactiva">Inactiva</option>
-                </select>
-                @error('estado')
-                    <span class="text-red-500">{{ $message }}</span>
-                @enderror
-
-                <!-- Botón para crear elección -->
-                <br>
-                <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                    Crear Elección
-                </button>
-            </x-slot>
-        </x-dialog-modal>
+                    <br>
+                    <button wire:click="store"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Crear Elección
+                    </button>
+                </x-slot>
+            </x-dialog-modal>
+        </div>
     </div>
 </div>

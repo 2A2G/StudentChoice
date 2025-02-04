@@ -8,6 +8,99 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
+<style>
+    @page {
+        margin: 20mm;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    .page {
+        page-break-after: always;
+    }
+
+    /* Estilos para el contenido de las páginas */
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .page h1, .page h2, .page h3 {
+        margin-bottom: 10px;
+    }
+
+    .page h1 {
+        font-size: 36px;
+    }
+
+    .page h2 {
+        font-size: 28px;
+    }
+
+    .page h3 {
+        font-size: 24px;
+    }
+
+    .page p {
+        margin-bottom: 20px;
+        line-height: 1.6;
+    }
+
+    .page a {
+        color: #007BFF;
+        text-decoration: none;
+    }
+
+    .page a:hover {
+        text-decoration: underline;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .table th, .table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .table th {
+        background-color: #f2f2f2;
+    }
+
+    .card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+    }
+
+    .card-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .card-text {
+        font-size: 16px;
+        color: #666;
+    }
+
+    .highlight {
+        background-color: #FFFF00;
+        font-weight: bold;
+    }
+
+    .warning {
+        color: red;
+    }
+</style>
+
 <body class="bg-gray-50 font-serif text-gray-900">
     <div class="page break-after-page">
         <div class="flex flex-col items-center justify-center h-screen px-8 bg-gray-50">

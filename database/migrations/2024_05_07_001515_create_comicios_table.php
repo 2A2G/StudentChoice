@@ -14,20 +14,13 @@ return new class extends Migration {
         Schema::create('comicios', function (Blueprint $table) {
             $table->id();
             $table->string('nombre_eleccion');
-            $table->string('estado')->default('activo');
+            $table->boolean('estado')->default(true);
             $table->string('anio_eleccion')->default(date('Y'));
-            $table->boolean('estado_eleccion')->default('false');
+            $table->boolean('estado_eleccion')->default(false);
 
             $table->softDeletes();
             $table->timestamps();
         });
-
-        DB::statement('
-            CREATE UNIQUE INDEX unique_active_comicio
-            ON comicios (estado)
-            WHERE estado = \'activo\';
-        ');
-
     }
 
     /**
