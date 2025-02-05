@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Cargo;
+use App\Models\Curso;
+use App\Models\Estudiante;
+use App\Models\opcionesEstudiante;
 use App\Models\Postulante;
 use App\Models\Votos;
 use Illuminate\Support\Collection;
@@ -68,5 +71,24 @@ class VotacionService
         })->toArray();
     }
 
+    public function estudiantesSinVotarPorCurso()
+    {
+        $cursos = Curso::all();
+        $votos = OpcionesEstudiante::all();
+        $resultado = [];
 
+        foreach ($cursos as $curso) {
+            $estudiantesDelCurso = Estudiante::where('curso_id', $curso->id)->get();
+
+            $sinVotar = $estudiantesDelCurso->filter(function ($estudiante) use ($votos) {
+                return !$votos->where('estudiante_id', $estudiante->id)->first();
+            })->count();
+
+            $resultado[] = [
+                'curso_id' => $curso->id,
+                'sinVotar' => $sinVotar,
+            ];
+        }
+        return $resultado;
+    }
 }
