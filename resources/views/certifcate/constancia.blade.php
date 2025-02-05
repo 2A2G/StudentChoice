@@ -26,7 +26,9 @@
         font-family: 'Roboto', sans-serif;
     }
 
-    .page h1, .page h2, .page h3 {
+    .page h1,
+    .page h2,
+    .page h3 {
         margin-bottom: 10px;
     }
 
@@ -62,7 +64,8 @@
         margin-top: 20px;
     }
 
-    .table th, .table td {
+    .table th,
+    .table td {
         border: 1px solid #ddd;
         padding: 8px;
         text-align: center;
@@ -282,8 +285,11 @@
                     <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
                         <h4 class="text-xl font-semibold text-gray-800">Estudiantes sin Votar</h4>
                         <p class="mt-2 text-lg text-gray-700">
-                            <span
-                                class="font-semibold text-blue-600">{{ $curso->estudiantes->count() - $votos->where('curso_id', $curso->id)->count() }}</span>
+                            @foreach ($estudiantesSinVotar as $sinVotar)
+                                @if ($sinVotar['curso_id'] == $curso->id)
+                                    <span class="font-semibold text-blue-600">{{ $sinVotar['sinVotar'] }}</span>
+                                @endif
+                            @endforeach
                         </p>
                     </div>
                 </div>

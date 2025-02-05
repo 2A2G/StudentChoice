@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Services\VotacionService;
 use App\Models\Curso;
 use App\Models\Cargo;
+use App\Models\Estudiante;
 use App\Models\Postulante;
 use App\Models\Votos;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -67,9 +68,11 @@ class CertificateController extends Controller
         if ($ganadoresPersonero->isNotEmpty()) {
             $resultados['personero'] = $ganadoresPersonero->toArray();
         }
+        $estudiantesSinVotar = $this->votacionService->estudiantesSinVotarPorCurso();
 
-        $pdf = Pdf::loadView('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados'));
+        $pdf = Pdf::loadView('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados', 'estudiantesSinVotar'));
 
         return $pdf->download('boletin_comicios.pdf');
+
     }
 }
