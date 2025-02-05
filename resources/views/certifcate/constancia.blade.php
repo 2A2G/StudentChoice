@@ -5,104 +5,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boletín Electoral</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
+
+    <style>
+        /* Ensure consistent font rendering in PDF */
+        body {
+            font-family: 'DejaVu Sans', Arial, sans-serif;
+        }
+
+        /* Prevent page breaks in undesirable locations */
+        .page-break {
+            page-break-before: always;
+        }
+
+        /* Ensure images scale correctly */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Improve table rendering */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        /* Ensure background colors are preserved */
+        .bg-gray-50,
+        .bg-white,
+        .bg-blue-100 {
+            -pdf-background-color: currentColor;
+        }
+
+        /* Fix for color preservation */
+        * {
+            -pdf-keep-color: true;
+        }
+
+        /* Prevent content overflow */
+        .page {
+            overflow: hidden;
+        }
+
+        /* Ensure text is not cut off */
+        p,
+        div {
+            word-wrap: break-word;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                zoom: 1;
+            }
+        }
+    </style>
 </head>
 
-<style>
-    @page {
-        margin: 20mm;
-    }
-
-    .page-break {
-        page-break-before: always;
-    }
-
-    .page {
-        page-break-after: always;
-    }
-
-    /* Estilos para el contenido de las páginas */
-    body {
-        font-family: 'Roboto', sans-serif;
-    }
-
-    .page h1,
-    .page h2,
-    .page h3 {
-        margin-bottom: 10px;
-    }
-
-    .page h1 {
-        font-size: 36px;
-    }
-
-    .page h2 {
-        font-size: 28px;
-    }
-
-    .page h3 {
-        font-size: 24px;
-    }
-
-    .page p {
-        margin-bottom: 20px;
-        line-height: 1.6;
-    }
-
-    .page a {
-        color: #007BFF;
-        text-decoration: none;
-    }
-
-    .page a:hover {
-        text-decoration: underline;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-    }
-
-    .table th,
-    .table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: center;
-    }
-
-    .table th {
-        background-color: #f2f2f2;
-    }
-
-    .card {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-    }
-
-    .card-title {
-        font-size: 20px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .card-text {
-        font-size: 16px;
-        color: #666;
-    }
-
-    .highlight {
-        background-color: #FFFF00;
-        font-weight: bold;
-    }
-
-    .warning {
-        color: red;
-    }
-</style>
 
 <body class="bg-gray-50 font-serif text-gray-900">
     <div class="page break-after-page">
@@ -246,7 +206,7 @@
                     @foreach ($curso->postulante as $postulante)
                         <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
                             <h4 class="text-xl font-semibold text-gray-800">
-                                {{ $postulante->estudiante->nombre_estudiante }}
+                                {{ $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante }}
                             </h4>
                             <p class="mt-2 text-lg text-gray-700">
                                 Cargo: {{ $postulante->cargo->nombre_cargo }}
