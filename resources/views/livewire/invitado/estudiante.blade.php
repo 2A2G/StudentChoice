@@ -2,8 +2,6 @@
     <div class="mb-6">
         <x-authentication-card-logo class="w-24 h-24" />
     </div>
-    <p class="text-gray-700 text-lg font-semibold mb-2">Sistema de Votación</p>
-    <h1 class="text-2xl font-extrabold text-gray-900 mb-6">INEFRAPASA</h1>
 
     <!-- Formulario -->
     <form action="{{ route('sveVotacion') }}" method="POST" class="w-full">
@@ -24,6 +22,5 @@
         <button type="submit"
             class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 w-full">Entrar</button>
     </form>
-
     <x-notificacion />
 </div>
