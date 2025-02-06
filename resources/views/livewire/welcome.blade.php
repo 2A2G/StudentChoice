@@ -25,8 +25,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Footer -->
-            <x-footer class="mt-6" />
         </div>
     </x-guest-layout>
 </div>
