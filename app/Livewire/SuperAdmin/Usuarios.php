@@ -23,6 +23,8 @@ class Usuarios extends Component
     public $roles;
     public $permisos;
     public $filterUser;
+    public $userActivos;
+    public $userSistema;
 
     public function clearInput()
     {
@@ -32,10 +34,13 @@ class Usuarios extends Component
         $this->estado = '';
         $this->mount();
     }
+
     public function mount()
     {
         $this->roles = Role::all(['id', 'name'])->toArray();
         $this->permisos = Permission::get()->toArray();
+        $this->userActivos = User::all();
+        $this->userSistema = User::withTrashed()->get();
     }
 
 
@@ -86,10 +91,11 @@ class Usuarios extends Component
                 $this->role = '';
             }
 
-            if (isset($data['estado'])) {
-                $this->estado = $data['estado'];
+
+            if ($data['deleted_at'] != null) {
+                $this->estado = "Eliminado";
             } else {
-                $this->estado = 'Activo';
+                $this->estado = "Activo";
             }
 
             $this->openUpdate = true;
@@ -177,6 +183,7 @@ class Usuarios extends Component
 
     public function filter()
     {
+        $this->clearInput();
         $this->openFilter = true;
     }
 

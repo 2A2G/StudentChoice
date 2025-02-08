@@ -23,7 +23,7 @@ class Curso extends Model
 
     public function estudiantes()
     {
-        return $this->hasMany(Postulante::class, 'curso_id');
+        return $this->hasMany(Estudiante::class, 'curso_id');
     }
 
     public function postulante()
@@ -36,10 +36,9 @@ class Curso extends Model
         return $this->hasMany(Docente::class);
     }
 
-    public static function getCursoData($page)
+    public function scopeFilter($query, $filters)
     {
-        return self::withTrashed()
-            ->leftJoin('estudiantes', 'cursos.id', '=', 'estudiantes.curso_id')
+        return $query->leftJoin('estudiantes', 'cursos.id', '=', 'estudiantes.curso_id')
             ->select(
                 'cursos.id',
                 'cursos.nombre_curso',
@@ -48,9 +47,20 @@ class Curso extends Model
                 DB::raw('COUNT(estudiantes.id) as cantidad_estudiantes'),
                 DB::raw('CASE WHEN cursos.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
             )
+            ->when($filters['nombre_curso'] ?? null, function ($query, $nombre_curso) {
+                $query->where('cursos.nombre_curso', 'like', "%$nombre_curso%");
+            })
+            ->when($filters['sexo'] ?? null, function ($query, $sexo) {
+                $query->where('estudiantes.sexo', $sexo);
+            })
+            ->when($filters['estado'] ?? null, function ($query, $estado) {
+                if ($estado == 'Eliminado') {
+                    $query->onlyTrashed();
+                } elseif ($estado == 'Activo') {
+                    $query->whereNull('cursos.deleted_at');
+                }
+            })
             ->groupBy('cursos.id', 'cursos.nombre_curso', 'cursos.deleted_at')
-            ->orderByRaw('cursos.id')
-            ->simplePaginate($page);
+            ->orderBy('cursos.id');
     }
-
 }
