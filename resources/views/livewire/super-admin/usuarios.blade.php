@@ -15,7 +15,7 @@
                     Total de Usuarios Activos</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    {{ $userActivos->count() }}
+                    {{-- {{ $userActivos->count() }} --}}
                 </h4>
             </div>
         </div>
@@ -33,7 +33,7 @@
                     Total de Usuarios en el sistema</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    {{ $user->count() }}
+                    {{-- {{ $userSistema->count() }} --}}
                 </h4>
             </div>
         </div>
@@ -56,19 +56,76 @@
                     </button>
                 @endCan
             </div>
-            <button wire:click="filter"
-                class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                    class="w-6 h-6 text-white">
-                    <path fill-rule="evenodd"
-                        d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
-                        clip-rule="evenodd" />
-                </svg>
-                <span class="ml-2">Filtrar</span>
-            </button>
-            @livewire('diagramas.table', ['case' => 'usuarios'])
-        </div>
+            <div>
+                <button wire:click="filter"
+                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                        class="w-6 h-6 text-white">
+                        <path fill-rule="evenodd"
+                            d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span class="ml-2">Filtrar</span>
+                </button>
 
+                <br>
+
+                @if ($user->isEmpty())
+                    <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Nombre del Usuario</th>
+                                    <th scope="col" class="px-6 py-3">Correo Electrónico</th>
+                                    <th scope="col" class="px-6 py-3">Rol</th>
+                                    <th scope="col" class="px-6 py-3">Estado</th>
+                                    @can('general deletion or editing')
+                                        <th scope="col" class="px-6 py-3">Acción</th>
+                                    @endcan
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($user as $usuario)
+                                    <tr
+                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td class="px-6 py-4">{{ $usuario->name }}</td>
+                                        <td class="px-6 py-4">{{ $usuario->email }}</td>
+                                        <td class="px-6 py-4">{{ $usuario->roles->pluck('name')->join(', ') }}</td>
+                                        <td class="px-6 py-4">
+                                            <span class="{{ $usuario->deleted_at ? 'text-red-500' : 'text-blue-500' }}">
+                                                {{ $usuario->deleted_at ? 'Eliminado' : 'Activo' }}
+                                            </span>
+                                        </td>
+                                        @can('general deletion or editing')
+                                            <td class="px-6 py-4 flex space-x-2">
+                                                <button wire:click="edit({{ $usuario }})"
+                                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                    Editar
+                                                </button>
+                                                <button wire:click="preDelete({{ $usuario }})"
+                                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        @endcan
+                                    </tr>
+                                @endforeach
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mt-4">
+                        {{ $user->links() }}
+                    </div>
+                @endif
+            </div>
+
+
+        </div>
     </div>
     <div>
         <x-dialog-modal wire:model="open">
