@@ -3,17 +3,14 @@
 namespace App\Livewire\SuperAdmin;
 
 use App\Models\User;
-use Livewire\Attributes\On;
-use Livewire\Attributes\Validate;
-use Spatie\Permission\Models\Role;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class Usuarios extends Component
 {
-
-    #[Validate('required')]
-    #[Validate("Unique:users,name, users,email")]
+    use WithPagination;
 
     public $open = false;
     public $openFilter = false;
@@ -23,7 +20,9 @@ class Usuarios extends Component
     public $estado = '';
     public $role = '';
     public $email;
-
+    public $roles;
+    public $permisos;
+    public $filterUser;
 
     public function clearInput()
     {
@@ -31,7 +30,14 @@ class Usuarios extends Component
         $this->email = '';
         $this->role = '';
         $this->estado = '';
+        $this->mount();
     }
+    public function mount()
+    {
+        $this->roles = Role::all(['id', 'name'])->toArray();
+        $this->permisos = Permission::get()->toArray();
+    }
+
 
     public function cambiar()
     {
@@ -59,6 +65,7 @@ class Usuarios extends Component
             $user->syncRoles([$this->role]);
 
             $this->dispatch('post-created', name: "El usuario " . $this->name . ", creado satisfactoriamente");
+            $this->clearInput();
             $this->open = false;
         } catch (\Throwable $th) {
             $this->open = false;
@@ -67,14 +74,24 @@ class Usuarios extends Component
         }
     }
 
-    #[On('update-usuarios')]
     public function edit($data)
     {
         if ($data) {
             $this->name = $data['name'];
             $this->email = $data['email'];
-            $this->role = $data['role'];
-            $this->estado = $data['estado'];
+
+            if (isset($data['roles'][0])) {
+                $this->role = $data['roles'][0]['name'];
+            } else {
+                $this->role = '';
+            }
+
+            if (isset($data['estado'])) {
+                $this->estado = $data['estado'];
+            } else {
+                $this->estado = 'Activo';
+            }
+
             $this->openUpdate = true;
         } else {
             $this->dispatch('post-error', name: "Error no se encontraron registros del usuario, intentelo nuevamente");
@@ -116,6 +133,7 @@ class Usuarios extends Component
             $user->syncRoles([$this->role]);
 
             $this->dispatch('post-created', name: "El usuario " . $this->name . " ha sido actualizado satisfactoriamente");
+            $this->clearInput();
             $this->openUpdate = false;
         } catch (\Throwable $th) {
             $this->openUpdate = false;
@@ -124,7 +142,6 @@ class Usuarios extends Component
         }
     }
 
-    #[On('delete-usuarios')]
     public function preDelete($data)
     {
         if ($data) {
@@ -150,6 +167,7 @@ class Usuarios extends Component
 
             $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
+            $this->clearInput();
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
@@ -165,37 +183,29 @@ class Usuarios extends Component
     public function searchUser()
     {
         if (!$this->name && !$this->email && !$this->role && !$this->estado) {
-            session()->flash('error', 'Debe ingresar al menos un dato para filtrar.');
-            return;
+            $this->dispatch('post-warning', name: "Debe ingresar al menos un campo para filtrar");
         }
 
-        $searchResults = [
+        $this->filterUser = [
             'name'   => $this->name,
             'email'  => $this->email,
             'role'   => $this->role,
             'estado' => $this->estado,
         ];
 
-        $this->dispatch('search-users', $searchResults);
         $this->openFilter = false;
     }
 
-
-
     public function render()
     {
-        $userActivos = User::all();
-        $user = User::withTrashed()->get();
-        $rol = Role::all('id', 'name');
-        $permisos = Permission::get();
-        return view(
-            'livewire.super-admin.usuarios',
-            [
-                'userActivos' => $userActivos,
-                'user' => $user,
-                'roles' => $rol,
-                'permisos' => $permisos,
-            ]
-        );
+        $query = User::withTrashed();
+
+        if ($this->filterUser) {
+            $query->filter($this->filterUser);
+        }
+
+        return view('livewire.super-admin.usuarios', [
+            'user' => $query->paginate(10),
+        ]);
     }
 }

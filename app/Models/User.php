@@ -3,6 +3,9 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -89,35 +92,25 @@ class User extends Authenticatable
             ->simplePaginate($perPage);
     }
 
-    public static function filterUsers(array $filters)
+    public function scopeFilter($query, $filters)
     {
-        $users = self::query()
-            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
-            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-            ->when(!empty($filters['name']), function ($query) use ($filters) {
-                $query->whereRaw('LOWER(users.name) LIKE ?', ['%' . strtolower($filters['name']) . '%']);
+        return $query->when($filters['name'] ?? null, function ($query, $name) {
+            $query->where('name', 'like', "%$name%");
+        })
+            ->when($filters['email'] ?? null, function ($query, $email) {
+                $query->where('email', 'like', "%$email%");
             })
-            ->when(!empty($filters['email']), function ($query) use ($filters) {
-                $query->whereRaw('LOWER(users.email) LIKE ?', ['%' . strtolower($filters['email']) . '%']);
+            ->when($filters['role'] ?? null, function ($query, $role) {
+                $query->whereHas('roles', function ($query) use ($role) {
+                    $query->where('name', $role);
+                });
             })
-            ->when(!empty($filters['role']), function ($query) use ($filters) {
-                $query->whereRaw('LOWER(roles.name) = ?', [strtolower($filters['role'])]);
-            })
-            ->when(!empty($filters['estado']), function ($query) use ($filters) {
-                if ($filters['estado'] === 'Activo') {
-                    $query->whereNull('users.deleted_at');
-                } elseif ($filters['estado'] === 'Eliminado') {
-                    $query->whereNotNull('users.deleted_at');
+            ->when($filters['estado'] ?? null, function ($query, $estado) {
+                if ($estado == 'Eliminado') {
+                    $query->onlyTrashed();
+                } elseif ($estado == 'Activo') {
+                    $query->whereNull('deleted_at');
                 }
-            })
-            ->select(
-                'users.id',
-                'users.name',
-                'users.email',
-                DB::raw('COALESCE(roles.name, \'No\') AS role'),
-                DB::raw('CASE WHEN users.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-            );
-
-        return $users->paginate(10);
+            });
     }
 }
