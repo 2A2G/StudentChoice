@@ -15,7 +15,7 @@
                     Total de Usuarios Activos</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    {{-- {{ $userActivos->count() }} --}}
+                    {{ $userActivos->count() }}
                 </h4>
             </div>
         </div>
@@ -33,7 +33,7 @@
                     Total de Usuarios en el sistema</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    {{-- {{ $userSistema->count() }} --}}
+                    {{ $userSistema->count() }}
                 </h4>
             </div>
         </div>
@@ -122,9 +122,8 @@
                         {{ $user->links() }}
                     </div>
                 @endif
+
             </div>
-
-
         </div>
     </div>
     <div>

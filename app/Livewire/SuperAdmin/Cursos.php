@@ -6,18 +6,31 @@ use App\Models\Curso;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Cursos extends Component
 {
+    use WithPagination;
 
     #[Validate('required')]
 
     public $open = false;
     public $openUpdate = false;
+    public $openFilter = false;
     public $openDelete = false;
     public $nombre_curso = '';
     public $curso_id = '';
-    public $estado;
+    public $estado = '';
+    public $totalCursosActivos;
+    public $totalCursos;
+    public $filterCurso = [];
+    public $sexo = '';
+
+    public function mount()
+    {
+        $this->totalCursosActivos = Curso::all();
+        $this->totalCursos = Curso::withTrashed()->get();
+    }
 
 
     public function clearInput()
@@ -60,15 +73,14 @@ class Cursos extends Component
         $this->open = true;
     }
 
-    #[On('update-cursos')] public function edit($data)
+    public function edit($data)
     {
         try {
-            $this->curso_id = $data['id'];
             if ($data) {
+                $this->curso_id = $data['id'];
                 $this->nombre_curso = $data['nombre_curso'];
-                $this->estado = $data['estado'];
+                $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
                 $this->openUpdate = true;
-
             } else {
                 $this->dispatch('post-error', name: "Error no se encontraron registros del curso, inténtelo nuevamente");
             }
@@ -105,7 +117,6 @@ class Cursos extends Component
             $this->dispatch('post-created', name: "El curso " . $this->nombre_curso . ", actualizado satisfactoriamente");
             $this->clearInput();
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del curso. Inténtelo de nuevo");
@@ -114,7 +125,6 @@ class Cursos extends Component
         }
     }
 
-    #[On('delete-cursos')]
     public function preDelete($data)
     {
         if ($data) {
@@ -142,7 +152,6 @@ class Cursos extends Component
 
             $this->dispatch('post-created', name: "El curso ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El curso " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
@@ -150,16 +159,52 @@ class Cursos extends Component
         }
     }
 
+    public function filter()
+    {
+        $this->clearInput();
+        $this->openFilter = true;
+    }
+
+    public function searchCurso()
+    {
+        if (!$this->nombre_curso && !$this->sexo && !$this->estado) {
+            $this->dispatch('post-warning', name: "Debe ingresar al menos un campo para filtrar");
+        }
+
+        $this->filterCurso = [
+            'nombre_curso' => $this->nombre_curso,
+            'sexo' => $this->sexo,
+            'estado' => $this->estado,
+        ];
+
+        $this->openFilter = false;
+    }
+
 
     public function render()
     {
-        $totalCursosActivos = Curso::all();
-        $totalCursos = Curso::withTrashed()->get();
+        $query = Curso::with(['estudiantes' => function ($query) {
+            $query->select('sexo', 'curso_id');
+        }])
+            ->withTrashed()
+            ->withCount([
+                'estudiantes as cantidad_estudiantes_masculinos' => function ($query) {
+                    $query->where('sexo', 'Masculino');
+                },
+                'estudiantes as cantidad_estudiantes_femeninos' => function ($query) {
+                    $query->where('sexo', 'Femenino');
+                },
+                'estudiantes as cantidad_estudiantes'
+            ]);
+
+        if ($this->filterCurso) {
+            $query->filter($this->filterCurso);
+        }
+
         return view(
-            'livewire..super-admin.cursos',
+            'livewire.super-admin.cursos',
             [
-                'totalCursos' => $totalCursos,
-                'totalCursosActivos' => $totalCursosActivos
+                'cursos' => $query->paginate(10)
             ]
         );
     }
