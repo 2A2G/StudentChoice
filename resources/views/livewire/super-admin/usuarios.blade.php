@@ -56,6 +56,16 @@
                     </button>
                 @endCan
             </div>
+            <button wire:click="filter"
+                class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                    class="w-6 h-6 text-white">
+                    <path fill-rule="evenodd"
+                        d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="ml-2">Filtrar</span>
+            </button>
             @livewire('diagramas.table', ['case' => 'usuarios'])
         </div>
 
@@ -192,10 +202,54 @@
             </x-slot>
         </x-dialog-modal>
 
+        <x-dialog-modal wire:model="openFilter">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Filtrar Usuarios</h1>
+            </x-slot>
+            <x-slot name="content">
+
+                <label class="block mb-2">Nombre de Usuario</label>
+                <input type="text" wire:model="name" class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
+                    placeholder="Ingrese el nombre de usuario">
+                @error('name')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Correo Electrónico</label>
+                <input type="email" wire:model="email" class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
+                    placeholder="Ingrese el correo electrónico">
+                @error('email')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Seleccione el Rol</label>
+                <select wire:model="role" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un rol</option>
+                    @foreach ($roles as $rol)
+                        <option value="{{ $rol['name'] }}">{{ $rol['name'] }}</option>
+                    @endforeach
+                </select>
+                @error('role')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Seleccione el Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <br>
+                <button wire:click="searchUser"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Filtrar Usuario
+                </button>
+            </x-slot>
+        </x-dialog-modal>
     </div>
-
-    {{-- Alerrta de notificaciones --}}
     <x-notificacion />
-
-
 </div>

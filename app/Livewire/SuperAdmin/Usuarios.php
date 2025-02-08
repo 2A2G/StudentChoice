@@ -16,10 +16,11 @@ class Usuarios extends Component
     #[Validate("Unique:users,name, users,email")]
 
     public $open = false;
+    public $openFilter = false;
     public $openUpdate = false;
     public $openDelete = false;
     public $name;
-    public $estado;
+    public $estado = '';
     public $role = '';
     public $email;
 
@@ -64,7 +65,6 @@ class Usuarios extends Component
             $this->dispatch('post-error', name: "Error al crear el usuario. Intentelo de nuevo");
             throw $th;
         }
-
     }
 
     #[On('update-usuarios')]
@@ -117,7 +117,6 @@ class Usuarios extends Component
 
             $this->dispatch('post-created', name: "El usuario " . $this->name . " ha sido actualizado satisfactoriamente");
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo actualizar. Intentelo nuevamente");
@@ -151,13 +150,37 @@ class Usuarios extends Component
 
             $this->dispatch('post-created', name: "El usuario ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El usuario " . $this->name . " no se pudo eliminar. Intentelo nuevamente");
             throw $th;
         }
     }
+
+    public function filter()
+    {
+        $this->openFilter = true;
+    }
+
+    public function searchUser()
+    {
+        if (!$this->name && !$this->email && !$this->role && !$this->estado) {
+            session()->flash('error', 'Debe ingresar al menos un dato para filtrar.');
+            return;
+        }
+
+        $searchResults = [
+            'name'   => $this->name,
+            'email'  => $this->email,
+            'role'   => $this->role,
+            'estado' => $this->estado,
+        ];
+
+        $this->dispatch('search-users', $searchResults);
+        $this->openFilter = false;
+    }
+
+
 
     public function render()
     {

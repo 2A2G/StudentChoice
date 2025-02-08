@@ -6,16 +6,6 @@
                     No hay datos para mostrar
                 </p>
             @else
-                <button wire:click="filter"
-                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                        class="w-6 h-6 text-white">
-                        <path fill-rule="evenodd"
-                            d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span class="ml-2">Filtrar</span>
-                </button>
                 <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
@@ -72,6 +62,7 @@
             @endif
         </div>
         <div>
+            
             <x-dialog-modal wire:model="open">
                 <x-slot name="title">
                     <h1 class="text-lg font-medium">{{ $type }}</h1>
@@ -109,10 +100,8 @@
                             Actualizar
                         </button>
                     @endif
-                    <!-- Botón para guardar usuario -->
                     <br>
                 </x-slot>
-
             </x-dialog-modal>
         </div>
         <!-- Pagination Links -->
@@ -120,42 +109,5 @@
             {{ $pagination->links() }} <!-- Muestra los enlaces de paginación -->
             <br>
         </div>
-
-        {{-- Filtrar --}}
-        <x-dialog-modal wire:model="openFilter">
-            <x-slot name="title">
-                <h1 class="text-lg font-medium">Filtrar Docentes</h1>
-            </x-slot>
-            <x-slot name="content">
-                <tr>
-                    @foreach ($columns as $column)
-                        @if ($column !== 'Acción' || $column !== 'Docente' || $column !== 'Director del Curso')
-                            <th scope="col" class="px-6 py-3">
-                                {{ $column }}
-                            </th>
-                        @endif
-                    @endforeach
-                </tr>
-
-                <label class="block mb-2">Selecione el Estado</label>
-                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
-                    <option value="" selected disabled>Seleccione un estado</option>
-                    <option value="Activo">Activo</option>
-                    <option value="Eliminado">Eliminado</option>
-                </select>
-                @error('estado')
-                    {{ $message }}
-                @enderror
-
-                <!-- Botón para guardar usuario -->
-                <br>
-                <button wire:click="update"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                    Filtrar Docente
-                </button>
-            </x-slot>
-
-
-        </x-dialog-modal>
     </div>
 </div>
