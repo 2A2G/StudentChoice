@@ -233,8 +233,6 @@
                 </div>
             </x-slot>
         </x-dialog-modal>
-
-
     </div>
 
     {{-- Alerrta de notificaciones --}}

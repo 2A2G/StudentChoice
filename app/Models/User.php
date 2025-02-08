@@ -88,4 +88,36 @@ class User extends Authenticatable
             ->orderBy('users.id')
             ->simplePaginate($perPage);
     }
+
+    public static function filterUsers(array $filters)
+    {
+        $users = self::query()
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->when(!empty($filters['name']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(users.name) LIKE ?', ['%' . strtolower($filters['name']) . '%']);
+            })
+            ->when(!empty($filters['email']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(users.email) LIKE ?', ['%' . strtolower($filters['email']) . '%']);
+            })
+            ->when(!empty($filters['role']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(roles.name) = ?', [strtolower($filters['role'])]);
+            })
+            ->when(!empty($filters['estado']), function ($query) use ($filters) {
+                if ($filters['estado'] === 'Activo') {
+                    $query->whereNull('users.deleted_at');
+                } elseif ($filters['estado'] === 'Eliminado') {
+                    $query->whereNotNull('users.deleted_at');
+                }
+            })
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                DB::raw('COALESCE(roles.name, \'No\') AS role'),
+                DB::raw('CASE WHEN users.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
+            );
+
+        return $users->paginate(10);
+    }
 }

@@ -52,8 +52,9 @@
             <div class="p-4 text-right">
                 <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
                     Docentes</p>
-                <h4 class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$totalDocentes"/>
+                <h4
+                    class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+                    <livewire:animated-counter :targetCount="$totalDocentes" />
                 </h4>
             </div>
 
@@ -73,7 +74,8 @@
                 </p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$totalRoles" /></h4>
+                    <livewire:animated-counter :targetCount="$totalRoles" />
+                </h4>
             </div>
 
         </div>
