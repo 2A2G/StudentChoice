@@ -26,6 +26,5 @@ class CargoFactory extends Factory
                 }
             },
         ];
-
     }
 }
