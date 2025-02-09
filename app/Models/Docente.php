@@ -42,9 +42,13 @@ class Docente extends Model
             $query->where('sexo', $filters['sexo']);
         }
 
-        if (!empty($filters['estado'])) {
-            $query->where('estado', $filters['estado']);
-        }
+        $query->when($filters['estado'] ?? null, function ($query, $estado) {
+            if ($estado == 'Eliminado') {
+                $query->onlyTrashed();
+            } elseif ($estado == 'Activo') {
+                $query->whereNull('deleted_at');
+            }
+        });
 
         if (!empty($filters['asignatura'])) {
             $query->where('asignatura', 'LIKE', "%{$filters['asignatura']}%");

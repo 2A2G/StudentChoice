@@ -7,17 +7,20 @@ use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class Roles extends Component
 {
+    use WithPagination;
+
     public $open = false;
+    public $openFilterRol = false;
     public $openUpdate = false;
     public $openDelete = false;
     public $name_rol;
     public $id_rol;
-    public $permisosDisponibles;
     public $permiso_seleccionado = [];
     public $estado = '';
 
@@ -25,18 +28,33 @@ class Roles extends Component
     public $openDeletePermisos = false;
     public $name_permiso;
     public $id_permiso;
+    public $filterRole = [];
 
+    public $totalRolesActivos;
+    public $totalRoles;
+
+    public $totalPermisosActivos;
+    public $totalPermisos;
 
     #[Validate('required')]
     #[Validate("Unique:roles,name")]
+
+    public function mount()
+    {
+        $this->totalRolesActivos = Role::whereNull('deleted_at')->count();
+        $this->totalPermisosActivos = Permission::whereNull('deleted_at')->count();
+        $this->totalRoles = Role::withTrashed()->count();
+        $this->totalPermisos = Permission::withTrashed()->count();
+    }
+
 
     private function clearInput()
     {
         $this->name_rol = '';
         $this->id_rol = '';
-        $this->permisosDisponibles = '';
         $this->permiso_seleccionado = [];
         $this->estado = '';
+        $this->mount();
     }
 
     public function openCreateRol()
@@ -66,7 +84,6 @@ class Roles extends Component
             $this->dispatch('post-created', name: "Se ha creado satisfactoriamente el rol, " . $this->name_rol);
             $this->open = false;
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->dispatch('post-error', name: "Error al registrar el rol. inténtelo de nuevo");
             $this->clearInput();
@@ -74,13 +91,12 @@ class Roles extends Component
         }
     }
 
-    #[On('update-roles')]
     public function edit($data)
     {
         if ($data) {
             $this->name_rol = $data['name'];
             $this->id_rol = $data['id'];
-            $this->estado = $data['estado'];
+            $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
 
             $rol = Role::withTrashed()->find($this->id_rol);
             $this->permiso_seleccionado = $rol->permissions->pluck('id')->toArray();
@@ -120,7 +136,6 @@ class Roles extends Component
             $this->dispatch('post-created', name: "Se ha actualizado satisfactoriamente el rol, " . $this->name_rol);
             $this->openUpdate = false;
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->dispatch('post-error', name: "Error al registrar el rol. Inténtelo de nuevo");
             $this->clearInput();
@@ -129,8 +144,7 @@ class Roles extends Component
         }
     }
 
-    #[On('delete-roles')]
-    public function preeDelete($data)
+    public function preDelete($data)
     {
         if ($data) {
             $this->name_rol = $data['name'];
@@ -157,7 +171,6 @@ class Roles extends Component
 
             $this->dispatch('post-created', name: "El rol ha sido eliminado satisfactoriamente");
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->openDelete = false;
             $this->dispatch('post-error', name: "El rol " . $this->name_rol . " no se pudo eliminar. Inténtelo nuevamente");
@@ -166,17 +179,33 @@ class Roles extends Component
         }
     }
 
+    public function openFilterRole()
+    {
+        $this->openFilterRol = true;
+    }
+
+    public function searchRole()
+    {
+        if (!$this->name_rol && !$this->estado) {
+            $this->dispatch('post-error', name: "Debe ingresar al menos un campo para realizar la búsqueda");
+        }
+
+        $this->filterRole = [
+            'name_rol' => $this->name_rol,
+            'estado' => $this->estado,
+        ];
+        $this->openFilterRol = false;
+    }
+
 
     // Permisos
-    #[On('update-permisos')]
     public function editPermisos($data)
     {
         if ($data) {
             $this->name_permiso = $data['name'];
             $this->id_permiso = $data['id'];
-            $this->estado = $data['estado'];
+            $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
             $this->openUpdatePermisos = true;
-
         } else {
             $this->dispatch('post-error', name: "Error, no se encontraron registros del rol. Inténtelo nuevamente.");
             $this->clearInput();
@@ -205,7 +234,6 @@ class Roles extends Component
             $this->dispatch('post-created', name: "Se ha actualizado satisfactoriamente el permiso, " . $this->name_permiso);
             $this->openUpdatePermisos = false;
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->dispatch('post-error', name: "Error al registrar el permiso. Inténtelo de nuevo");
             $this->clearInput();
@@ -214,7 +242,6 @@ class Roles extends Component
         }
     }
 
-    #[On('delete-permisos')]
     public function preeDeletePermisos($data)
     {
         if ($data) {
@@ -242,7 +269,6 @@ class Roles extends Component
 
             $this->dispatch('post-created', name: "El permiso ha sido eliminado satisfactoriamente");
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->openDeletePermisos = false;
             $this->dispatch('post-error', name: "El permiso " . $this->name_permiso . " no se pudo eliminar. Inténtelo nuevamente");
@@ -251,15 +277,22 @@ class Roles extends Component
         }
     }
 
-
     public function render()
     {
-        $this->permisosDisponibles = Permission::all();
-        $totalRoles = Role::count();
-        $totalPermisos = Permission::count();
+        $query = Role::withTrashed();
+        if ($this->filterRole) {
+            $query->Role($this->filterRole);
+        }
+
+        $permuiso = Permission::withTrashed();
+
+        $roles = $query->paginate(10, ['*'], 'page_roles');
+
+        $permisos = $permuiso->paginate(20, ['*'], 'page_permisos');
         return view('livewire.super-admin.roles', [
-            'totalRoles' => $totalRoles,
-            'totalPermisos' => $totalPermisos
+            'roles' => $roles,
+            'permisosDisponibles' => Permission::all(),
+            'permisos' => $permisos,
         ]);
     }
 }

@@ -103,7 +103,7 @@
                                         <td class="px-6 py-4">
                                             <span
                                                 class="{{ $docente->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
-                                                {{ $docente->deleted_at === null ? 'Activo' : 'Inactivo' }}
+                                                {{ $docente->deleted_at === null ? 'Activo' : 'Eliminado' }}
                                             </span>
 
                                         </td>
@@ -383,7 +383,7 @@
                     <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                         <option value="" selected disabled>Seleccione un estado</option>
                         <option value="Activo">Activo</option>
-                        <option value="Inactivo">Inactivo</option>
+                        <option value="Eliminado">Eliminado</option>
                     </select>
                     @error('estado')
                         <span class="text-red-500 text-sm">{{ $message }}</span>
