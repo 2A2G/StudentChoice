@@ -188,6 +188,7 @@ class Estudiantes extends Component
         $this->clearInput();
         $this->openFilter = true;
     }
+    
 
     public function searchStudents()
     {
