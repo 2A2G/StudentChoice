@@ -22,30 +22,44 @@ class Docente extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function curso()
     {
-        return $this->belongsTo(Curso::class);
+        return $this->belongsTo(Curso::class, 'curso_id');
     }
 
-    public static function getDocenteData($page)
+    public function scopeDocente($query, $filters)
     {
-        return self::withTrashed()
-            ->leftJoin('cursos', 'docentes.curso_id', '=', 'cursos.id')
-            ->leftJoin('users', 'docentes.user_id', '=', 'users.id')
-            ->select(
-                'docentes.id',
-                'users.name',
-                'users.email',
-                'docentes.numero_identidad',
-                'docentes.asignatura',
-                'docentes.sexo',
-                DB::raw('COALESCE(cursos.nombre_curso, \'No\') AS curso'),
-                DB::raw('CASE WHEN docentes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-            )
-            ->orderByRaw('docentes.id')
-            ->simplePaginate($page);
+        if (!empty($filters['name_docente'])) {
+            $query->whereHas('user', function ($q) use ($filters) {
+                $q->where('name', 'LIKE', "%{$filters['name_docente']}%");
+            });
+        }
+
+        if (!empty($filters['sexo'])) {
+            $query->where('sexo', $filters['sexo']);
+        }
+
+        if (!empty($filters['estado'])) {
+            $query->where('estado', $filters['estado']);
+        }
+
+        if (!empty($filters['asignatura'])) {
+            $query->where('asignatura', 'LIKE', "%{$filters['asignatura']}%");
+        }
+
+        if (!empty($filters['curso'])) {
+            $curso = json_decode($filters['curso'], true);
+
+            if (!empty($curso['nombre_curso'])) {
+                $query->whereHas('curso', function ($q) use ($curso) {
+                    $q->where('nombre_curso', 'LIKE', "%{$curso['nombre_curso']}%");
+                });
+            }
+        }
+
+        return $query;
     }
 }
