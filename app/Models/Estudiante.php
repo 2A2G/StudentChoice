@@ -37,20 +37,38 @@ class Estudiante extends Model
         return $this->hasMany(opcionesEstudiante::class);
     }
 
-    public static function getEstudianteData($page)
+    public function scopeEstudiante($query, $filters)
     {
-        return self::withTrashed()
-            ->join('cursos', 'estudiantes.curso_id', '=', 'cursos.id')
-            ->select(
-                'estudiantes.id',
-                'estudiantes.numero_identidad',
-                'estudiantes.nombre_estudiante',
-                'estudiantes.apellido_estudiante',
-                'estudiantes.sexo',
-                'cursos.nombre_curso as curso',
-                DB::raw('CASE WHEN estudiantes.deleted_at IS NULL THEN \'Activo\' ELSE \'Eliminado\' END as estado')
-            )
-            ->orderByRaw('cursos.id')
-            ->simplePaginate($page);
+        if (!empty($filters['numero_identidad'])) {
+            $query->where('numero_identidad', 'LIKE', "%{$filters['numero_identidad']}%");
+        }
+
+        if (!empty($filters['nombre_estudiante'])) {
+            $query->whereHas('user', function ($q) use ($filters) {
+                $q->where('name', 'LIKE', "%{$filters['nombre_estudiante']}%");
+            });
+        }
+
+        if (!empty($filters['apellido_estudiante'])) {
+            $query->whereHas('user', function ($q) use ($filters) {
+                $q->where('last_name', 'LIKE', "%{$filters['apellido_estudiante']}%");
+            });
+        }
+
+        if (!empty($filters['sexo'])) {
+            $query->where('sexo', $filters['sexo']);
+        }
+
+        if (!empty($filters['estado'])) {
+            $query->where('estado', $filters['estado']);
+        }
+
+        if (!empty($filters['curso_id'])) {
+            $query->whereHas('curso', function ($q) use ($filters) {
+                $q->where('id', $filters['curso_id']);
+            });
+        }
+
+        return $query;
     }
 }

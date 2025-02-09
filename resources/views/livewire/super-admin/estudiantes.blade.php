@@ -57,9 +57,78 @@
                     <span class="ml-2">Registrar Estudiante</span>
                 </button>
             </div>
-            @livewire('diagramas.table', ['case' => 'estudiantes'])
-        </div>
+            <div>
+                <button wire:click="filter"
+                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                        class="w-6 h-6 text-white">
+                        <path fill-rule="evenodd"
+                            d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    <span class="ml-2">Filtrar</span>
+                </button>
+                <br>
+                @if ($estudiantes->isEmpty())
+                    <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
+                            <thead
+                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">Número de Identidad</th>
+                                    <th scope="col" class="px-6 py-3">Nombre</th>
+                                    <th scope="col" class="px-6 py-3">Apellido</th>
+                                    <th scope="col" class="px-6 py-3">Sexo</th>
+                                    <th scope="col" class="px-6 py-3">Curso</th>
+                                    <th scope="col" class="px-6 py-3">Estado</th>
+                                    @can('general deletion or editing')
+                                        <th scope="col" class="px-6 py-3">Acción</th>
+                                    @endcan
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($estudiantes as $estudiante)
+                                    <tr
+                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td class="px-6 py-4">{{ $estudiante->numero_identidad }}</td>
+                                        <td class="px-6 py-4">{{ $estudiante->nombre_estudiante ?? 'Sin nombre' }}</td>
+                                        <td class="px-6 py-4">{{ $estudiante->apellido_estudiante ?? 'Sin apellido' }}
+                                        </td>
+                                        <td class="px-6 py-4">{{ $estudiante->sexo }}</td>
+                                        <td class="px-6 py-4">{{ $estudiante->curso->nombre_curso ?? 'No asignado' }}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="{{ $estudiante->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
+                                                {{ $estudiante->deleted_at === null ? 'Activo' : 'Inactivo' }}
+                                            </span>
+                                        </td>
+                                        @can('general deletion or editing')
+                                            <td class="px-6 py-4 flex space-x-2">
+                                                <button wire:click="edit({{ $estudiante }})"
+                                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                    Editar
+                                                </button>
+                                                <button wire:click="preDelete({{ $estudiante }})"
+                                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        @endcan
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
 
+                    <div class="mt-4">
+                        {{ $estudiantes->links() }}
+                    </div>
+                @endif
+            </div>
+        </div>
     </div>
     <div>
         <x-dialog-modal wire:model="open">
@@ -113,7 +182,8 @@
 
                 <!-- Botón para guardar usuario -->
                 <br>
-                <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <button wire:click="store"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Guardar Estudiante
                 </button>
             </x-slot>
@@ -128,8 +198,8 @@
                 <!-- Campo de nombre completo -->
                 <label class="block mb-2">Número de identidad</label>
                 <input type="number" disabled wire:model.live="numero_identidad"
-                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0" step="1"
-                    oninput="this.value = this.value.slice(0, 10);">
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0"
+                    step="1" oninput="this.value = this.value.slice(0, 10);">
                 @error('numero_identidad')
                     {{ $message }}
                 @enderror
@@ -233,6 +303,74 @@
                 </div>
             </x-slot>
         </x-dialog-modal>
+
+        <x-dialog-modal wire:model="openFilter">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Filtrar Estudiantes</h1>
+            </x-slot>
+            <x-slot name="content">
+
+                <label class="block mb-2">Número de Identidad</label>
+                <input type="text" wire:model="numero_identidad"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
+                    placeholder="Ingrese el número de identidad">
+                @error('numero_identidad')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Nombre</label>
+                <input type="text" wire:model="name" class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
+                    placeholder="Ingrese el nombre">
+                @error('name')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Apellido</label>
+                <input type="text" wire:model="apellido"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" placeholder="Ingrese el apellido">
+                @error('apellido')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Sexo</label>
+                <select wire:model="sexo" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione el sexo</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+                @error('sexo')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <label class="block mb-2">Selecione el curso</label>
+                <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione un curso</option>
+                    @foreach ($cursos as $curso)
+                        <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
+                    @endforeach
+                </select>
+                @error('curso_id')
+                    {{ $message }}
+                @enderror
+
+                <label class="block mb-2">Estado</label>
+                <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                    <option value="" selected disabled>Seleccione el estado</option>
+                    <option value="Activo">Activo</option>
+                    <option value="Eliminado">Eliminado</option>
+                </select>
+                @error('estado')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
+
+                <br>
+                <button wire:click="searchStudents"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                    Filtrar Estudiantes
+                </button>
+            </x-slot>
+        </x-dialog-modal>
+
     </div>
 
     {{-- Alerrta de notificaciones --}}

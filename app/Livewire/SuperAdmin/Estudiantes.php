@@ -4,18 +4,24 @@ namespace App\Livewire\SuperAdmin;
 
 use App\Models\Curso;
 use App\Models\Estudiante;
+use Laravel\Jetstream\Rules\Role;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Spatie\Permission\Models\Role as ModelsRole;
 
 class Estudiantes extends Component
 {
+
+    use WithPagination;
 
     #[Validate('required')]
     #[Validate("Unique:estudiantes,numero_identidad")]
 
     public $open = false;
     public $openUpdate = false;
+    public $openFilter = false;
     public $openDelete = false;
 
     public $numero_identidad;
@@ -23,7 +29,20 @@ class Estudiantes extends Component
     public $apellido_estudiante;
     public $sexo = '';
     public $curso_id = '';
-    public $estado;
+    public $estado = '';
+
+    public $totalEstudiantesActivos;
+    public $totalEstudiantes;
+    public $cursos;
+    public $filterEstudiante = [];
+
+
+    public function mount()
+    {
+        $this->totalEstudiantesActivos = Estudiante::all();
+        $this->totalEstudiantes = Estudiante::withTrashed()->get();
+        $this->cursos = Curso::all();
+    }
 
     public function clearInput()
     {
@@ -57,7 +76,6 @@ class Estudiantes extends Component
             $this->dispatch('post-created', name: "El estudiante " . $this->nombre_estudiante . ", creado satisfactoriamente");
             $this->clearInput();
             $this->open = false;
-
         } catch (\Throwable $th) {
             $this->open = false;
             $this->dispatch('post-error', name: "Error al registrar el estudiante. inténtelo de nuevo");
@@ -72,17 +90,16 @@ class Estudiantes extends Component
         $this->open = true;
     }
 
-    #[On('update-estudiantes')]
     public function edit($data)
     {
         if ($data) {
-            $curso = Curso::where('nombre_curso', $data['curso'])->first();
+            $curso = Curso::find($data['curso'])->first();
             $this->numero_identidad = $data['numero_identidad'];
             $this->nombre_estudiante = $data['nombre_estudiante'];
             $this->apellido_estudiante = $data['apellido_estudiante'];
             $this->sexo = $data['sexo'];
             $this->curso_id = $curso->id;
-            $this->estado = $data['estado'];
+            $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
             $this->openUpdate = true;
         } else {
             $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, inténtelo nuevamente");
@@ -103,7 +120,6 @@ class Estudiantes extends Component
 
             $estudiante = Estudiante::withTrashed()->where('numero_identidad', $this->numero_identidad)->first();
 
-            // Verificar si el estudiante existe
             if (!$estudiante) {
                 $this->openUpdate = false;
                 $this->dispatch('post-error', name: "Error no se encontraron registros del estudiante, inténtelo nuevamente");
@@ -127,7 +143,6 @@ class Estudiantes extends Component
             $this->openUpdate = false;
             $this->dispatch('post-created', name: "El estudiante " . $this->nombre_estudiante . ", actualizado satisfactoriamente");
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del estudiante. Inténtelo de nuevo");
@@ -136,7 +151,6 @@ class Estudiantes extends Component
         }
     }
 
-    #[On('delete-estudiantes')]
     public function preDelete($data)
     {
         if ($data) {
@@ -162,7 +176,6 @@ class Estudiantes extends Component
 
             $this->dispatch('post-created', name: "El estudiante ha sido eliminado satisfactoriamente");
             $this->openDelete = false;
-
         } catch (\Throwable $th) {
             $this->openDelete = false;
             $this->dispatch('post-error', name: "El estudiante " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
@@ -170,15 +183,39 @@ class Estudiantes extends Component
         }
     }
 
+    public function filter()
+    {
+        $this->clearInput();
+        $this->openFilter = true;
+    }
+
+    public function searchStudents()
+    {
+        if (!$this->numero_identidad && !$this->nombre_estudiante && !$this->apellido_estudiante && !$this->sexo && !$this->curso_id && !$this->estado) {
+            $this->dispatch('post-error', name: "Debe ingresar al menos un campo para realizar la búsqueda");
+        }
+
+        $this->filterEstudiante = [
+            'numero_identidad' => $this->numero_identidad,
+            'nombre_estudiante' => $this->nombre_estudiante,
+            'apellido_estudiante' => $this->apellido_estudiante,
+            'sexo' => $this->sexo,
+            'curso_id' => $this->curso_id
+        ];
+
+        $this->openFilter = false;
+    }
+
+
     public function render()
     {
-        $totalEstudiantesActivos = Estudiante::all();
-        $totalEstudiantes = Estudiante::withTrashed()->get();
-        $cursos = Curso::all();
+        $query = Estudiante::withTrashed()->orderBy('curso_id', 'asc');
+        if ($this->filterEstudiante) {
+            $query->estudiante($this->filterEstudiante);
+        }
+
         return view('livewire.super-admin.estudiantes', [
-            'totalEstudiantesActivos' => $totalEstudiantesActivos,
-            'totalEstudiantes' => $totalEstudiantes,
-            'cursos' => $cursos,
+            'estudiantes' => $query->paginate(50)
         ]);
     }
 }
