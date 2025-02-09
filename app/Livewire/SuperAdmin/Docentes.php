@@ -8,13 +8,17 @@ use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Docentes extends Component
 {
+    use WithPagination;
+
     #[Validate('required')]
     #[Validate("Unique:docentes,numero_identidad")]
 
     public $open = false;
+    public $openFilter = false;
     public $openUpdate = false;
     public $openDelete = false;
     public $name;
@@ -23,10 +27,23 @@ class Docentes extends Component
     public $email;
     public $sexo = '';
     public $asignatura = '';
-    public $curso = '';
+    public $curso;
     public $curso_id = null;
     public $estado = '';
 
+    public $totalDocenteActivos;
+    public $totalDocente;
+    public $cursos;
+
+    public $filterDocente = [];
+
+
+    public function mount()
+    {
+        $this->totalDocenteActivos = Docente::all();
+        $this->totalDocente = Docente::withTrashed()->get();
+        $this->cursos = Curso::all();
+    }
 
     public function clearInput()
     {
@@ -39,6 +56,7 @@ class Docentes extends Component
         $this->curso = '';
         $this->estado = '';
         $this->curso_id = null;
+        $this->mount();
     }
 
     public function store()
@@ -88,31 +106,30 @@ class Docentes extends Component
         $this->open = true;
     }
 
-    #[On('update-docentes')]
     public function edit($data)
     {
         if ($data) {
-            $curso = Curso::where('nombre_curso', $data['curso'])->first();
-            if ($curso) {
-                $dirCurso = $curso->id;
+            if ($data['curso']) {
+                $curso = Curso::find($data['curso'])->first();
+                if ($curso) {
+                    $dirCurso = $curso->id;
+                }
             } else {
                 $dirCurso = '';
             }
 
             $this->numero_identidad = $data['numero_identidad'];
-            $this->name_docente = $data['name'];
-            $this->email = $data['email'];
+            $this->name_docente = $data['user']['name'];
+            $this->email = $data['user']['email'];
             $this->sexo = $data['sexo'];
             $this->asignatura = $data['asignatura'];
             $this->numero_identidad = $data['numero_identidad'];
             $this->curso_id = $dirCurso;
-            $this->estado = $data['estado'];
+            $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
             $this->openUpdate = true;
-
         } else {
             $this->dispatch('post-error', name: "Error no se encontraron registros del docente, inténtelo nuevamente");
         }
-
     }
 
     public function update()
@@ -151,7 +168,6 @@ class Docentes extends Component
             $this->openUpdate = false;
             $this->dispatch('post-created', name: "El docente " . $this->name_docente . ", actualizado satisfactoriamente");
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del docente. Inténtelo de nuevo");
@@ -160,7 +176,6 @@ class Docentes extends Component
         }
     }
 
-    #[On('delete-docentes')]
     public function preDelete($data)
     {
         if ($data) {
@@ -190,7 +205,6 @@ class Docentes extends Component
 
             $this->dispatch('post-created', name: "El docente ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El docente " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
@@ -198,15 +212,42 @@ class Docentes extends Component
         }
     }
 
+    public function filter()
+    {
+        $this->clearInput();
+        $this->openFilter = true;
+    }
+
+    public function searchDocente()
+    {
+        if (!$this->name_docente && !$this->sexo && !$this->estado && !$this->asignatura && !$this->curso) {
+            $this->dispatch('post-error', name: "Error: Debe ingresar al menos un campo para realizar la búsqueda");
+            return;
+        }
+        $this->filterDocente = [
+            'name_docente' => $this->name_docente,
+            'sexo' => $this->sexo,
+            'estado' => $this->estado,
+            'asignatura' => $this->asignatura,
+            'curso' => $this->curso
+        ];
+
+        $this->openFilter = false;
+    }
+
     public function render()
     {
-        $totalDocenteActivos = Docente::all();
-        $totalDocente = Docente::withTrashed()->get();
-        $totalCurso = Curso::all();
-        return view('livewire.super-admin.docentes', [
-            'totalDocenteActivos' => $totalDocenteActivos,
-            'totalDocente' => $totalDocente,
-            'cursos' => $totalCurso
-        ]);
+        $query = Docente::with('user')->withTrashed();
+
+        if ($this->filterDocente) {
+            $query->docente($this->filterDocente);
+        }
+
+        return view(
+            'livewire.super-admin.docentes',
+            [
+                'docentes' => $query->paginate(10)
+            ]
+        );
     }
 }
