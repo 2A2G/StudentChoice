@@ -5,9 +5,11 @@ namespace App\Livewire\SistemaVotacion;
 use App\Models\Cargo;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Cargos extends Component
 {
+    use WithPagination;
 
     public $open = false;
     public $openUpdate = false;
@@ -16,11 +18,20 @@ class Cargos extends Component
     public $descripcion_cargo;
     public $estado;
     public $cargo_id;
+    public $numberCargo;
+    public $numberCargoActive;
 
+
+    public function mount()
+    {
+        $this->numberCargo = Cargo::withTrashed()->count();
+        $this->numberCargoActive = Cargo::whereNull('deleted_at')->count();
+    }
     public function clearInput()
     {
         $this->nombre_cargo = '';
         $this->descripcion_cargo = '';
+        $this->mount();
     }
 
     public function cambiar()
@@ -50,15 +61,13 @@ class Cargos extends Component
         $this->open = false;
     }
 
-    #[On('update-cargos')]
     public function edit($data)
     {
-        // dd($data);
         if ($data) {
             $this->cargo_id = $data['id'];
             $this->nombre_cargo = $data['nombre_cargo'];
             $this->descripcion_cargo = $data['descripcion_cargo'];
-            $this->estado = $data['estado'];
+            $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
             $this->openUpdate = true;
         } else {
             $this->dispatch('post-error', name: "Error no se encontraron registros del cargo, inténtelo nuevamente");
@@ -98,7 +107,6 @@ class Cargos extends Component
             $this->openUpdate = false;
             $this->dispatch('post-created', name: "El cargo " . $this->nombre_cargo . ", actualizado satisfactoriamente");
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del cargo. Inténtelo de nuevo");
@@ -107,7 +115,6 @@ class Cargos extends Component
         }
     }
 
-    #[On('delete-cargos')]
     public function preDelete($data)
     {
         if ($data) {
@@ -133,7 +140,6 @@ class Cargos extends Component
 
             $this->dispatch('post-created', name: "El cargo ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "El cargo " . $this->name . " no se pudo eliminar. Inténtelo nuevamente");
@@ -143,11 +149,11 @@ class Cargos extends Component
 
     public function render()
     {
-        $cargos = Cargo::count();
+        $query = Cargo::withTrashed();
         return view(
             'livewire.sistema-votacion.cargos',
             [
-                'cargos' => $cargos
+                'cargos' => $query->paginate(10)
             ]
         );
     }
