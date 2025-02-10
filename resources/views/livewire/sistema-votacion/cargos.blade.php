@@ -1,22 +1,19 @@
 <div class="mt-12">
 
-    <div class="mb-12 grid gap-y-10 gap-x-6 md:grid-cols-2 xl:grid-cols-1 px-4">
-        <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
-            <div
-                class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-pink-600 to-pink-400 text-white shadow-pink-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                    <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="m7.171 12.906l-2.153 6.411l2.672-.89l1.568 2.34l1.825-5.183m5.73-2.678l2.154 6.411l-2.673-.89l-1.568 2.34l-1.825-5.183M9.165 4.3c.58.068 1.153-.17 1.515-.628a1.68 1.68 0 0 1 2.64 0a1.68 1.68 0 0 0 1.515.628a1.68 1.68 0 0 1 1.866 1.866c-.068.58.17 1.154.628 1.516a1.68 1.68 0 0 1 0 2.639a1.68 1.68 0 0 0-.628 1.515a1.68 1.68 0 0 1-1.866 1.866a1.68 1.68 0 0 0-1.516.628a1.68 1.68 0 0 1-2.639 0a1.68 1.68 0 0 0-1.515-.628a1.68 1.68 0 0 1-1.867-1.866a1.68 1.68 0 0 0-.627-1.515a1.68 1.68 0 0 1 0-2.64c.458-.361.696-.935.627-1.515A1.68 1.68 0 0 1 9.165 4.3M14 9a2 2 0 1 1-4 0a2 2 0 0 1 4 0" />
-                </svg>
-            </div>
-            <div class="p-4 text-right">
-                <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">
-                    Total de Cargos</p>
-                <h4
-                    class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$cargos" />
-                </h4>
-            </div>
+    <div class="relative flex flex-col bg-clip-border rounded-xl bg-white text-gray-700 shadow-md">
+        <div
+            class="bg-clip-border mx-4 rounded-xl overflow-hidden bg-gradient-to-tr from-orange-600 to-orange-400 text-white shadow-orange-500/40 shadow-lg absolute -mt-4 grid h-16 w-16 place-items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                <path fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m7.171 12.906l-2.153 6.411l2.672-.89l1.568 2.34l1.825-5.183m5.73-2.678l2.154 6.411l-2.673-.89l-1.568 2.34l-1.825-5.183M9.165 4.3c.58.068 1.153-.17 1.515-.628a1.68 1.68 0 0 1 2.64 0a1.68 1.68 0 0 0 1.515.628a1.68 1.68 0 0 1 1.866 1.866c-.068.58.17 1.154.628 1.516a1.68 1.68 0 0 1 0 2.639a1.68 1.68 0 0 0-.628 1.515a1.68 1.68 0 0 1-1.866 1.866a1.68 1.68 0 0 0-1.516.628a1.68 1.68 0 0 1-2.639 0a1.68 1.68 0 0 0-1.515-.628a1.68 1.68 0 0 1-1.867-1.866a1.68 1.68 0 0 0-.627-1.515a1.68 1.68 0 0 1 0-2.64c.458-.361.696-.935.627-1.515A1.68 1.68 0 0 1 9.165 4.3M14 9a2 2 0 1 1-4 0a2 2 0 0 1 4 0" />
+            </svg>
+        </div>
+        <div class="p-4 text-right">
+            <p class="block antialiased font-sans text-sm leading-normal font-normal text-blue-gray-600">Roles</p>
+            <h4
+                class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
+                {{ $numberCargo }}</h4>
+            <p class="text-sm text-blue-gray-600">Total de roles cargos: {{ $numberCargoActive }}</p>
         </div>
     </div>
 
@@ -37,7 +34,55 @@
                     </button>
                 @endCan --}}
             </div>
-            @livewire('diagramas.table', ['case' => 'cargos'])
+            @if ($cargos->isEmpty())
+                <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
+            @else
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Nombre del Cargo</th>
+                                <th scope="col" class="px-6 py-3">Descripcicón del Cargo</th>
+                                <th scope="col" class="px-6 py-3">Estado</th>
+                                @can('general deletion or editing')
+                                    <th scope="col" class="px-6 py-3">Acción</th>
+                                @endcan
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($cargos as $cargo)
+                                <tr
+                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <td class="px-6 py-4">{{ $cargo->nombre_cargo }}</td>
+                                    <td class="px-6 py-4">{{ $cargo->descripcion_cargo }}</td>
+                                    <td class="px-6 py-4">
+                                        <span class="{{ $cargo->deleted_at ? 'text-red-500' : 'text-blue-500' }}">
+                                            {{ $cargo->deleted_at ? 'Eliminado' : 'Activo' }}
+                                        </span>
+                                    </td>
+                                    @can('general deletion or editing')
+                                        <td class="px-6 py-4 flex space-x-2">
+                                            <button wire:click="edit({{ $cargo }})"
+                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                                Editar
+                                            </button>
+                                            <button wire:click="preDelete({{ $cargo }})"
+                                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                Eliminar
+                                            </button>
+                                        </td>
+                                    @endcan
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mt-4">
+                    {{ $cargos->links() }}
+                </div>
+            @endif
         </div>
 
     </div>
@@ -109,7 +154,7 @@
                 <br>
                 <button wire:click="update"
                     class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                    Actualizar Estudiante
+                    Actualizar Cargo
                 </button>
             </x-slot>
 
