@@ -25,7 +25,7 @@ class Postulante extends Model
 
     public function comicio()
     {
-        return $this->belongsTo(Comicio::class);
+        return $this->belongsTo(Comicio::class, 'comicio_id');
     }
 
     public function postulanteCurso()
@@ -35,16 +35,16 @@ class Postulante extends Model
 
     public function curso()
     {
-        return $this->belongsTo(Curso::class);
+        return $this->belongsTo(Curso::class, 'curso_id');
     }
     public function cargo()
     {
-        return $this->belongsTo(Cargo::class);
+        return $this->belongsTo(Cargo::class, 'cargo_id');
     }
 
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class);
+        return $this->belongsTo(Estudiante::class, 'estudiante_id');
     }
 
     public function opcionesEstudiante()
@@ -55,24 +55,43 @@ class Postulante extends Model
     public function votos()
     {
         return $this->hasMany(Votos::class);
-
     }
 
-    public static function getPostulanteData($page)
+    public function scopePostulante($query, $filters)
     {
-        return self::withTrashed()
-            ->join('estudiantes', 'postulantes.estudiante_id', '=', 'estudiantes.id')
-            ->join('cargos', 'postulantes.cargo_id', '=', 'cargos.id')
-            ->join('cursos', 'estudiantes.curso_id', '=', 'cursos.id')
+        if (!empty($filters['numero_identidad'])) {
+            $query->whereHas('estudiante', function ($query) use ($filters) {
+                $query->where('numero_identidad', 'like', '%' . $filters['numero_identidad'] . '%');
+            });
+        }
 
-            ->select(
-                'postulantes.id',
-                DB::raw("CONCAT(estudiantes.nombre_estudiante, ' ', estudiantes.apellido_estudiante) as estudiante"),
-                'cursos.nombre_curso as cursos',
-                'cargos.nombre_cargo as cargos',
-                DB::raw("CASE WHEN postulantes.deleted_at IS NULL THEN 'Activo' ELSE 'Eliminado' END as estado")
-            )
+        if (!empty($filters['curso_postulante'])) {
+            $query->whereHas('curso', function ($query) use ($filters) {
+                $query->where('id', $filters['curso_postulante']);
+            });
+        }
 
-            ->simplePaginate($page);
+        if (!empty($filters['cargo'])) {
+            $query->whereHas('cargo', function ($query) use ($filters) {
+                $query->where('id', $filters['cargo']);
+            });
+        }
+
+        if (!empty($filters['eleccion'])) {
+            $query->whereHas('comicio', function ($query) use ($filters) {
+                $query->where('id', $filters['eleccion']);
+            });
+        }
+
+        if (!empty($filters['estado'])) {
+            if ($filters['estado'] == 'Activo') {
+                $query->whereNull('deleted_at');
+            } elseif ($filters['estado'] == 'Eliminado') {
+                $query->whereNotNull('deleted_at');
+            }
+        }
+
+
+        return $query;
     }
 }

@@ -17,16 +17,18 @@ use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Livewire\WithFileUploads;
-
+use Livewire\WithPagination;
 
 class Postulacion extends Component
 {
     use WithFileUploads;
+    use WithPagination;
 
     #[Validate('required')]
     #[Validate("unique:estudiantes,numero_identidad")]
 
     public $open = false;
+    public $openFilter = false;
     public $openUpdate = false;
     public $openDelete = false;
     public $numero_identidad;
@@ -34,17 +36,20 @@ class Postulacion extends Component
     public $cargos = '';
     public $cargo = '';
     public $imagen;
-    public $curso_postulante;
+    public $curso_postulante = '';
     public $cursos_seleccionados = [];
     public $cursosDisponibles;
     public $postulante_id;
-    public $estado;
+    public $estado = '';
     public $mensajeError;
     public $type;
     public $data;
     public $filePath;
     public $elecciones;
     public $eleccion = '';
+    public $totalPostulantes;
+    public $totalPostulantesEliminados;
+    public $filterPostulante = [];
 
 
     public function clearInput()
@@ -57,10 +62,14 @@ class Postulacion extends Component
         $this->filePath = null;
         $this->mensajeError = '';
         $this->cursos_seleccionados = [];
+        $this->estado = '';
+        $this->filterPostulante = [];
     }
 
     public function mount()
     {
+        $this->totalPostulantes = Postulante::count();
+        $this->totalPostulantesEliminados = Postulante::onlyTrashed()->count();
         $this->cargos = Cargo::all();
         $this->cursosDisponibles = Curso::all();
         $this->elecciones = Comicio::where('estado', true)->get();
@@ -88,13 +97,12 @@ class Postulacion extends Component
             $this->mensajeError = '';
             if (
                 Postulante::where('estudiante_id', $estudiante->id)
-                    ->where('anio_postulacion', date('Y'))
-                    ->exists()
+                ->where('anio_postulacion', date('Y'))
+                ->exists()
             ) {
                 $this->mensajeError = 'Este estudiante ya se encuentra postulado';
                 return;
             }
-
         } else {
             $this->nombre_postulante = '';
             $this->curso_postulante = '';
@@ -118,10 +126,12 @@ class Postulacion extends Component
     public function updatedImagen($property)
     {
         if ($property instanceof TemporaryUploadedFile) {
-            $this->dispatch('upload-image', $property->temporaryUrl());
+            $caso = 'store';
+            $this->dispatch('upload-image', $property->temporaryUrl(), $caso);
         } else {
             $imageUrl = Storage::url($property);
-            $this->dispatch('upload-image', $imageUrl);
+            $caso = "update";
+            $this->dispatch('upload-image', $imageUrl, $caso);
         }
     }
 
@@ -171,7 +181,6 @@ class Postulacion extends Component
         }
     }
 
-    #[On('update-postulantes')]
     public function edit($data)
     {
         $this->clearInput();
@@ -192,7 +201,7 @@ class Postulacion extends Component
                 $cursoPostulante = PostulanteCurso::where('postulante_id', $postulante->id)->get();
                 $this->cursos_seleccionados = $cursoPostulante->pluck('curso_id')->toArray();
 
-                $this->estado = $data['estado'];
+                $this->estado = $data['deleted_at'] ? 'Eliminado' : 'Activo';
 
                 $this->dispatchDataPostulante();
                 $this->openUpdate = true;
@@ -240,7 +249,6 @@ class Postulacion extends Component
             $this->dispatch('post-created', name: "El postulante {$this->nombre_postulante} se actualizó satisfactoriamente.");
             $this->openUpdate = false;
             $this->clearInput();
-
         } catch (\Throwable $th) {
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del postulante. Inténtelo nuevamente.");
             $this->openUpdate = false;
@@ -249,7 +257,6 @@ class Postulacion extends Component
         }
     }
 
-    #[On('delete-postulantes')]
     public function preDelete($data)
     {
         // dd($data);
@@ -275,23 +282,48 @@ class Postulacion extends Component
             $postulante->delete();
             $this->dispatch('post-created', name: "El postulante ha sido eliminado satisfactoriamente");
             $this->openUpdate = false;
-
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "No se pudo eliminar el regitro del postulante. Inténtelo nuevamente");
             throw $th;
         }
+    }
 
+    public function filter()
+    {
+        $this->clearInput();
+        $this->openFilter = true;
+    }
+
+    public function searchPostulante()
+    {
+        if (!$this->numero_identidad && !$this->curso_postulante && !$this->cargo && !$this->eleccion && !$this->estado) {
+            $this->dispatch('post-error', name: "Por favor, ingrese al menos un campo para realizar la búsqueda.");
+            return;
+        }
+
+        $this->filterPostulante = [
+            'numero_identidad' => $this->numero_identidad,
+            'curso_postulante' => $this->curso_postulante,
+            'cargo' => $this->cargo,
+            'eleccion' => $this->eleccion,
+            'estado' => $this->estado,
+        ];
+        $this->openFilter = false;
     }
 
     public function render()
     {
-        $totalPostulantes = Postulante::count();
+        $query = Postulante::with('estudiante', 'cargo', 'curso', 'comicio')->withTrashed();
+
+        if ($this->filterPostulante) {
+            $query->postulante($this->filterPostulante);
+        }
+
         return view(
             'livewire.sistema-votacion.postulacion',
             [
-                'totalPostulantes' => $totalPostulantes,
-                'cargos' => $this->cargos,
+                'postulantes' => $query->paginate(10)
             ]
         );
     }

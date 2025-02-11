@@ -21,9 +21,8 @@ class Cartas extends Component
         $this->cargo = $cargo;
         $this->curso = $curso;
         $this->imagen = $imagen;
-
     }
-    //Limpiar los datos de la carta
+
     #[On('clear-card')]
     public function clearInput()
     {
@@ -43,19 +42,14 @@ class Cartas extends Component
     }
 
 
-    // #[On('data-postulante-update')]
-    // public function estudiante(Postulante $postulante)
-    // {
-    //     $this->nombre = $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante;
-    //     $this->cargo = $postulante->cargo->nombre_cargo;
-    //     $this->curso = $postulante->estudiante->curso->nombre_curso;
-    //     $this->imagen = Storage::url('imagenes_postulantes/' . $postulante->fotografia_postulante);
-    // }
-
     #[On('upload-image')]
-    public function uploadImage($imagen)
+    public function uploadImage($imagen, $caso)
     {
-        $this->imagen = $imagen;
+        if ($caso == "store") {
+            $this->imagen = $imagen;
+        } else {
+            $this->imagen = $imagen;
+        }
     }
 
     public function render()
