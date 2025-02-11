@@ -27,15 +27,6 @@ class Comicio extends Model
         return $comicio->id;
     }
 
-    public static function getComicio($page)
-    {
-        return self::with('postulante')
-            ->select('nombre_eleccion', 'id', 'estado', 'estado_eleccion', )
-            ->withCount(['postulante as cantidad_postulantes'])
-            ->simplePaginate($page);
-    }
-
-
     public function opcionEstudiante()
     {
         return $this->hasMany(opcionesEstudiante::class);
@@ -43,5 +34,22 @@ class Comicio extends Model
     public function postulante()
     {
         return $this->hasMany(postulante::class);
+    }
+
+    public function scopeComicio($query, $filters)
+    {
+        return $query
+            ->with('postulante')
+            ->withCount('postulante')
+            ->when($filters['nombre_eleccion'] ?? null, function ($query, $nombreEleccion) {
+                $query->where('nombre_eleccion', 'LIKE', "%{$nombreEleccion}%");
+            })
+            ->when($filters['estado'] ?? null, function ($query, $estado) {
+                if ($estado == 'Eliminado') {
+                    $query->onlyTrashed();
+                } elseif ($estado == 'Activo') {
+                    $query->whereNull('deleted_at');
+                }
+            });
     }
 }

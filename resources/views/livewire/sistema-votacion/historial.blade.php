@@ -43,56 +43,106 @@
                     </button>
                 @endCan
             </div>
+            <button wire:click="filter"
+                class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                    class="w-6 h-6 text-white">
+                    <path fill-rule="evenodd"
+                        d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="ml-2">Filtrar</span>
+            </button>
+            <br>
             <div>
-                <table class="table-auto w-full text-left">
+                <table class="table-auto w-full text-left border border-gray-200 rounded-lg overflow-hidden">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                         <tr>
                             <th scope="col" class="px-6 py-3">Nombre de la Elección</th>
-                            <th scope="col" class="px-6 py-3">Cantidad de Postulantes</th>
-                            <th scope="col" class="px-6 py-3">Estado del comicio</th>
-                            <th scope="col" class="px-6 py-3">Estado de la elección</th>
-                            <th scope="col" class="px-6 py-3">Acción</th>
+                            <th scope="col" class="px-6 py-3">Postulantes</th>
+                            <th scope="col" class="px-6 py-3 text-center">Estado del Comicio</th>
+                            <th scope="col" class="px-6 py-3 text-center">Estado de la Elección</th>
+                            <th scope="col" class="px-6 py-3 text-center">Comicio</th>
+                            <th scope="col" class="px-6 py-3 text-center">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($comicioData as $comicio)
-                            <tr>
+                            <tr
+                                class="bg-white border-b hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-600">
                                 <td class="px-6 py-4">{{ $comicio->nombre_eleccion }}</td>
-                                <td class="px-6 py-4">{{ $comicio->cantidad_postulantes }}</td>
-
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">{{ $comicio->postulante_count }}</td>
+                                <td class="px-6 py-4 text-center">
                                     @if ($comicio->estado)
-                                        <span class="px-2 py-1 bg-green-500 text-white rounded-full">Activo</span>
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-green-500 text-white rounded-full text-sm">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7">
+                                                </path>
+                                            </svg>
+                                            Activo
+                                        </span>
                                     @else
-                                        <span class="px-2 py-1 bg-gray-400 text-white rounded-full">Finalizado</span>
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-gray-400 text-white rounded-full text-sm">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
+                                                stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            Finalizado
+                                        </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
                                     @if ($comicio->estado_eleccion)
-                                        <span class="px-2 py-1 bg-blue-500 text-white rounded-full">En Curso</span>
-                                    @elseif($comicio->estado)
-                                        <span class="px-2 py-1 bg-orange-500 text-white rounded-full">Pendiente</span>
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-blue-500 text-white rounded-full text-sm">En
+                                            Curso</span>
+                                    @elseif ($comicio->estado)
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-orange-500 text-white rounded-full text-sm">Pendiente</span>
                                     @else
-                                        <span class="px-2 py-1 bg-gray-600 text-white rounded-full">Finalizada</span>
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-gray-600 text-white rounded-full text-sm">Finalizada</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-6 py-4 text-center">
+                                    @if ($comicio->deleted_at == null)
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-green-500 text-white rounded-full text-sm"
+                                            title="El registro aún está presente en el programa">
+                                            Vigente
+                                        </span>
+                                    @else
+                                        <span
+                                            class="inline-flex items-center px-3 py-1 bg-red-500 text-white rounded-full text-sm"
+                                            title="El registro ha sido eliminado o no está activo">
+                                            Eliminado
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-center flex justify-center space-x-2">
                                     <button wire:click="showResults({{ $comicio->id }})"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
-                                        Ver resultados
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" stroke-width="2"
+                                            viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7">
+                                            </path>
+                                        </svg>
+                                        Ver Resultados
                                     </button>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay datos disponibles
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay datos disponibles
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
-
-
                 <div class="mt-4">
                     {{ $comicioData->links() }}
                 </div>
@@ -120,7 +170,6 @@
                     </button>
                 </x-slot>
             </x-dialog-modal>
-
 
             <x-dialog-modal wire:model="openUpdate">
                 <x-slot name="title">
@@ -152,6 +201,39 @@
                     </button>
                 </x-slot>
             </x-dialog-modal>
+
+            <x-dialog-modal wire:model="openFilter">
+                <x-slot name="title">
+                    <h1 class="text-lg font-medium">Filtrar Comicios</h1>
+                </x-slot>
+                <x-slot name="content">
+
+                    <label class="block mb-2">Nombre del Comicio</label>
+                    <input type="text" wire:model="nombre_eleccion"
+                        class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
+                        placeholder="Ingrese el nombre del comicio">
+                    @error('nombre_eleccion')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+
+                    <label class="block mb-2">Estado</label>
+                    <select wire:model="estado" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
+                        <option value="" selected disabled>Seleccione un estado</option>
+                        <option value="Activo">Vigente</option>
+                        <option value="Eliminado">Eliminado</option>
+                    </select>
+                    @error('estado')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+
+                    <br>
+                    <button wire:click="searchComicios"
+                        class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        Filtrar Comicio
+                    </button>
+                </x-slot>
+            </x-dialog-modal>
+
         </div>
     </div>
 </div>

@@ -7,12 +7,23 @@ use App\Models\Comicio;
 use App\Models\Eleccion;
 use App\Models\Postulante;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Historial extends Component
 {
+    use WithPagination;
+
     public $open = false;
+    public $openFilter = false;
     public $nombre_eleccion;
     public $estado = '';
+    public $totalPostulantesAnios;
+    public $filterComicio = [];
+
+    public function mount()
+    {
+        $this->totalPostulantesAnios = Comicio::all()->count();
+    }
 
     public function clearInput()
     {
@@ -48,7 +59,6 @@ class Historial extends Component
 
             $this->clearInput();
             $this->open = false;
-
         } catch (\Throwable $th) {
             return $th;
         }
@@ -59,17 +69,41 @@ class Historial extends Component
         return redirect()->route('viewResultados', ['comicioId' => $comcioId]);
     }
 
+    public function filter()
+    {
+        $this->clearInput();
+        $this->openFilter = true;
+    }
+
+    public function searchComicios()
+    {
+        if (empty($this->nombre_eleccion) && empty($this->estado)) {
+            $this->dispatch('post-warning', name: "Debe ingresar al menos un campo para filtrar");
+            return;
+        }
+
+        $this->filterComicio = [
+            'nombre_eleccion' => $this->nombre_eleccion,
+            'estado' => $this->estado,
+        ];
+
+        $this->openFilter = false;
+    }
 
     public function render()
     {
-        $totalPostulantesAnios = Postulante::all()->count();
-        $comicioData = Comicio::getComicio(10);
+        $query = Comicio::with('postulante')
+            ->withTrashed()
+            ->withCount('postulante');
+
+        if (!empty($this->filterComicio)) {
+            $query->comicio($this->filterComicio);
+        }
 
         return view(
             'livewire.sistema-votacion.historial',
             [
-                'totalPostulantesAnios' => $totalPostulantesAnios,
-                'comicioData' => $comicioData,
+                'comicioData' => $query->paginate(10),
             ]
         );
     }
