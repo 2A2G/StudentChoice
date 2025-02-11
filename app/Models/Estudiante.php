@@ -60,7 +60,11 @@ class Estudiante extends Model
         }
 
         if (!empty($filters['estado'])) {
-            $query->where('estado', $filters['estado']);
+            if ($filters['estado'] == 'Activo') {
+                $query->whereNull('deleted_at');
+            } elseif ($filters['estado'] == 'Eliminado') {
+                $query->whereNotNull('deleted_at');
+            }
         }
 
         if (!empty($filters['curso_id'])) {
