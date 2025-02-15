@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\ViewController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,4 +38,3 @@ Route::middleware(['auth'])->group(
         });
     }
 );
-

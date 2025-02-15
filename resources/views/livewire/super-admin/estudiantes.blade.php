@@ -16,7 +16,7 @@
                     Total de Estudiantes Activos</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$totalEstudiantesActivos->count()" />
+                    {{$totalEstudiantesActivos->count()}}
                 </h4>
             </div>
         </div>
@@ -36,7 +36,7 @@
                     Total de Estudiantes en el sistema</p>
                 <h4
                     class="block antialiased tracking-normal font-sans text-2xl font-semibold leading-snug text-blue-gray-900">
-                    <livewire:animated-counter :targetCount="$totalEstudiantes->count()" />
+                    {{$totalEstudiantes->count()}}
                 </h4>
             </div>
         </div>
@@ -388,35 +388,43 @@
 
         <x-dialog-modal wire:model="openImport">
             <x-slot name="title">
-                <h1 class="text-lg font-medium">Importar Estudiantes</h1>
+                <h1 class="text-xl font-semibold text-gray-800">📥 Importar Estudiantes</h1>
             </x-slot>
 
             <x-slot name="content">
                 <div class="mb-4">
-                    <label class="block font-medium text-gray-700 mb-2">Subir archivo Excel</label>
-                    <input type="file" wire:model="file" class="border border-gray-300 rounded px-3 py-2 w-full">
-                    @error('file')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    <label id="fileLabel" class="block font-medium text-gray-700 mb-2">
+                        📂 Seleccionar archivo Excel
+                    </label>
+
+                    <div
+                        class="relative border border-gray-300 rounded-lg px-4 py-3 bg-white flex items-center justify-between cursor-pointer">
+                        <span id="fileName" class="text-gray-600 truncate">Ningún archivo seleccionado</span>
+                        <input type="file" wire:model="importFile" required
+                            class="absolute inset-0 opacity-0 cursor-pointer"
+                            onchange="document.getElementById('fileName').innerText = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado'">
+                        <span class="bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-semibold">📎 Subir</span>
+                    </div>
+
+                    @error('importFile')
+                    <div class="mt-2 flex items-center text-red-600 text-sm">
+                        ❌ <span class="ml-1">{{ $message }}</span>
+                    </div>
                     @enderror
                 </div>
 
-                <!-- Mensaje de estado -->
-                <div class="mt-2 text-sm text-gray-600">
-                    @if ($importStatus)
-                    <span class="text-green-600 font-semibold">{{ $importStatus }}</span>
-                    @endif
+                <div class="w-full bg-gray-200 rounded-full h-3 mt-4 overflow-hidden">
+                    <div wire:loading wire:target="importStudents"
+                        class="h-3 w-full bg-gradient-to-r from-blue-500 via-blue-700 to-blue-500 animate-[pulse_1.5s_linear_infinite]">
+                    </div>
                 </div>
 
-                <!-- Barra de progreso -->
-                <div class="w-full bg-gray-200 rounded-full h-2 mt-4" wire:loading wire:target="importStudents">
-                    <div class="bg-blue-600 h-2 rounded-full animate-pulse" style="width: 100%"></div>
-                </div>
 
                 <div class="flex justify-end mt-6">
                     <button wire:click="importStudents" wire:loading.attr="disabled"
-                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md">
-                        <span wire:loading.remove wire:target="importStudents">Importar Estudiantes</span>
-                        <span wire:loading wire:target="importStudents">Importando...</span>
+                        class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg shadow-md transition-all ease-in-out duration-300 flex items-center">
+                        <span wire:loading.remove wire:target="importStudents">📤 Importar Estudiantes</span>
+                        <span wire:loading wire:target="importStudents">⏳ Importando...</span>
                     </button>
                 </div>
             </x-slot>

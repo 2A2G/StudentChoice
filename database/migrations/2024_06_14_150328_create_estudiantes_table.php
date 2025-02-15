@@ -12,12 +12,12 @@ return new class extends Migration {
     {
         Schema::create('estudiantes', function (Blueprint $table) {
             $table->id();
-            $table->string('numero_identidad');
+            $table->string('numero_identidad')->uniqid();
             $table->string('nombre_estudiante');
             $table->string('apellido_estudiante');
             $table->string('sexo');
             $table->foreignId('curso_id');
-            
+
             $table->foreign('curso_id')->references('id')->on('cursos')->onDelete('cascade');
 
             $table->softDeletes();
