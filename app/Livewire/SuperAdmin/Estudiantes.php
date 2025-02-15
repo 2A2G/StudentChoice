@@ -23,6 +23,7 @@ class Estudiantes extends Component
     public $openUpdate = false;
     public $openFilter = false;
     public $openDelete = false;
+    public $openImport = false;
 
     public $numero_identidad;
     public $nombre_estudiante;
@@ -84,7 +85,7 @@ class Estudiantes extends Component
         }
     }
 
-    public function cambiar()
+    public function registrarEstudiante()
     {
         $this->clearInput();
         $this->open = true;
@@ -204,6 +205,11 @@ class Estudiantes extends Component
         ];
 
         $this->openFilter = false;
+    }
+
+    public function estudentImport()
+    {
+        $this->openImport = true;
     }
 
 

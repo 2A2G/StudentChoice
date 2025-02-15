@@ -46,17 +46,34 @@
         <div class="w-full px-4">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Estudiantes</h2>
-                <button wire:click="cambiar"
-                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                        class="w-6 h-6 text-white">
-                        <path fill-rule="evenodd"
-                            d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
-                            clip-rule="evenodd"></path>
-                    </svg>
-                    <span class="ml-2">Registrar Estudiante</span>
-                </button>
+
+                <div class="flex space-x-3">
+                    <!-- Botón Importar Estudiante -->
+                    <button wire:click="estudentImport"
+                        class="flex items-center px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                            class="w-5 h-5 text-white">
+                            <path
+                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1 5a1 1 0 012 0v4h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V7z">
+                            </path>
+                        </svg>
+                        <span class="ml-2">Importar Estudiante</span>
+                    </button>
+
+                    <!-- Botón Registrar Estudiante -->
+                    <button wire:click="registrarEstudiante"
+                        class="flex items-center px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
+                            class="w-5 h-5 text-white">
+                            <path
+                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 5a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z">
+                            </path>
+                        </svg>
+                        <span class="ml-2">Registrar Estudiante</span>
+                    </button>
+                </div>
             </div>
+
             <div>
                 <button wire:click="filter"
                     class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -70,62 +87,61 @@
                 </button>
                 <br>
                 @if ($estudiantes->isEmpty())
-                    <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
+                <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
                 @else
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
-                            <thead
-                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3">Número de Identidad</th>
-                                    <th scope="col" class="px-6 py-3">Nombre</th>
-                                    <th scope="col" class="px-6 py-3">Apellido</th>
-                                    <th scope="col" class="px-6 py-3">Sexo</th>
-                                    <th scope="col" class="px-6 py-3">Curso</th>
-                                    <th scope="col" class="px-6 py-3">Estado</th>
-                                    @can('general deletion or editing')
-                                        <th scope="col" class="px-6 py-3">Acción</th>
-                                    @endcan
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($estudiantes as $estudiante)
-                                    <tr
-                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                        <td class="px-6 py-4">{{ $estudiante->numero_identidad }}</td>
-                                        <td class="px-6 py-4">{{ $estudiante->nombre_estudiante ?? 'Sin nombre' }}</td>
-                                        <td class="px-6 py-4">{{ $estudiante->apellido_estudiante ?? 'Sin apellido' }}
-                                        </td>
-                                        <td class="px-6 py-4">{{ $estudiante->sexo }}</td>
-                                        <td class="px-6 py-4">{{ $estudiante->curso->nombre_curso ?? 'No asignado' }}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            <span
-                                                class="{{ $estudiante->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
-                                                {{ $estudiante->deleted_at === null ? 'Activo' : 'Inactivo' }}
-                                            </span>
-                                        </td>
-                                        @can('general deletion or editing')
-                                            <td class="px-6 py-4 flex space-x-2">
-                                                <button wire:click="edit({{ $estudiante }})"
-                                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                    Editar
-                                                </button>
-                                                <button wire:click="preDelete({{ $estudiante }})"
-                                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                                    Eliminar
-                                                </button>
-                                            </td>
-                                        @endcan
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">Número de Identidad</th>
+                                <th scope="col" class="px-6 py-3">Nombre</th>
+                                <th scope="col" class="px-6 py-3">Apellido</th>
+                                <th scope="col" class="px-6 py-3">Sexo</th>
+                                <th scope="col" class="px-6 py-3">Curso</th>
+                                <th scope="col" class="px-6 py-3">Estado</th>
+                                @can('general deletion or editing')
+                                <th scope="col" class="px-6 py-3">Acción</th>
+                                @endcan
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($estudiantes as $estudiante)
+                            <tr
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <td class="px-6 py-4">{{ $estudiante->numero_identidad }}</td>
+                                <td class="px-6 py-4">{{ $estudiante->nombre_estudiante ?? 'Sin nombre' }}</td>
+                                <td class="px-6 py-4">{{ $estudiante->apellido_estudiante ?? 'Sin apellido' }}
+                                </td>
+                                <td class="px-6 py-4">{{ $estudiante->sexo }}</td>
+                                <td class="px-6 py-4">{{ $estudiante->curso->nombre_curso ?? 'No asignado' }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span
+                                        class="{{ $estudiante->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
+                                        {{ $estudiante->deleted_at === null ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </td>
+                                @can('general deletion or editing')
+                                <td class="px-6 py-4 flex space-x-2">
+                                    <button wire:click="edit({{ $estudiante }})"
+                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                        Editar
+                                    </button>
+                                    <button wire:click="preDelete({{ $estudiante }})"
+                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                        Eliminar
+                                    </button>
+                                </td>
+                                @endcan
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                    <div class="mt-4">
-                        {{ $estudiantes->links() }}
-                    </div>
+                <div class="mt-4">
+                    {{ $estudiantes->links() }}
+                </div>
                 @endif
             </div>
         </div>
@@ -142,19 +158,19 @@
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0" step="1"
                     oninput="this.value = this.value.slice(0, 10);">
                 @error('numero_identidad')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
                 <label class="block mb-2">Nombre</label>
                 <input type="text" wire:model.live="nombre_estudiante"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('nombre_estudiante')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
                 <label class="block mb-2">Apellido</label>
                 <input type="text" wire:model.live="apellido_estudiante"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('apellido_estudiante')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
 
@@ -166,24 +182,23 @@
                     <option value="Femenino">Femenino</option>
                 </select>
                 @error('sexo')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <label class="block mb-2">Selecione el curso</label>
                 <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un curso</option>
                     @foreach ($cursos as $curso)
-                        <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
+                    <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
                     @endforeach
                 </select>
                 @error('curso_id')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <!-- Botón para guardar usuario -->
                 <br>
-                <button wire:click="store"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Guardar Estudiante
                 </button>
             </x-slot>
@@ -198,22 +213,22 @@
                 <!-- Campo de nombre completo -->
                 <label class="block mb-2">Número de identidad</label>
                 <input type="number" disabled wire:model.live="numero_identidad"
-                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0"
-                    step="1" oninput="this.value = this.value.slice(0, 10);">
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0" step="1"
+                    oninput="this.value = this.value.slice(0, 10);">
                 @error('numero_identidad')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
                 <label class="block mb-2">Nombre</label>
                 <input type="text" disabled wire:model.live="nombre_estudiante"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('nombre_estudiante')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
                 <label class="block mb-2">Apellido</label>
                 <input type="text" disabled wire:model.live="apellido_estudiante"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('apellido_estudiante')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
 
@@ -225,20 +240,20 @@
                     <option value="Femenino">Femenino</option>
                 </select>
                 @error('sexo')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <label class="block mb-2">Seleccione el curso</label>
                 <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un curso</option>
                     @foreach ($cursos as $curso)
-                        <option value="{{ $curso['id'] }}">
-                            {{ $curso['nombre_curso'] }}
-                        </option>
+                    <option value="{{ $curso['id'] }}">
+                        {{ $curso['nombre_curso'] }}
+                    </option>
                     @endforeach
                 </select>
                 @error('curso_id')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
 
@@ -249,7 +264,7 @@
                     <option value="Eliminado">Eliminado</option>
                 </select>
                 @error('estado')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <!-- Botón para guardar usuario -->
@@ -315,21 +330,21 @@
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
                     placeholder="Ingrese el número de identidad">
                 @error('numero_identidad')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <label class="block mb-2">Nombre</label>
                 <input type="text" wire:model="name" class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
                     placeholder="Ingrese el nombre">
                 @error('name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <label class="block mb-2">Apellido</label>
-                <input type="text" wire:model="apellido"
-                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3" placeholder="Ingrese el apellido">
+                <input type="text" wire:model="apellido" class="border border-gray-300 rounded px-3 py-2 w-full mb-3"
+                    placeholder="Ingrese el apellido">
                 @error('apellido')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <label class="block mb-2">Sexo</label>
@@ -339,18 +354,18 @@
                     <option value="Femenino">Femenino</option>
                 </select>
                 @error('sexo')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <label class="block mb-2">Selecione el curso</label>
                 <select wire:model="curso_id" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un curso</option>
                     @foreach ($cursos as $curso)
-                        <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
+                    <option value="{{ $curso['id'] }}">{{ $curso['nombre_curso'] }}</option>
                     @endforeach
                 </select>
                 @error('curso_id')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <label class="block mb-2">Estado</label>
@@ -360,7 +375,7 @@
                     <option value="Eliminado">Eliminado</option>
                 </select>
                 @error('estado')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <br>
@@ -371,6 +386,41 @@
             </x-slot>
         </x-dialog-modal>
 
+        <x-dialog-modal wire:model="openImport">
+            <x-slot name="title">
+                <h1 class="text-lg font-medium">Importar Estudiantes</h1>
+            </x-slot>
+
+            <x-slot name="content">
+                <div class="mb-4">
+                    <label class="block font-medium text-gray-700 mb-2">Subir archivo Excel</label>
+                    <input type="file" wire:model="file" class="border border-gray-300 rounded px-3 py-2 w-full">
+                    @error('file')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Mensaje de estado -->
+                <div class="mt-2 text-sm text-gray-600">
+                    @if ($importStatus)
+                    <span class="text-green-600 font-semibold">{{ $importStatus }}</span>
+                    @endif
+                </div>
+
+                <!-- Barra de progreso -->
+                <div class="w-full bg-gray-200 rounded-full h-2 mt-4" wire:loading wire:target="importStudents">
+                    <div class="bg-blue-600 h-2 rounded-full animate-pulse" style="width: 100%"></div>
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <button wire:click="importStudents" wire:loading.attr="disabled"
+                        class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow-md">
+                        <span wire:loading.remove wire:target="importStudents">Importar Estudiantes</span>
+                        <span wire:loading wire:target="importStudents">Importando...</span>
+                    </button>
+                </div>
+            </x-slot>
+        </x-dialog-modal>
     </div>
 
     {{-- Alerrta de notificaciones --}}
