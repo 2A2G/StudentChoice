@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use App\Services\VotacionService;
 use App\Models\Curso;
 use App\Models\Cargo;
-use App\Models\Estudiante;
 use App\Models\Postulante;
 use App\Models\Votos;
 use Barryvdh\DomPDF\Facade\Pdf;

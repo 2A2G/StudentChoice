@@ -4,21 +4,29 @@ namespace App\Livewire\SuperAdmin;
 
 use App\Models\Curso;
 use App\Models\Estudiante;
+use App\Services\StudentImportService;
+use Illuminate\Support\Facades\Log;
 use Laravel\Jetstream\Rules\Role;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Excel;
 use Spatie\Permission\Models\Role as ModelsRole;
+use Livewire\Features\SupportFileUploads\WithFileUploads as SupportFileUploadsWithFileUploads;
 
 class Estudiantes extends Component
 {
 
     use WithPagination;
+    use WithFileUploads;
 
     #[Validate('required')]
     #[Validate("Unique:estudiantes,numero_identidad")]
 
+    public $importFile;
+    public $importStatus;
     public $open = false;
     public $openUpdate = false;
     public $openFilter = false;
@@ -37,7 +45,6 @@ class Estudiantes extends Component
     public $cursos;
     public $filterEstudiante = [];
 
-
     public function mount()
     {
         $this->totalEstudiantesActivos = Estudiante::all();
@@ -52,6 +59,9 @@ class Estudiantes extends Component
         $this->apellido_estudiante = '';
         $this->sexo = '';
         $this->curso_id = '';
+        $this->importFile = '';
+        $this->estado = '';
+        $this->mount();
     }
 
     public function store()
@@ -74,8 +84,9 @@ class Estudiantes extends Component
             $estudiante->sexo = $this->sexo;
             $estudiante->curso_id = $this->curso_id;
             $estudiante->save();
-            $this->dispatch('post-created', name: "El estudiante " . $this->nombre_estudiante . ", creado satisfactoriamente");
+
             $this->clearInput();
+            $this->dispatch('post-created', name: "El estudiante " . $this->nombre_estudiante . ", creado satisfactoriamente");
             $this->open = false;
         } catch (\Throwable $th) {
             $this->open = false;
@@ -147,6 +158,7 @@ class Estudiantes extends Component
         } catch (\Throwable $th) {
             $this->openUpdate = false;
             $this->dispatch('post-error', name: "Error al intentar actualizar los datos del estudiante. Inténtelo de nuevo");
+
             $this->clearInput();
             throw $th;
         }
@@ -174,7 +186,7 @@ class Estudiantes extends Component
             }
 
             $estudiante->delete();
-
+            $this->clearInput();
             $this->dispatch('post-created', name: "El estudiante ha sido eliminado satisfactoriamente");
             $this->openDelete = false;
         } catch (\Throwable $th) {
@@ -201,7 +213,8 @@ class Estudiantes extends Component
             'nombre_estudiante' => $this->nombre_estudiante,
             'apellido_estudiante' => $this->apellido_estudiante,
             'sexo' => $this->sexo,
-            'curso_id' => $this->curso_id
+            'curso_id' => $this->curso_id,
+            'estado' => $this->estado
         ];
 
         $this->openFilter = false;
@@ -210,6 +223,33 @@ class Estudiantes extends Component
     public function estudentImport()
     {
         $this->openImport = true;
+    }
+
+    public function importStudents(StudentImportService $studentImportService)
+    {
+        $this->validate([
+            'importFile' => 'required|mimes:xlsx,xls|max:2048',
+        ]);
+
+        try {
+
+            $filePath = $this->importFile->getPathname();
+            $importSuccess = $studentImportService->importStudents($filePath);
+
+            if ($importSuccess) {
+                $this->dispatch('post-created', name: "Estudiantes importados satisfactoriamente");
+                $this->clearInput();
+                $this->openImport = false;
+                $this->mount();
+            } else {
+                $this->dispatch('post-warning', name: "Error al importar los estudiantes. Inténtelo de nuevo");
+                $this->clearInput();
+            }
+        } catch (\Exception $e) {
+            Log::error('Error en la importación: ' . $e->getMessage());
+            $this->dispatch('post-error', name: "Error al importar los estudiantes. Inténtelo de nuevo");
+            $this->clearInput();
+        }
     }
 
 
