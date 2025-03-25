@@ -46,7 +46,6 @@ class Postulacion extends Component
     public $data;
     public $filePath;
     public $elecciones;
-    public $eleccion = '';
     public $totalPostulantes;
     public $totalPostulantesEliminados;
     public $filterPostulante = [];
@@ -72,15 +71,20 @@ class Postulacion extends Component
         $this->totalPostulantesEliminados = Postulante::onlyTrashed()->count();
         $this->cargos = Cargo::all();
         $this->cursosDisponibles = Curso::all();
-        $this->elecciones = Comicio::where('estado', true)->get();
+        $this->elecciones = Comicio::where('estado', true)->first();
     }
 
     public function cambiar()
     {
-        if ($this->elecciones->isEmpty()) {
+        if (empty($this->elecciones)) {
             $this->dispatch('post-error', name: 'Lo sentimos, no hay elecciones abiertas en este momento.');
             return;
         }
+        if ($this->elecciones->estado_eleccion == true) {
+            $this->dispatch('post-warning', name: 'Lo sentimos, hay un comicio en curso, no se pueden realizar postulaciones en este momento.');
+            return;
+        }
+
 
         $this->dispatch('clear-card');
         $this->open = true;
@@ -96,8 +100,8 @@ class Postulacion extends Component
             $this->curso_postulante = $estudiante->curso->nombre_curso;
             $this->mensajeError = '';
             if (
-                Postulante::where('estudiante_id', $estudiante->id)
-                ->where('anio_postulacion', date('Y'))
+                $this->elecciones && Postulante::where('estudiante_id', $estudiante->id)
+                ->where('comicio_id', $this->elecciones->id)
                 ->exists()
             ) {
                 $this->mensajeError = 'Este estudiante ya se encuentra postulado';
@@ -158,7 +162,7 @@ class Postulacion extends Component
                     'estudiante_id' => $newPostulante->id,
                     'cargo_id' => $this->cargo,
                     'curso_id' => $newPostulante->curso_id,
-                    'comicio_id' => $this->eleccion,
+                    'comicio_id' => $this->elecciones->id,
                     'fotografia_postulante' => $filePath,
                 ]);
 
@@ -297,7 +301,7 @@ class Postulacion extends Component
 
     public function searchPostulante()
     {
-        if (!$this->numero_identidad && !$this->curso_postulante && !$this->cargo && !$this->eleccion && !$this->estado) {
+        if (!$this->numero_identidad && !$this->curso_postulante && !$this->cargo && !$this->elecciones && !$this->estado) {
             $this->dispatch('post-error', name: "Por favor, ingrese al menos un campo para realizar la búsqueda.");
             return;
         }
@@ -306,7 +310,7 @@ class Postulacion extends Component
             'numero_identidad' => $this->numero_identidad,
             'curso_postulante' => $this->curso_postulante,
             'cargo' => $this->cargo,
-            'eleccion' => $this->eleccion,
+            'eleccion' => $this->eleccion->id,
             'estado' => $this->estado,
         ];
         $this->openFilter = false;
