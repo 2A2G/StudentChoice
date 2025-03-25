@@ -14,12 +14,14 @@ class Comicio extends Model
 
     protected $fillable = [
         'nombre_eleccion',
+        'estado',
+        'anio_eleccion',
         'estado_eleccion'
     ];
 
     public static function getComicioActive()
     {
-        $comicio = Comicio::where('estado', 'activo')->first();
+        $comicio = Comicio::where('estado', true)->first();
 
         if (!$comicio) {
             throw new \Exception('No hay un comicio activo');

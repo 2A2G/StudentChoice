@@ -40,14 +40,12 @@ class Votacion extends Component
     {
         $this->estudiante = $estudiante;
         if ($this->estudiante) {
-
-            $comicio = Comicio::where('estado', 'activo')->first();
+            $comicio = Comicio::where('estado', true)->first();
 
             if (!$comicio) {
                 $this->postulantes = [];
                 return;
             }
-            // dd($this->estudiante);
             $this->candidatos = null;
 
             $this->postulantes = PostulanteCurso::with('postulante')->where('curso_id', $this->estudiante->curso_id)->get();
@@ -62,7 +60,6 @@ class Votacion extends Component
             $this->candidatos = collect($this->postulantes)->groupBy(function ($postulante) {
                 return $postulante->postulante->cargo->nombre_cargo;
             });
-            // dd($this->candidatos);
 
         }
     }

@@ -112,10 +112,19 @@ class ViewController extends Controller
     public function votacion(Request $request)
     {
         $caso = 'votacion';
+
+        $request->validate([
+            'numero_identidad' => 'required|numeric',
+        ], [
+            'numero_identidad.required' => 'El número de identidad es obligatorio.',
+            'numero_identidad.numeric' => 'El número de identidad debe ser un valor numérico.',
+        ]);
+
         try {
-            $comicio = Comicio::where('estado', 'activo')->first();
-            if (empty($comicio) || $comicio->estado_eleccion !== true) {
-                return back()->withErrors(['estado_eleccion' => 'Actualmente no hay elecciones activas disponibles']);
+            $comicio = Comicio::where('estado', true)->firstOrFail();
+
+            if ($comicio->estado_eleccion !== true) {
+                return back()->withErrors(['estado_eleccion' => 'Actualmente no hay elecciones activas disponibles.']);
             }
 
             $estudiante = Estudiante::where('numero_identidad', $request->numero_identidad)->first();
@@ -124,8 +133,10 @@ class ViewController extends Controller
             } else {
                 return back()->withErrors(['numero_identidad' => 'No se encontró el estudiante o no está registrado.']);
             }
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return back()->withErrors(['estado_eleccion' => 'No se encontró un comicio activo en este momento.']);
         } catch (\Throwable $th) {
-            return back()->withErrors(['error' => $th->getMessage()]);
+            return back()->withErrors(['error' => 'Hubo un error inesperado: ' . $th->getMessage()]);
         }
     }
 }
