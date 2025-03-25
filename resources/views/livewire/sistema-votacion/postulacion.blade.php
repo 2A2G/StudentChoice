@@ -35,16 +35,16 @@
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Postulantes</h2>
                 @can('create applicant')
-                    <button data-modal-target="static-modal" data-modal-toggle="static-modal" wire:click="cambiar"
-                        class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                            class="w-6 h-6 text-white">
-                            <path fill-rule="evenodd"
-                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="ml-2">Nuevo postulante</span>
-                    </button>
+                <button data-modal-target="static-modal" data-modal-toggle="static-modal" wire:click="cambiar"
+                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                        class="w-6 h-6 text-white">
+                        <path fill-rule="evenodd"
+                            d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-2">Nuevo postulante</span>
+                </button>
                 @endCan
             </div>
             <button wire:click="filter"
@@ -59,60 +59,63 @@
             </button>
             <br>
             @if ($postulantes->isEmpty())
-                <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
+            <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
             @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">Estudiante</th>
-                                <th scope="col" class="px-6 py-3">Curso</th>
-                                <th scope="col" class="px-6 py-3">Cargo</th>
-                                <th scope="col" class="px-6 py-3">Año</th>
-                                <th scope="col" class="px-6 py-3">Estado</th>
-                                @can('general deletion or editing')
-                                    <th scope="col" class="px-6 py-3">Acción</th>
-                                @endcan
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($postulantes as $postulante)
-                                <tr
-                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <td class="px-6 py-4">
-                                        {{ $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante ?? 'Sin nombre' }}
-                                    </td>
-                                    <td class="px-6 py-4">{{ $postulante->curso->nombre_curso ?? 'No' }}</td>
-                                    <td class="px-6 py-4">{{ $postulante->cargo->nombre_cargo }}</td>
-                                    <td class="px-6 py-4">{{ $postulante->comicio->anio_eleccion ?? 'No especificado' }}
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="{{ $postulante->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
-                                            {{ $postulante->deleted_at === null ? 'Activo' : 'Eliminado' }}
-                                        </span>
-                                    </td>
-                                    @can('general deletion or editing')
-                                        <td class="px-6 py-4 flex space-x-2">
-                                            <button wire:click="edit({{ $postulante }})"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                Editar
-                                            </button>
-                                            <button wire:click="preDelete({{ $postulante }})"
-                                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    @endcan
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Estudiante</th>
+                            <th scope="col" class="px-6 py-3">Curso</th>
+                            <th scope="col" class="px-6 py-3">Cargo</th>
+                            <th scope="col" class="px-6 py-3">Año</th>
+                            <th scope="col" class="px-6 py-3">Nombre del comicio</th>
+                            <th scope="col" class="px-6 py-3">Estado</th>
+                            @can('general deletion or editing')
+                            <th scope="col" class="px-6 py-3">Acción</th>
+                            @endcan
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($postulantes as $postulante)
+                        <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4">
+                                {{ $postulante->estudiante->nombre_estudiante . ' ' .
+                                $postulante->estudiante->apellido_estudiante ?? 'Sin nombre' }}
+                            </td>
+                            <td class="px-6 py-4">{{ $postulante->curso->nombre_curso ?? 'No' }}</td>
+                            <td class="px-6 py-4">{{ $postulante->cargo->nombre_cargo }}</td>
+                            <td class="px-6 py-4">{{ $postulante->comicio->anio_eleccion ?? 'No especificado' }}
+                            </td>
+                            <td class="px-6 py-4">{{ $postulante->comicio->nombre_eleccion ?? 'No especificado' }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="{{ $postulante->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
+                                    {{ $postulante->deleted_at === null ? 'Activo' : 'Eliminado' }}
+                                </span>
+                            </td>
+                            @can('general deletion or editing')
+                            <td class="px-6 py-4 flex space-x-2">
+                                <button wire:click="edit({{ $postulante }})"
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Editar
+                                </button>
+                                <button wire:click="preDelete({{ $postulante }})"
+                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Eliminar
+                                </button>
+                            </td>
+                            @endcan
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                <div class="mt-4">
-                    {{ $postulantes->links() }}
-                </div>
+            <div class="mt-4">
+                {{ $postulantes->links() }}
+            </div>
             @endif
         </div>
     </div>
@@ -129,10 +132,10 @@
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required min="0" step="1"
                     oninput="this.value = this.value.slice(0, 10);">
                 @error('numeroIdentidad')
-                    <span class="text-red-500">{{ $message }}</span>
+                <span class="text-red-500">{{ $message }}</span>
                 @enderror
                 @if ($mensajeError)
-                    <span class="text-red-500">{{ $mensajeError }}</span>
+                <span class="text-red-500">{{ $mensajeError }}</span>
                 @endif
 
                 <!-- Campo del nombre -->
@@ -151,22 +154,18 @@
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un cargo</option>
                     @foreach ($cargos as $cargo)
-                        <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
+                    <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
                     @endforeach
                 </select>
                 @error('cargo')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
 
 
                 <!-- Campo de la eleccion -->
                 <label class="block mb-2">Elección</label>
-                <select wire:model="eleccion" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
-                    <option value="" selected disabled>Seleccione un Elección</option>
-                    @foreach ($elecciones as $eleccion)
-                        <option value="{{ $eleccion->id }}">{{ $eleccion->nombre_eleccion }}</option>
-                    @endforeach
-                </select>
+                <input type="text" value="{{$elecciones['nombre_eleccion']}}" wire:model="eleccion"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3 bg-gray-100" disabled>
 
 
                 <!-- Campo para subir la imagen -->
@@ -186,45 +185,43 @@
                             Subir imagen
                         </button>
                         @error('imagen')
-                            <span class="text-red-500 block mt-2">{{ $message }}</span>
+                        <span class="text-red-500 block mt-2">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
 
                 <!-- Componente de la carta -->
                 @if ($cargo && $curso_postulante)
-                    @livewire('cartas.cartas', [
-                        'nombre' => $nombre_postulante,
-                        'curso' => $curso_postulante,
-                        'cargo' => $cargo->nombre_cargo,
-                        'imagen' => $imagen,
-                    ])
+                @livewire('cartas.cartas', [
+                'nombre' => $nombre_postulante,
+                'curso' => $curso_postulante,
+                'cargo' => $cargo->nombre_cargo,
+                'imagen' => $imagen,
+                ])
 
-                    <!-- Agregar checkbox para seleccionar cursos, alineados horizontalmente -->
-                    <div class="mt-4">
-                        <label class="block mb-2">Cursos a los cuales aplica el postulante</label>
-                        <div class="flex flex-wrap gap-4">
-                            <!-- Ajustamos para que se ajusten al tamaño del contenedor -->
-                            @foreach ($cursosDisponibles as $cursoItem)
-                                <div class="flex items-center space-x-2">
-                                    <input type="checkbox" id="curso_{{ $cursoItem->id }}"
-                                        value="{{ $cursoItem->id }}" wire:model="cursos_seleccionados"
-                                        class="mr-2"
-                                        {{ in_array($cursoItem->id, $cursos_seleccionados) ? 'checked' : '' }}>
-                                    <label for="curso_{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</label>
-                                </div>
-                            @endforeach
+                <!-- Agregar checkbox para seleccionar cursos, alineados horizontalmente -->
+                <div class="mt-4">
+                    <label class="block mb-2">Cursos a los cuales aplica el postulante</label>
+                    <div class="flex flex-wrap gap-4">
+                        <!-- Ajustamos para que se ajusten al tamaño del contenedor -->
+                        @foreach ($cursosDisponibles as $cursoItem)
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="curso_{{ $cursoItem->id }}" value="{{ $cursoItem->id }}"
+                                wire:model="cursos_seleccionados" class="mr-2" {{ in_array($cursoItem->id,
+                            $cursos_seleccionados) ? 'checked' : '' }}>
+                            <label for="curso_{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</label>
                         </div>
+                        @endforeach
                     </div>
+                </div>
                 @endif
                 @error('cursos_seleccionados')
-                    <span class="text-red-500 block mt-2">{{ $message }}</span>
+                <span class="text-red-500 block mt-2">{{ $message }}</span>
                 @enderror
 
                 <!-- Botón para guardar usuario -->
                 <br>
-                <button wire:click="store"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                <button wire:click="store" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
                     Guardar postulante
                 </button>
             </x-slot>
@@ -251,19 +248,18 @@
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un cargo</option>
                     @foreach ($cargos as $cargo)
-                        <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
+                    <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
                     @endforeach
                 </select>
                 @error('cargo')
-                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                 @enderror
 
                 <!-- Campo para subir la imagen -->
                 <div class="mb-4">
                     <label for="image-upload" class="block text-gray-700 font-bold mb-2">Imagen del postulante</label>
                     <div class="relative">
-                        <input type="file" id="image-upload" wire:model="imagen" accept="image/*"
-                            class="hidden">
+                        <input type="file" id="image-upload" wire:model="imagen" accept="image/*" class="hidden">
                         <button type="button" onclick="document.getElementById('image-upload').click()"
                             class="flex items-center justify-center w-full border border-gray-300 rounded px-3 py-2 bg-white hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 mr-2"
@@ -275,16 +271,16 @@
                             Subir imagen
                         </button>
                         @error('imagen')
-                            <span class="text-red-500 block mt-2">{{ $message }}</span>
+                        <span class="text-red-500 block mt-2">{{ $message }}</span>
                         @enderror
                     </div>
                 </div>
 
                 @livewire('cartas.cartas', [
-                    'nombre' => $nombre_postulante,
-                    'curso' => $curso_postulante,
-                    'cargo' => $cargo->nombre_cargo,
-                    'imagen' => $imagen,
+                'nombre' => $nombre_postulante,
+                'curso' => $curso_postulante,
+                'cargo' => $cargo->nombre_cargo,
+                'imagen' => $imagen,
                 ])
 
                 <!-- Cursos seleccionados -->
@@ -292,16 +288,16 @@
                     <label class="block mb-2">Cursos a los cuales aplica el postulante</label>
                     <div class="flex flex-wrap gap-4">
                         @foreach ($cursosDisponibles as $cursoItem)
-                            <div class="flex items-center space-x-2">
-                                <input type="checkbox" id="curso_{{ $cursoItem->id }}" value="{{ $cursoItem->id }}"
-                                    wire:model="cursos_seleccionados" class="mr-2">
-                                <label for="curso_{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</label>
-                            </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="curso_{{ $cursoItem->id }}" value="{{ $cursoItem->id }}"
+                                wire:model="cursos_seleccionados" class="mr-2">
+                            <label for="curso_{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</label>
+                        </div>
                         @endforeach
                     </div>
                 </div>
                 @error('cursos_seleccionados')
-                    <span class="text-red-500 block mt-2">{{ $message }}</span>
+                <span class="text-red-500 block mt-2">{{ $message }}</span>
                 @enderror
 
                 <label class="block mb-2">Selecione el Estado</label>
@@ -311,7 +307,7 @@
                     <option value="Eliminado">Eliminado</option>
                 </select>
                 @error('estado')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <!-- Botón para actualizar usuario -->
@@ -376,7 +372,7 @@
                 <input type="number" wire:model="numero_identidad"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" placeholder="Número de identidad">
                 @error('numero_identidad')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <!-- Filtro por curso -->
@@ -384,11 +380,11 @@
                 <select wire:model="curso_postulante" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un curso</option>
                     @foreach ($cursosDisponibles as $cursoItem)
-                        <option value="{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</option>
+                    <option value="{{ $cursoItem->id }}">{{ $cursoItem->nombre_curso }}</option>
                     @endforeach
                 </select>
                 @error('curso_postulante')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <!-- Filtro por cargo -->
@@ -396,24 +392,18 @@
                 <select wire:model="cargo" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
                     <option value="" selected disabled>Seleccione un cargo</option>
                     @foreach ($cargos as $cargo)
-                        <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
+                    <option value="{{ $cargo->id }}">{{ $cargo->nombre_cargo }}</option>
                     @endforeach
                 </select>
                 @error('cargo')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <!-- Filtro por elección -->
                 <label class="block mb-2">Elección</label>
-                <select wire:model="eleccion" class="border border-gray-300 rounded px-3 py-2 w-full mb-3">
-                    <option value="" selected disabled>Seleccione una elección</option>
-                    @foreach ($elecciones as $eleccion)
-                        <option value="{{ $eleccion->id }}">{{ $eleccion->nombre_eleccion }}</option>
-                    @endforeach
-                </select>
-                @error('eleccion')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+                <input type="text" value="{{$elecciones->nombre_eleccion}}"
+                    class="border border-gray-300 rounded px-3 py-2 w-full mb-3 bg-gray-100" disabled>
+
 
                 <!-- Filtro por estado -->
                 <label class="block mb-2">Estado</label>
@@ -423,7 +413,7 @@
                     <option value="Eliminado">Eliminado</option>
                 </select>
                 @error('estado')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
 
                 <br>
