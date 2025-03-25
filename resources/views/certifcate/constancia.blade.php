@@ -203,7 +203,7 @@
 
                 <h3 class="text-2xl font-semibold text-blue-700 mt-6">Postulantes</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-4">
-                    @foreach ($curso->postulante as $postulante)
+                    @foreach ($postulantes as $postulante)
                         <div class="p-4 bg-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300">
                             <h4 class="text-xl font-semibold text-gray-800">
                                 {{ $postulante->estudiante->nombre_estudiante . ' ' . $postulante->estudiante->apellido_estudiante }}
