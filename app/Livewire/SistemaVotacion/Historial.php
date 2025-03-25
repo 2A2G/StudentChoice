@@ -64,10 +64,24 @@ class Historial extends Component
         }
     }
 
-    public function showResults($comcioId)
+    public function showResults($comicioId)
     {
-        return redirect()->route('viewResultados', ['comicioId' => $comcioId]);
+        $comicio = Comicio::find($comicioId);
+
+        if (!$comicio) {
+            $this->dispatch('post-warning', name: "La elección seleccionada no existe.");
+            return;
+        }
+
+        if ($comicio->postulante()->count() === 0) {
+            $this->dispatch('post-warning', name: "No se pueden mostrar los resultados porque no hay postulantes en esta elección.");
+            return;
+        }
+
+        return redirect()->route('viewResultados', ['comicioId' => $comicioId]);
     }
+
+
 
     public function filter()
     {
