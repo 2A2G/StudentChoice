@@ -42,110 +42,98 @@
         </div>
     </div>
 
-    <div class="flex">
-        <div class="w-full px-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-semibold text-gray-800">Estudiantes</h2>
+    <div
+        class="flex flex-col lg:flex-row items-start lg:items-center justify-between w-full px-4 space-y-4 lg:space-y-0">
+        <h2 class="text-2xl font-semibold text-gray-800">Estudiantes</h2>
 
-                <div class="flex space-x-3">
-                    <!-- Botón Importar Estudiante -->
-                    <button wire:click="estudentImport"
-                        class="flex items-center px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                            class="w-5 h-5 text-white">
-                            <path
-                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1 5a1 1 0 012 0v4h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V7z">
-                            </path>
-                        </svg>
-                        <span class="ml-2">Importar Estudiante</span>
-                    </button>
+        <div class="flex flex-wrap gap-2">
+            <button wire:click="estudentImport"
+                class="flex items-center px-5 py-2 text-sm font-medium text-white bg-green-600 rounded-lg shadow-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+                    <path
+                        d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1 5a1 1 0 012 0v4h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V7z">
+                    </path>
+                </svg>
+                <span class="ml-2">Importar Estudiante</span>
+            </button>
 
-                    <!-- Botón Registrar Estudiante -->
-                    <button wire:click="registrarEstudiante"
-                        class="flex items-center px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md transition-all duration-200 ease-in-out hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"
-                            class="w-5 h-5 text-white">
-                            <path
-                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 5a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z">
-                            </path>
-                        </svg>
-                        <span class="ml-2">Registrar Estudiante</span>
-                    </button>
-                </div>
-            </div>
+            <button wire:click="registrarEstudiante"
+                class="flex items-center px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-5 h-5">
+                    <path
+                        d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 5a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z">
+                    </path>
+                </svg>
+                <span class="ml-2">Registrar Estudiante</span>
+            </button>
 
-            <div>
-                <button wire:click="filter"
-                    class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                        class="w-6 h-6 text-white">
-                        <path fill-rule="evenodd"
-                            d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <span class="ml-2">Filtrar</span>
-                </button>
-                <br>
-                @if ($estudiantes->isEmpty())
-                <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
-                @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">Número de Identidad</th>
-                                <th scope="col" class="px-6 py-3">Nombre</th>
-                                <th scope="col" class="px-6 py-3">Apellido</th>
-                                <th scope="col" class="px-6 py-3">Sexo</th>
-                                <th scope="col" class="px-6 py-3">Curso</th>
-                                <th scope="col" class="px-6 py-3">Estado</th>
-                                @can('general deletion or editing')
-                                <th scope="col" class="px-6 py-3">Acción</th>
-                                @endcan
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($estudiantes as $estudiante)
-                            <tr
-                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                <td class="px-6 py-4">{{ $estudiante->numero_identidad }}</td>
-                                <td class="px-6 py-4">{{ $estudiante->nombre_estudiante ?? 'Sin nombre' }}</td>
-                                <td class="px-6 py-4">{{ $estudiante->apellido_estudiante ?? 'Sin apellido' }}
-                                </td>
-                                <td class="px-6 py-4">{{ $estudiante->sexo }}</td>
-                                <td class="px-6 py-4">{{ $estudiante->curso->nombre_curso ?? 'No asignado' }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <span
-                                        class="{{ $estudiante->deleted_at === null ? 'text-blue-500' : 'text-red-500' }}">
-                                        {{ $estudiante->deleted_at === null ? 'Activo' : 'Inactivo' }}
-                                    </span>
-                                </td>
-                                @can('general deletion or editing')
-                                <td class="px-6 py-4 flex space-x-2">
-                                    <button wire:click="edit({{ $estudiante }})"
-                                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                        Editar
-                                    </button>
-                                    <button wire:click="preDelete({{ $estudiante }})"
-                                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                        Eliminar
-                                    </button>
-                                </td>
-                                @endcan
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="mt-4">
-                    {{ $estudiantes->links() }}
-                </div>
-                @endif
-            </div>
+            <button wire:click="filter"
+                class="flex items-center px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-lg shadow-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path fill-rule="evenodd"
+                        d="M3 5a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6 6A1 1 0 0114 14v4.586a1 1 0 01-.293.707l-4 4A1 1 0 019 23V14a1 1 0 01-.293-.707l-6-6A1 1 0 013 7.586V5z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="ml-2">Filtrar</span>
+            </button>
         </div>
     </div>
+
+    @if ($estudiantes->isEmpty())
+    <p class="text-center text-gray-500 py-4">No hay datos para mostrar</p>
+    @else
+    <div class="overflow-x-auto mt-4">
+        <table class="w-full min-w-max text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3">Número de Identidad</th>
+                    <th scope="col" class="px-6 py-3">Nombre</th>
+                    <th scope="col" class="px-6 py-3">Apellido</th>
+                    <th scope="col" class="px-6 py-3">Sexo</th>
+                    <th scope="col" class="px-6 py-3">Curso</th>
+                    <th scope="col" class="px-6 py-3">Estado</th>
+                    @can('general deletion or editing')
+                    <th scope="col" class="px-6 py-3">Acción</th>
+                    @endcan
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($estudiantes as $estudiante)
+                <tr class="bg-white border-b hover:bg-gray-50">
+                    <td class="px-6 py-4">{{ $estudiante->numero_identidad }}</td>
+                    <td class="px-6 py-4">{{ $estudiante->nombre_estudiante ?? 'Sin nombre' }}</td>
+                    <td class="px-6 py-4">{{ $estudiante->apellido_estudiante ?? 'Sin apellido' }}</td>
+                    <td class="px-6 py-4">{{ $estudiante->sexo }}</td>
+                    <td class="px-6 py-4">{{ $estudiante->curso->nombre_curso ?? 'No asignado' }}</td>
+                    <td class="px-6 py-4">
+                        <span class="{{ $estudiante->deleted_at ? 'text-red-500' : 'text-blue-500' }}">
+                            {{ $estudiante->deleted_at ? 'Inactivo' : 'Activo' }}
+                        </span>
+                    </td>
+                    @can('general deletion or editing')
+                    <td class="px-6 py-4 flex flex-wrap gap-2">
+                        <button wire:click="edit({{ $estudiante }})"
+                            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            Editar
+                        </button>
+                        <button wire:click="preDelete({{ $estudiante }})"
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                            Eliminar
+                        </button>
+                    </td>
+                    @endcan
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        {{ $estudiantes->links() }}
+    </div>
+    @endif
+
+
     <div>
         <x-dialog-modal wire:model="open">
             <x-slot name="title">

@@ -17,75 +17,75 @@
         </div>
     </div>
 
-    <div class="flex">
+    <div class="flex flex-col md:flex-row">
         <div class="w-full px-4">
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center">
                 <h2 class="text-2xl font-semibold text-gray-800">Cargos</h2>
                 {{-- @can('create position')
-                    <button data-modal-target="static-modal" wire:click="cambiar"
-                        class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
-                            class="w-6 h-6 text-white">
-                            <path fill-rule="evenodd"
-                                d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
-                                clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="ml-2">Registrar nuevo Cargo</span>
-                    </button>
+                <button data-modal-target="static-modal" wire:click="cambiar"
+                    class="mt-2 md:mt-0 flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                        class="w-6 h-6 text-white">
+                        <path fill-rule="evenodd"
+                            d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 1a9 9 0 100 18 9 9 0 000-18zm0 4a1 1 0 011 1v3h3a1 1 0 010 2h-3v3a1 1 0 01-2 0v-3H8a1 1 0 010-2h3V8a1 1 0 011-1z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                    <span class="ml-2">Registrar nuevo Cargo</span>
+                </button>
                 @endCan --}}
             </div>
+
             @if ($cargos->isEmpty())
-                <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
+            <p class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos para mostrar</p>
             @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mx-auto">
-                        <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" class="px-6 py-3">Nombre del Cargo</th>
-                                <th scope="col" class="px-6 py-3">Descripcicón del Cargo</th>
-                                <th scope="col" class="px-6 py-3">Estado</th>
-                                @can('general deletion or editing')
-                                    <th scope="col" class="px-6 py-3">Acción</th>
-                                @endcan
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($cargos as $cargo)
-                                <tr
-                                    class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <td class="px-6 py-4">{{ $cargo->nombre_cargo }}</td>
-                                    <td class="px-6 py-4">{{ $cargo->descripcion_cargo }}</td>
-                                    <td class="px-6 py-4">
-                                        <span class="{{ $cargo->deleted_at ? 'text-red-500' : 'text-blue-500' }}">
-                                            {{ $cargo->deleted_at ? 'Eliminado' : 'Activo' }}
-                                        </span>
-                                    </td>
-                                    @can('general deletion or editing')
-                                        <td class="px-6 py-4 flex space-x-2">
-                                            <button wire:click="edit({{ $cargo }})"
-                                                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                                Editar
-                                            </button>
-                                            <button wire:click="preDelete({{ $cargo }})"
-                                                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
-                                                Eliminar
-                                            </button>
-                                        </td>
-                                    @endcan
-                                </tr>
-                            @endforeach
+            <div class="overflow-auto rounded-lg shadow mt-4">
+                <table class="min-w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Nombre del Cargo</th>
+                            <th scope="col" class="px-6 py-3">Descripción del Cargo</th>
+                            <th scope="col" class="px-6 py-3">Estado</th>
+                            @can('general deletion or editing')
+                            <th scope="col" class="px-6 py-3">Acción</th>
+                            @endcan
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($cargos as $cargo)
+                        <tr
+                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $cargo->nombre_cargo }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $cargo->descripcion_cargo }}</td>
+                            <td class="px-6 py-4">
+                                <span class="{{ $cargo->deleted_at ? 'text-red-500' : 'text-blue-500' }}">
+                                    {{ $cargo->deleted_at ? 'Eliminado' : 'Activo' }}
+                                </span>
+                            </td>
+                            @can('general deletion or editing')
+                            <td class="px-6 py-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                                <button wire:click="edit({{ $cargo }})"
+                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Editar
+                                </button>
+                                <button wire:click="preDelete({{ $cargo }})"
+                                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                    Eliminar
+                                </button>
+                            </td>
+                            @endcan
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
 
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="mt-4">
-                    {{ $cargos->links() }}
-                </div>
+            <div class="mt-4">
+                {{ $cargos->links() }}
+            </div>
             @endif
         </div>
-
     </div>
+
     <div>
         <x-dialog-modal wire:model="open">
             <x-slot name="title">
@@ -97,7 +97,7 @@
                 <input type="text" wire:model.live="nombre_cargo"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('nombre_crgo')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <!--Descripcion del cargo-->
@@ -105,7 +105,7 @@
                 <input type="text" wire:model.live="descripcion_cargo"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('descripcion_cargo')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
 
@@ -128,7 +128,7 @@
                 <input type="text" wire:model.live="nombre_cargo"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('nombre_crgo')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <!--Descripcion del cargo-->
@@ -136,7 +136,7 @@
                 <input type="text" wire:model.live="descripcion_cargo"
                     class="border border-gray-300 rounded px-3 py-2 w-full mb-3" required>
                 @error('descripcion_cargo')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
                 <label class="block mb-2">Selecione el Estado</label>
@@ -146,7 +146,7 @@
                     <option value="Eliminado">Eliminado</option>
                 </select>
                 @error('estado')
-                    {{ $message }}
+                {{ $message }}
                 @enderror
 
 
