@@ -13,18 +13,18 @@ class CursoFactory extends Factory
      */
     private static $indiceCurso = 0;
     private static $nombresCursos = [
-        'Transicion',
+        'Transición',
         'Primero',
         'Segundo',
         'Tercero',
         'Cuarto',
         'Quinto',
         'Sexto',
-        'Septimo',
+        'Séptimo',
         'Octavo',
         'Noveno',
-        'Decimo',
-        'Undecimo'
+        'Décimo',
+        'Undécimo'
     ];
 
     public function definition(): array

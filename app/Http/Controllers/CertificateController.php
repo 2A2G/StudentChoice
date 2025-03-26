@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Services\VotacionService;
@@ -23,9 +24,11 @@ class CertificateController extends Controller
         $fechaComicios = '2025-02-10';
 
         $cursos = Curso::with(['estudiantes', 'postulante'])->get();
-        $postulantes = Postulante::with('cargo')->get();
-        $votos = Votos::all();
-
+        $postulantes = Postulante::with('cargo')->where('comicio_id', $comicioId)->get();
+        $votos = Votos::with('postulante')
+            ->whereHas('postulante', function ($query) use ($comicioId) {
+                $query->where('comicio_id', $comicioId);
+            })->get();
         $normas = [
             [
                 'titulo' => 'Ley General de Educación (Ley 115 de 1994)',
@@ -57,7 +60,6 @@ class CertificateController extends Controller
         }
 
         $ganadoresContralor = $this->votacionService->calcularResultadosPorCargo($cargoContralor, null, $comicioId);
-
         if ($ganadoresContralor->isNotEmpty()) {
             $resultados['contralor'] = $ganadoresContralor->toArray();
         }
@@ -72,6 +74,5 @@ class CertificateController extends Controller
         $pdf = Pdf::loadView('certifcate.constancia', compact('nameInstitucion', 'fechaComicios', 'normas', 'cargos', 'cursos', 'postulantes', 'votos', 'resultados', 'estudiantesSinVotar'));
 
         return $pdf->download('boletin_comicios.pdf');
-
     }
 }
